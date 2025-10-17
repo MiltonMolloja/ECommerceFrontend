@@ -9,6 +9,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
   providedIn: 'root'
 })
 export class BreakpointService {
+  private breakpointObserver = inject(BreakpointObserver);
+
   // Observables convertidos a signals
   private readonly breakpointState = toSignal(
     this.breakpointObserver.observe([
@@ -46,6 +48,4 @@ export class BreakpointService {
 
   // Signal computado para determinar si es tablet o mayor
   readonly isTabletOrDesktop = computed(() => !this.isMobile());
-
-  private breakpointObserver = inject(BreakpointObserver);
 }
