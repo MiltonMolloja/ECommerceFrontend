@@ -1,0 +1,100 @@
+<mat-sidenav-container class="sidenav-container">
+  <!-- Sidenav -->
+  <mat-sidenav
+    #sidenav
+    [mode]="sidenavMode()"
+    [opened]="sidenavOpened()"
+    (closed)="sidenavOpened.set(false)"
+    class="sidenav"
+  >
+    <mat-nav-list>
+      @for (item of navItems; track item.route) {
+        <a
+          mat-list-item
+          [routerLink]="item.route"
+          (click)="closeSidenavIfMobile()"
+          class="nav-item"
+        >
+          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+          <span matListItemTitle>{{ item.label }}</span>
+          @if (item.badge) {
+            <span
+              matListItemMeta
+              [matBadge]="item.badge()"
+              matBadgeColor="warn"
+              matBadgeSize="small"
+            ></span>
+          }
+        </a>
+      }
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!-- Contenido principal -->
+  <mat-sidenav-content>
+    <!-- Toolbar -->
+    <mat-toolbar color="primary" class="toolbar">
+      <button
+        mat-icon-button
+        (click)="toggleSidenav()"
+        aria-label="Toggle sidenav"
+        class="menu-button"
+      >
+        <mat-icon>menu</mat-icon>
+      </button>
+
+      <span class="logo">ECommerce</span>
+
+      <span class="spacer"></span>
+
+      <!-- Acciones del toolbar - visibles en desktop -->
+      <div class="toolbar-actions hide-xs">
+        <button mat-icon-button aria-label="Búsqueda">
+          <mat-icon>search</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Favoritos">
+          <mat-icon>favorite</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          aria-label="Carrito"
+          [matBadge]="cartItemCount()"
+          matBadgeColor="warn"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Usuario">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+      </div>
+
+      <!-- Solo carrito en móvil -->
+      <button
+        mat-icon-button
+        aria-label="Carrito"
+        class="hide-gt-xs"
+        [matBadge]="cartItemCount()"
+        matBadgeColor="warn"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+    </mat-toolbar>
+
+    <!-- Router Outlet para rutas hijas -->
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <p>&copy; 2025 ECommerce - Todos los derechos reservados</p>
+        <nav class="footer-links">
+          <a href="#">Privacidad</a>
+          <a href="#">Términos</a>
+          <a href="#">Contacto</a>
+        </nav>
+      </div>
+    </footer>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,0 +1,50 @@
+<div class="catalog-container">
+  <h1>Catálogo de Productos</h1>
+
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+      <p>Cargando productos...</p>
+    </div>
+  } @else {
+    <div class="products-grid">
+      @for (product of products(); track trackByProductId($index, product)) {
+        <mat-card class="product-card">
+          <img mat-card-image [src]="product.image" [alt]="product.name" loading="lazy" />
+          <mat-card-header>
+            <mat-card-title>{{ product.name }}</mat-card-title>
+            <mat-card-subtitle>{{ product.category }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <p class="description">{{ product.description }}</p>
+            <div class="price-container">
+              <span class="price">${{ product.price }}</span>
+              @if (!product.inStock) {
+                <mat-chip class="out-of-stock">Sin stock</mat-chip>
+              }
+            </div>
+          </mat-card-content>
+          <mat-card-actions>
+            <button
+              mat-raised-button
+              color="primary"
+              [disabled]="!product.inStock"
+              (click)="addToCart(product)"
+            >
+              <mat-icon>add_shopping_cart</mat-icon>
+              Agregar
+            </button>
+            <button mat-button color="accent">
+              <mat-icon>favorite_border</mat-icon>
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      } @empty {
+        <div class="empty-state">
+          <mat-icon>inventory_2</mat-icon>
+          <p>No hay productos disponibles</p>
+        </div>
+      }
+    </div>
+  }
+</div>

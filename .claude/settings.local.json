@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version:*)",
+      "Bash(npm:*)",
+      "Bash(ng version:*)",
+      "Bash(dir:*)",
+      "Bash(ng new:*)",
+      "Bash(ng add:*)",
+      "Bash(ng lint:*)",
+      "Bash(npx husky init)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
