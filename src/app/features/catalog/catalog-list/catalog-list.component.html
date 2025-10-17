@@ -10,7 +10,14 @@
     <div class="products-grid">
       @for (product of products(); track trackByProductId($index, product)) {
         <mat-card class="product-card">
-          <img mat-card-image [src]="product.image" [alt]="product.name" loading="lazy" />
+          <img
+            mat-card-image
+            [src]="product.image"
+            [alt]="product.name || 'Producto'"
+            [title]="product.name || 'Producto'"
+            [attr.aria-label]="product.name || 'Producto'"
+            loading="lazy"
+          />
           <mat-card-header>
             <mat-card-title>{{ product.name }}</mat-card-title>
             <mat-card-subtitle>{{ product.category }}</mat-card-subtitle>

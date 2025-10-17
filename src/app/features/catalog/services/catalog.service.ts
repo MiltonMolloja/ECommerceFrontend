@@ -29,7 +29,7 @@ export class CatalogService {
       name: 'Laptop Premium',
       description: 'Laptop de alto rendimiento con procesador i7',
       price: 1299.99,
-      image: 'https://via.placeholder.com/300x200?text=Laptop',
+      image: 'https://placehold.co/300x200?text=Laptop',
       category: 'Electrónica',
       inStock: true
     },
@@ -38,7 +38,7 @@ export class CatalogService {
       name: 'Smartphone Pro',
       description: 'Último modelo con cámara de 108MP',
       price: 899.99,
-      image: 'https://via.placeholder.com/300x200?text=Smartphone',
+      image: 'https://placehold.co/300x200?text=Smartphone',
       category: 'Electrónica',
       inStock: true
     },
@@ -47,7 +47,7 @@ export class CatalogService {
       name: 'Audífonos Bluetooth',
       description: 'Cancelación de ruido activa',
       price: 199.99,
-      image: 'https://via.placeholder.com/300x200?text=Audifonos',
+      image: 'https://placehold.co/300x200?text=Audifonos',
       category: 'Audio',
       inStock: false
     },
@@ -56,7 +56,7 @@ export class CatalogService {
       name: 'Teclado Mecánico',
       description: 'Switches Cherry MX con retroiluminación RGB',
       price: 149.99,
-      image: 'https://via.placeholder.com/300x200?text=Teclado',
+      image: 'https://placehold.co/300x200?text=Teclado',
       category: 'Accesorios',
       inStock: true
     },
@@ -65,7 +65,7 @@ export class CatalogService {
       name: 'Monitor 4K',
       description: '27 pulgadas con HDR',
       price: 499.99,
-      image: 'https://via.placeholder.com/300x200?text=Monitor',
+      image: 'https://placehold.co/300x200?text=Monitor',
       category: 'Electrónica',
       inStock: true
     },
@@ -74,7 +74,7 @@ export class CatalogService {
       name: 'Mouse Gaming',
       description: 'Sensor óptico de 16000 DPI',
       price: 79.99,
-      image: 'https://via.placeholder.com/300x200?text=Mouse',
+      image: 'https://placehold.co/300x200?text=Mouse',
       category: 'Accesorios',
       inStock: true
     }
