@@ -3,7 +3,8 @@
   width: 100%;
   height: 300px;
   overflow: hidden;
-  background-color: #232f3e;
+  background-color: var(--amazon-dark);
+  transition: background-color 0.3s ease;
 
   @media (min-width: 768px) {
     height: 400px;
@@ -71,13 +72,13 @@
         }
 
         .cta-button {
-          background-color: #ff9900;
+          background-color: var(--amazon-orange);
           color: #111;
           padding: 1.5rem 2rem;
           font-size: 1.125rem;
 
           &:hover {
-            background-color: #febd69;
+            background-color: var(--amazon-yellow);
           }
         }
       }
@@ -133,7 +134,7 @@
       padding: 0;
 
       &.active {
-        background-color: #ff9900;
+        background-color: var(--amazon-orange);
         width: 2rem;
       }
 

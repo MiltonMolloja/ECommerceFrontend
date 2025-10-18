@@ -1,8 +1,9 @@
 .product-carousel {
-  background: white;
+  background: var(--card-bg);
   padding: 1rem 1.5rem;
   margin-bottom: 1.5rem;
   border-radius: 4px;
+  transition: background-color 0.3s ease;
 
   @media (min-width: 768px) {
     padding: 1.5rem;
@@ -19,7 +20,8 @@
     font-size: 1.25rem;
     font-weight: 500;
     margin: 0;
-    color: #111;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 
     @media (min-width: 768px) {
       font-size: 1.5rem;
@@ -33,11 +35,14 @@
     .nav-btn {
       width: 40px;
       height: 40px;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--border-color);
       border-radius: 50%;
+      transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease;
 
       &:hover {
-        background-color: #f5f5f5;
+        background-color: var(--card-hover-bg);
       }
     }
   }
@@ -62,8 +67,12 @@
   flex: 0 0 auto;
   width: 250px;
   cursor: pointer;
-  transition: box-shadow 300ms;
-  border: 1px solid #e0e0e0;
+  transition:
+    box-shadow 300ms,
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  border: 1px solid var(--card-border);
+  background-color: var(--card-bg);
 
   &:hover {
     box-shadow:
@@ -77,10 +86,11 @@
 
   .product-image-container {
     aspect-ratio: 1;
-    background-color: #f5f5f5;
+    background-color: var(--card-hover-bg);
     border-radius: 4px;
     overflow: hidden;
     margin-bottom: 0.75rem;
+    transition: background-color 0.3s ease;
 
     .product-image {
       width: 100%;
@@ -94,7 +104,7 @@
     padding: 1rem;
 
     .product-name {
-      color: #111;
+      color: var(--text-primary);
       font-size: 1rem;
       font-weight: 400;
       margin-bottom: 0.5rem;
@@ -103,6 +113,7 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
       height: 3rem;
+      transition: color 0.3s ease;
     }
 
     .rating {
@@ -115,10 +126,11 @@
         font-size: 1rem;
         width: 1rem;
         height: 1rem;
-        color: #e0e0e0;
+        color: var(--border-color);
+        transition: color 0.3s ease;
 
         &.filled {
-          color: #ff9900;
+          color: var(--amazon-orange);
         }
       }
 
@@ -142,9 +154,10 @@
       }
 
       .original-price {
-        color: #666;
+        color: var(--text-secondary);
         font-size: 0.875rem;
         text-decoration: line-through;
+        transition: color 0.3s ease;
       }
     }
 
@@ -156,11 +169,11 @@
 
     .add-to-cart {
       width: 100%;
-      background-color: #ff9900;
+      background-color: var(--amazon-orange);
       color: #111;
 
       &:hover {
-        background-color: #febd69;
+        background-color: var(--amazon-yellow);
       }
 
       mat-icon {
@@ -180,16 +193,18 @@
   display: block;
   border-radius: 4px;
   overflow: hidden;
-  background: white;
+  background: var(--card-bg);
   transition:
     transform 0.15s ease,
-    box-shadow 0.15s ease;
-  border: 1px solid #ddd;
+    box-shadow 0.15s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+  border: 1px solid var(--border-color);
 
   &:hover {
     transform: scale(1.02);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    border-color: #999;
+    border-color: var(--text-secondary);
     z-index: 1;
   }
 

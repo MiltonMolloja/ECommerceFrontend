@@ -17,11 +17,12 @@
 
 // Primera fila - Logo, Búsqueda, Acciones
 .top-toolbar {
-  background-color: var(--amazon-dark, #232f3e) !important;
+  background-color: var(--header-bg-primary) !important;
   color: white !important;
   padding: 0 !important;
   height: auto !important;
   min-height: 60px !important;
+  transition: background-color 0.3s ease;
 
   .header-content {
     display: flex;
@@ -74,9 +75,10 @@
 
     ::ng-deep {
       .mat-mdc-text-field-wrapper {
-        background-color: white;
+        background-color: var(--search-bg);
         border-radius: 4px 0 0 4px;
         padding: 0;
+        transition: background-color 0.3s ease;
       }
 
       .mat-mdc-form-field-flex {
@@ -96,7 +98,13 @@
 
       input {
         font-size: 14px;
-        color: #111;
+        color: var(--search-text);
+        transition: color 0.3s ease;
+
+        &::placeholder {
+          color: var(--text-secondary);
+          transition: color 0.3s ease;
+        }
       }
     }
   }
@@ -129,7 +137,7 @@
 }
 
 .account-button,
-.returns-button {
+.theme-button {
   color: white !important;
   padding: 0.5rem !important;
   border: 1px solid transparent !important;
@@ -185,11 +193,12 @@
 
 // Segunda fila - Navegación
 .nav-toolbar {
-  background-color: var(--amazon-light, #37475a) !important;
+  background-color: var(--header-bg-secondary) !important;
   color: white !important;
   padding: 0 !important;
   height: 40px !important;
   min-height: 40px !important;
+  transition: background-color 0.3s ease;
 
   .nav-content {
     display: flex;
@@ -238,8 +247,25 @@
 .content {
   flex: 1;
   width: 100%;
-  background-color: var(--amazon-bg, #eaeded);
+  background-color: var(--current-bg, var(--amazon-bg));
   overflow-x: hidden;
+  transition: background-color 0.3s ease;
+}
+
+// Estilos para opciones de tema activas en el menú
+::ng-deep .mat-mdc-menu-content {
+  button.mat-mdc-menu-item.active {
+    background-color: rgba(25, 118, 210, 0.12);
+
+    .mat-icon {
+      color: #1976d2;
+    }
+
+    span {
+      font-weight: 600;
+      color: #1976d2;
+    }
+  }
 }
 
 // ============================================
@@ -247,9 +273,10 @@
 // ============================================
 
 .footer {
-  background-color: var(--amazon-light, #37475a);
+  background-color: var(--footer-bg);
   color: white;
   margin-top: auto;
+  transition: background-color 0.3s ease;
 
   .footer-content {
     max-width: 1500px;
@@ -286,9 +313,10 @@
   }
 
   .footer-bottom {
-    background-color: var(--amazon-dark, #232f3e);
+    background-color: var(--footer-bottom-bg);
     padding: 1rem;
     text-align: center;
+    transition: background-color 0.3s ease;
 
     p {
       margin: 0;

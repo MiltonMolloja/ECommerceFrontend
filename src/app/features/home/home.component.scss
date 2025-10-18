@@ -1,6 +1,7 @@
 .home-container {
-  background: var(--amazon-bg, #eaeded);
+  background: var(--current-bg, var(--amazon-bg));
   min-height: 100vh;
+  transition: background-color 0.3s ease;
 }
 
 .content-section {

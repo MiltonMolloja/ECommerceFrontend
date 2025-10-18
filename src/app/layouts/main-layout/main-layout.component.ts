@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, inject } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -8,6 +8,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
+import { ThemeService, type ThemeMode } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -28,6 +29,7 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
+  readonly themeService = inject(ThemeService);
   readonly cartItemCount = signal(3);
   readonly searchQuery = signal('');
 
@@ -42,5 +44,9 @@ export class MainLayoutComponent {
 
   onSearch(): void {
     console.log('Searching for:', this.searchQuery());
+  }
+
+  setTheme(mode: ThemeMode): void {
+    this.themeService.setThemeMode(mode);
   }
 }

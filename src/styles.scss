@@ -1,8 +1,36 @@
 // Tema Angular Material 3 con soporte claro/oscuro
 @use '@angular/material' as mat;
 
-// Configuración global del tema
-html {
+// Amazon color variables (disponibles en ambos temas)
+:root {
+  --amazon-dark: #232f3e;
+  --amazon-light: #37475a;
+  --amazon-orange: #ff9900;
+  --amazon-yellow: #febd69;
+  --amazon-bg: #eaeded;
+  --amazon-bg-dark: #131921;
+  --amazon-white: #ffffff;
+  --amazon-text-light: #0f1111;
+  --amazon-text-dark: #ffffff;
+
+  // Variables dinámicas por defecto (tema claro)
+  --card-bg: #ffffff;
+  --card-border: #e0e0e0;
+  --card-hover-bg: #f5f5f5;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --header-bg-primary: #232f3e;
+  --header-bg-secondary: #37475a;
+  --footer-bg: #37475a;
+  --footer-bottom-bg: #232f3e;
+  --search-bg: #ffffff;
+  --search-text: #111111;
+}
+
+// Tema Claro por defecto
+html,
+html.light-theme {
   @include mat.theme(
     (
       color: (
@@ -14,42 +42,64 @@ html {
       density: 0
     )
   );
+
+  color-scheme: light;
+  --current-bg: var(--amazon-bg);
+  --current-text: var(--amazon-text-light);
+  --card-bg: #ffffff;
+  --card-border: #e0e0e0;
+  --card-hover-bg: #f5f5f5;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --header-bg-primary: #232f3e;
+  --header-bg-secondary: #37475a;
+  --footer-bg: #37475a;
+  --footer-bottom-bg: #232f3e;
+  --search-bg: #ffffff;
+  --search-text: #111111;
 }
 
-// Tema oscuro automático basado en preferencias del sistema
-@media (prefers-color-scheme: dark) {
-  html {
-    @include mat.theme(
-      (
-        color: (
-          primary: mat.$azure-palette,
-          tertiary: mat.$blue-palette,
-          theme-type: dark
-        ),
-        typography: Roboto,
-        density: 0
-      )
-    );
-  }
-}
+// Tema Oscuro
+html.dark-theme {
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+        theme-type: dark
+      ),
+      typography: Roboto,
+      density: 0
+    )
+  );
 
-// Amazon color variables
-:root {
-  --amazon-dark: #232f3e;
-  --amazon-light: #37475a;
-  --amazon-orange: #ff9900;
-  --amazon-yellow: #febd69;
-  --amazon-bg: #eaeded;
-  --amazon-white: #ffffff;
+  color-scheme: dark;
+  --current-bg: var(--amazon-bg-dark);
+  --current-text: var(--amazon-text-dark);
+  --card-bg: #1f2937;
+  --card-border: #374151;
+  --card-hover-bg: #2d3748;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --border-color: #374151;
+  --header-bg-primary: #0f172a;
+  --header-bg-secondary: #1e293b;
+  --footer-bg: #1e293b;
+  --footer-bottom-bg: #0f172a;
+  --search-bg: #374151;
+  --search-text: #f3f4f6;
 }
 
 body {
-  color-scheme: light dark; // Soporta ambos modos según preferencias del sistema
-  background-color: var(--amazon-bg);
+  background-color: var(--current-bg, var(--amazon-bg));
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
   margin: 0;
   height: 100%;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 html,

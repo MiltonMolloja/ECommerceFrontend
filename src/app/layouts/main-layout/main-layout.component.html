@@ -50,13 +50,70 @@
             <mat-icon>account_circle</mat-icon>
           </button>
 
-          <!-- Órdenes y devoluciones -->
-          <button mat-button class="returns-button hide-xs" routerLink="/orders">
+          <!-- Selector de Tema -->
+          <button mat-button class="theme-button hide-xs" [matMenuTriggerFor]="themeMenu">
             <div class="account-info">
-              <span class="account-greeting">Devoluciones</span>
-              <span class="account-label">y Pedidos</span>
+              <span class="account-greeting">Tema</span>
+              <span class="account-label">{{ themeService.getThemeLabel() }}</span>
             </div>
           </button>
+          <mat-menu #themeMenu="matMenu">
+            <button
+              mat-menu-item
+              (click)="setTheme('light')"
+              [class.active]="themeService.themeMode() === 'light'"
+            >
+              <mat-icon>light_mode</mat-icon>
+              <span>Claro</span>
+            </button>
+            <button
+              mat-menu-item
+              (click)="setTheme('dark')"
+              [class.active]="themeService.themeMode() === 'dark'"
+            >
+              <mat-icon>dark_mode</mat-icon>
+              <span>Oscuro</span>
+            </button>
+            <button
+              mat-menu-item
+              (click)="setTheme('auto')"
+              [class.active]="themeService.themeMode() === 'auto'"
+            >
+              <mat-icon>brightness_auto</mat-icon>
+              <span>Automático</span>
+            </button>
+          </mat-menu>
+
+          <!-- Icono de tema en móvil -->
+          <button mat-icon-button class="hide-gt-xs" [matMenuTriggerFor]="themeMobileMenu">
+            <mat-icon>{{ themeService.getThemeIcon() }}</mat-icon>
+          </button>
+          <mat-menu #themeMobileMenu="matMenu">
+            <button
+              mat-menu-item
+              (click)="setTheme('light')"
+              [class.active]="themeService.themeMode() === 'light'"
+            >
+              <mat-icon>light_mode</mat-icon>
+              <span>Claro</span>
+            </button>
+            <button
+              mat-menu-item
+              (click)="setTheme('dark')"
+              [class.active]="themeService.themeMode() === 'dark'"
+            >
+              <mat-icon>dark_mode</mat-icon>
+              <span>Oscuro</span>
+            </button>
+            <button
+              mat-menu-item
+              (click)="setTheme('auto')"
+              [class.active]="themeService.themeMode() === 'auto'"
+            >
+              <mat-icon>brightness_auto</mat-icon>
+              <span>Automático</span>
+            </button>
+          </mat-menu>
 
           <!-- Carrito -->
           <button mat-button class="cart-button" routerLink="/cart">
