@@ -13,7 +13,15 @@
       "Bash(git push:*)",
       "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Services/Identity/**)",
       "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Services/**)",
-      "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Gateways/**)"
+      "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Gateways/**)",
+      "Bash(ng generate service core/services/ip --skip-tests)",
+      "Read(//c/Users/milto/Downloads/**)",
+      "Bash(ng generate guard core/guards/auth --skip-tests)",
+      "Bash(ng generate component features/orders/orders-list --skip-tests)",
+      "Bash(ng generate component features/orders/orders-create --skip-tests)",
+      "Bash(ng generate @angular/core:route features/orders --skip-tests)",
+      "Bash(ng build --configuration development)",
+      "Bash(ng generate component features/orders/order-detail --skip-tests)"
     ],
     "deny": [],
     "ask": []

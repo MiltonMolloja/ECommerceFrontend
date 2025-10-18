@@ -1,0 +1,90 @@
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.error-message {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.order-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .order-number {
+    font-size: 3.5rem;
+    font-weight: 300;
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: #d84315;
+    margin: 0 0 2rem 0;
+  }
+
+  .order-info {
+    margin-bottom: 2.5rem;
+
+    .info-item {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+
+      .label {
+        font-weight: 600;
+        color: #333;
+        margin-right: 0.5rem;
+      }
+
+      .value {
+        color: #555;
+      }
+    }
+  }
+
+  .items-table-container {
+    margin-top: 2rem;
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+
+      th {
+        background-color: transparent;
+        border-bottom: 1px solid #e0e0e0;
+        font-weight: 600;
+        color: #333;
+        padding: 1rem 0;
+        text-align: left;
+      }
+
+      td {
+        padding: 1rem 0;
+        color: #555;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      // Remove Material table default background on hover
+      tr:hover {
+        background-color: transparent;
+      }
+    }
+
+    .total-section {
+      text-align: right;
+      padding: 1.5rem 0;
+
+      .total-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #333;
+      }
+    }
+  }
+}

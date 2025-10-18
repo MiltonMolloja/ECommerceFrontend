@@ -40,7 +40,8 @@ export class MainLayoutComponent {
   readonly navItems = [
     { label: 'Inicio', route: '/', icon: 'home' },
     { label: 'Catálogo', route: '/catalog', icon: 'store' },
-    { label: 'Carrito', route: '/cart', icon: 'shopping_cart', badge: this.cartItemCount }
+    { label: 'Carrito', route: '/cart', icon: 'shopping_cart', badge: this.cartItemCount },
+    { label: 'Órdenes', route: '/orders', icon: 'receipt_long' }
   ];
 
   toggleSidenav(): void {

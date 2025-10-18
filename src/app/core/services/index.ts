@@ -6,3 +6,4 @@ export * from './breakpoint.service';
 export * from './auth.service';
 export * from './order.service';
 export * from './customer.service';
+export * from './ip';

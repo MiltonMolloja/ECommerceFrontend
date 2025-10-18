@@ -8,8 +8,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, IpService } from '../../../core/services';
 import { UserLoginCommand } from '../../../core/models';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -31,6 +32,7 @@ import { UserLoginCommand } from '../../../core/models';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private ipService = inject(IpService);
   private router = inject(Router);
 
   readonly isLoading = signal(false);
@@ -65,28 +67,36 @@ export class LoginComponent {
     this.errorMessage.set(null);
 
     const { email, password } = this.loginForm.getRawValue();
-    const command: UserLoginCommand = {
-      email,
-      password,
-      ipAddress: '127.0.0.1' // TODO: Implementar obtención de IP real del cliente
-    };
 
-    this.authService.login(command).subscribe({
-      next: (response) => {
-        this.isLoading.set(false);
-        if (response.succeeded) {
-          this.router.navigate(['/']);
-        } else {
-          this.errorMessage.set('Credenciales inválidas. Por favor, intente nuevamente.');
+    // Primero obtenemos la IP del cliente y luego hacemos el login
+    this.ipService
+      .getClientIp()
+      .pipe(
+        switchMap((ipAddress) => {
+          const command: UserLoginCommand = {
+            email,
+            password,
+            ipAddress
+          };
+          return this.authService.login(command);
+        })
+      )
+      .subscribe({
+        next: (response) => {
+          this.isLoading.set(false);
+          if (response.succeeded) {
+            this.router.navigate(['/']);
+          } else {
+            this.errorMessage.set('Credenciales inválidas. Por favor, intente nuevamente.');
+          }
+        },
+        error: (error) => {
+          this.isLoading.set(false);
+          console.error('Login error:', error);
+          this.errorMessage.set(
+            'Error al iniciar sesión. Por favor, verifique su conexión e intente nuevamente.'
+          );
         }
-      },
-      error: (error) => {
-        this.isLoading.set(false);
-        console.error('Login error:', error);
-        this.errorMessage.set(
-          'Error al iniciar sesión. Por favor, verifique su conexión e intente nuevamente.'
-        );
-      }
-    });
+      });
   }
 }

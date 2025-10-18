@@ -1,0 +1,134 @@
+.processing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 300;
+    color: #666;
+  }
+}
+
+.order-create-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+
+  .header {
+    margin-bottom: 2rem;
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      margin: 0 0 0.5rem 0;
+      color: #333;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+
+  .order-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 4px;
+
+    .form-field {
+      margin-bottom: 1.5rem;
+
+      mat-form-field {
+        width: 100%;
+      }
+
+      .product-selector {
+        display: flex;
+        gap: 1rem;
+        align-items: flex-start;
+
+        mat-form-field {
+          flex: 1;
+        }
+
+        button {
+          margin-top: 0;
+          height: 56px;
+        }
+      }
+    }
+
+    .items-table-container {
+      margin: 2rem 0;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+
+      .items-table {
+        width: 100%;
+
+        th {
+          background-color: #f5f5f5;
+          font-weight: 600;
+          color: #333;
+          padding: 1rem;
+        }
+
+        td {
+          padding: 1rem;
+          color: #555;
+        }
+
+        .quantity-input {
+          width: 80px;
+          padding: 0.5rem;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+          font-size: 1rem;
+          text-align: center;
+
+          &:focus {
+            outline: none;
+            border-color: #1976d2;
+          }
+        }
+
+        .remove-button {
+          color: #d32f2f;
+        }
+      }
+
+      .total-section {
+        padding: 1.5rem;
+        text-align: right;
+        border-top: 1px solid #e0e0e0;
+
+        .total-label {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: #333;
+        }
+      }
+    }
+
+    .form-actions {
+      text-align: center;
+      margin-top: 2rem;
+
+      .create-button {
+        width: 100%;
+        height: 56px;
+        font-size: 1.1rem;
+      }
+    }
+  }
+}
