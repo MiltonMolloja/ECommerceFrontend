@@ -1,0 +1,20 @@
+<div class="offer-grid-container">
+  <h2 class="grid-title">{{ title }}</h2>
+  <div class="offers-grid">
+    @for (offer of offers; track offer.id) {
+      <mat-card class="offer-card">
+        <div class="image-container">
+          <img [src]="offer.image" [alt]="offer.title" class="offer-image" />
+          @if (offer.discount) {
+            <div class="discount-badge">{{ offer.discount }}</div>
+          }
+        </div>
+        <mat-card-content class="card-content">
+          <p class="category">{{ offer.category }}</p>
+          <h3 class="offer-title">{{ offer.title }}</h3>
+          <button mat-button class="see-more-button">See more</button>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>

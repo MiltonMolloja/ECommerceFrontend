@@ -1,100 +1,125 @@
-<mat-sidenav-container class="sidenav-container">
-  <!-- Sidenav -->
-  <mat-sidenav
-    #sidenav
-    [mode]="sidenavMode()"
-    [opened]="sidenavOpened()"
-    (closed)="sidenavOpened.set(false)"
-    class="sidenav"
-  >
-    <mat-nav-list>
-      @for (item of navItems; track item.route) {
-        <a
-          mat-list-item
-          [routerLink]="item.route"
-          (click)="closeSidenavIfMobile()"
-          class="nav-item"
-        >
-          <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
-          <span matListItemTitle>{{ item.label }}</span>
-          @if (item.badge) {
-            <span
-              matListItemMeta
-              [matBadge]="item.badge()"
-              matBadgeColor="warn"
-              matBadgeSize="small"
-            ></span>
-          }
+<div class="layout-container">
+  <!-- Header Principal - Amazon Style -->
+  <header class="main-header">
+    <!-- Primera fila: Logo, Búsqueda, Cuenta, Carrito -->
+    <mat-toolbar class="top-toolbar">
+      <div class="header-content">
+        <!-- Logo -->
+        <a routerLink="/" class="logo">
+          <mat-icon class="logo-icon">shopping_bag</mat-icon>
+          <span class="logo-text hide-xs">ECommerce</span>
         </a>
-      }
-    </mat-nav-list>
-  </mat-sidenav>
 
-  <!-- Contenido principal -->
-  <mat-sidenav-content>
-    <!-- Toolbar -->
-    <mat-toolbar color="primary" class="toolbar">
-      <button
-        mat-icon-button
-        (click)="toggleSidenav()"
-        aria-label="Toggle sidenav"
-        class="menu-button"
-      >
-        <mat-icon>menu</mat-icon>
-      </button>
+        <!-- Barra de búsqueda -->
+        <div class="search-bar">
+          <mat-form-field appearance="outline" class="search-field">
+            <input
+              matInput
+              placeholder="Buscar productos..."
+              [(ngModel)]="searchQuery"
+              (keyup.enter)="onSearch()"
+            />
+          </mat-form-field>
+          <button mat-raised-button class="search-button" (click)="onSearch()">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
 
-      <span class="logo">ECommerce</span>
+        <!-- Acciones de header -->
+        <div class="header-actions">
+          <!-- Cuenta y listas -->
+          <button mat-button class="account-button hide-xs" [matMenuTriggerFor]="accountMenu">
+            <div class="account-info">
+              <span class="account-greeting">Hola, Usuario</span>
+              <span class="account-label">Cuenta y Listas</span>
+            </div>
+          </button>
+          <mat-menu #accountMenu="matMenu">
+            <button mat-menu-item routerLink="/login">
+              <mat-icon>login</mat-icon>
+              <span>Iniciar Sesión</span>
+            </button>
+            <button mat-menu-item routerLink="/orders">
+              <mat-icon>receipt_long</mat-icon>
+              <span>Mis Órdenes</span>
+            </button>
+          </mat-menu>
 
-      <span class="spacer"></span>
+          <!-- Solo icono de usuario en móvil -->
+          <button mat-icon-button class="hide-gt-xs" routerLink="/login">
+            <mat-icon>account_circle</mat-icon>
+          </button>
 
-      <!-- Acciones del toolbar - visibles en desktop -->
-      <div class="toolbar-actions hide-xs">
-        <button mat-icon-button aria-label="Búsqueda">
-          <mat-icon>search</mat-icon>
-        </button>
-        <button mat-icon-button aria-label="Favoritos">
-          <mat-icon>favorite</mat-icon>
-        </button>
-        <button
-          mat-icon-button
-          aria-label="Carrito"
-          [matBadge]="cartItemCount()"
-          matBadgeColor="warn"
-        >
-          <mat-icon>shopping_cart</mat-icon>
-        </button>
-        <button mat-icon-button aria-label="Usuario" routerLink="/login">
-          <mat-icon>account_circle</mat-icon>
-        </button>
+          <!-- Órdenes y devoluciones -->
+          <button mat-button class="returns-button hide-xs" routerLink="/orders">
+            <div class="account-info">
+              <span class="account-greeting">Devoluciones</span>
+              <span class="account-label">y Pedidos</span>
+            </div>
+          </button>
+
+          <!-- Carrito -->
+          <button mat-button class="cart-button" routerLink="/cart">
+            <mat-icon [matBadge]="cartItemCount()" matBadgeColor="warn" matBadgeSize="small">
+              shopping_cart
+            </mat-icon>
+            <span class="cart-label hide-xs">Carrito</span>
+          </button>
+        </div>
       </div>
-
-      <!-- Solo carrito en móvil -->
-      <button
-        mat-icon-button
-        aria-label="Carrito"
-        class="hide-gt-xs"
-        [matBadge]="cartItemCount()"
-        matBadgeColor="warn"
-      >
-        <mat-icon>shopping_cart</mat-icon>
-      </button>
     </mat-toolbar>
 
-    <!-- Router Outlet para rutas hijas -->
-    <main class="content">
-      <router-outlet></router-outlet>
-    </main>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <div class="container">
-        <p>&copy; 2025 ECommerce - Todos los derechos reservados</p>
-        <nav class="footer-links">
-          <a href="#">Privacidad</a>
-          <a href="#">Términos</a>
-          <a href="#">Contacto</a>
-        </nav>
+    <!-- Segunda fila: Navegación de categorías -->
+    <mat-toolbar class="nav-toolbar">
+      <div class="nav-content">
+        <button mat-button class="nav-button" routerLink="/">
+          <mat-icon>home</mat-icon>
+          <span>Inicio</span>
+        </button>
+        @for (category of categories; track category.route) {
+          <button mat-button class="nav-button" [routerLink]="category.route">
+            {{ category.label }}
+          </button>
+        }
       </div>
-    </footer>
-  </mat-sidenav-content>
-</mat-sidenav-container>
+    </mat-toolbar>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Conócenos</h3>
+        <a href="#">Sobre Nosotros</a>
+        <a href="#">Carreras</a>
+        <a href="#">Relaciones con Inversionistas</a>
+      </div>
+      <div class="footer-section">
+        <h3>Gana Dinero con Nosotros</h3>
+        <a href="#">Vende en ECommerce</a>
+        <a href="#">Programa de Afiliados</a>
+        <a href="#">Anuncia tus Productos</a>
+      </div>
+      <div class="footer-section">
+        <h3>Podemos Ayudarte</h3>
+        <a href="#">Tu Cuenta</a>
+        <a href="#">Tus Pedidos</a>
+        <a href="#">Devoluciones y Reemplazos</a>
+      </div>
+      <div class="footer-section">
+        <h3>Métodos de Pago</h3>
+        <a href="#">Tarjetas de Crédito</a>
+        <a href="#">Tarjetas de Débito</a>
+        <a href="#">Transferencia Bancaria</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 ECommerce - Todos los derechos reservados</p>
+    </div>
+  </footer>
+</div>

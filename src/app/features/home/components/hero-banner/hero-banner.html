@@ -1,0 +1,36 @@
+<div class="hero-banner">
+  <div class="slides-container" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
+    @for (banner of banners; track banner.id) {
+      <div class="slide">
+        <img [src]="banner.image" [alt]="banner.title" class="slide-image" />
+        <div class="slide-content">
+          <div class="content-wrapper">
+            <h2 class="slide-title">{{ banner.title }}</h2>
+            <p class="slide-description">{{ banner.description }}</p>
+            <button mat-raised-button class="cta-button">
+              {{ banner.buttonText }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <button mat-icon-button class="nav-button prev" (click)="prev()" aria-label="Previous slide">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+  <button mat-icon-button class="nav-button next" (click)="next()" aria-label="Next slide">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+
+  <div class="dots-indicator">
+    @for (banner of banners; track banner.id; let i = $index) {
+      <button
+        class="dot"
+        [class.active]="i === currentSlide()"
+        (click)="goToSlide(i)"
+        [attr.aria-label]="'Go to slide ' + (i + 1)"
+      ></button>
+    }
+  </div>
+</div>

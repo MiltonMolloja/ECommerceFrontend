@@ -21,7 +21,13 @@
       "Bash(ng generate component features/orders/orders-create --skip-tests)",
       "Bash(ng generate @angular/core:route features/orders --skip-tests)",
       "Bash(ng build --configuration development)",
-      "Bash(ng generate component features/orders/order-detail --skip-tests)"
+      "Bash(ng generate component features/orders/order-detail --skip-tests)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Add complete orders management feature\n\n- Add auth guard to protect authenticated routes\n- Create orders list component with Material UI table\n- Create new order form with client, payment method, and product selection\n- Add order detail view with order information and items breakdown\n- Configure protected routes for orders feature (/orders, /orders/new, /orders/:id)\n- Add orders navigation link to main menu\n- All components use Angular signals and Material Design\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(ng generate service features/home/services/home-data --skip-tests)",
+      "Bash(ng generate component features/home/components/hero-banner --skip-tests)",
+      "Bash(ng generate component features/home/components/offer-grid --skip-tests)"
     ],
     "deny": [],
     "ask": []

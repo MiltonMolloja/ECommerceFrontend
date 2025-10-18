@@ -1,53 +1,14 @@
-.amazon-home {
-  background: #e3e6e6; /* Fondo gris claro tipo Amazon */
-  padding-bottom: 24px;
-
-  // Asegurar que mat-grid-tile contenga correctamente las tarjetas
-  ::ng-deep mat-grid-tile {
-    .mat-grid-tile-content {
-      align-items: stretch;
-      justify-content: stretch;
-      padding: 0;
-
-      app-promo-card {
-        width: 100%;
-        height: 100%;
-        display: block;
-      }
-    }
-  }
+.home-container {
+  background: var(--amazon-bg, #eaeded);
+  min-height: 100vh;
 }
 
-.hero-banner {
-  position: relative;
-  height: 320px;
-  background: linear-gradient(180deg, #f5f6f6 0%, #e3e6e6 60%);
+.content-section {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 1rem;
 
-  @media (min-width: 1200px) {
-    height: 380px;
-  }
-}
-
-.hero-image {
-  position: absolute;
-  inset: 0;
-  background-image: url('https://images.pexels.com/photos/374016/pexels-photo-374016.jpeg?auto=compress&cs=tinysrgb&w=1600');
-  background-size: cover;
-  background-position: center;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 1) 60%, rgba(0, 0, 0, 0) 100%);
-}
-
-section.container-max {
-  margin-top: -100px; /* Superponer grid sobre el hero */
-  margin-bottom: 24px;
-  position: relative;
-  z-index: 10;
-
-  &:not(:first-of-type) {
-    margin-top: 0;
-  }
-
-  @media (max-width: 600px) {
-    margin-top: -60px;
+  @media (min-width: 768px) {
+    padding: 0 1.5rem;
   }
 }

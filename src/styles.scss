@@ -33,9 +33,19 @@ html {
   }
 }
 
+// Amazon color variables
+:root {
+  --amazon-dark: #232f3e;
+  --amazon-light: #37475a;
+  --amazon-orange: #ff9900;
+  --amazon-yellow: #febd69;
+  --amazon-bg: #eaeded;
+  --amazon-white: #ffffff;
+}
+
 body {
   color-scheme: light dark; // Soporta ambos modos según preferencias del sistema
-  background-color: var(--mat-sys-surface);
+  background-color: var(--amazon-bg);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
   margin: 0;

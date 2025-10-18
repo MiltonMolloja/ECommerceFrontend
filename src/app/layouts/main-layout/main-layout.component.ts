@@ -1,12 +1,13 @@
-import { Component, signal, computed, inject } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSidenavModule } from '@angular/material/sidenav';
-import { MatListModule } from '@angular/material/list';
 import { MatBadgeModule } from '@angular/material/badge';
-import { BreakpointService } from '../../core/services/breakpoint.service';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-main-layout',
@@ -14,43 +15,32 @@ import { BreakpointService } from '../../core/services/breakpoint.service';
   imports: [
     RouterOutlet,
     RouterLink,
+    FormsModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
-    MatSidenavModule,
-    MatListModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatMenuModule
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
 })
 export class MainLayoutComponent {
-  private breakpointSvc = inject(BreakpointService);
+  readonly cartItemCount = signal(3);
+  readonly searchQuery = signal('');
 
-  readonly breakpointService = signal(this.breakpointSvc).asReadonly();
-  readonly sidenavOpened = signal(false);
-  readonly cartItemCount = signal(3); // Mock, luego conectar con servicio real
-
-  // Computed para saber si el sidenav debe estar en modo 'over' o 'side'
-  readonly sidenavMode = computed(() => (this.breakpointService().isMobile() ? 'over' : 'side'));
-
-  // Computed para determinar si el sidenav se cierra automáticamente al hacer clic
-  readonly autoCloseSidenav = computed(() => this.breakpointService().isMobile());
-
-  readonly navItems = [
-    { label: 'Inicio', route: '/', icon: 'home' },
-    { label: 'Catálogo', route: '/catalog', icon: 'store' },
-    { label: 'Carrito', route: '/cart', icon: 'shopping_cart', badge: this.cartItemCount },
-    { label: 'Órdenes', route: '/orders', icon: 'receipt_long' }
+  readonly categories = [
+    { label: 'Todo', route: '/catalog' },
+    { label: 'Ofertas del Día', route: '/deals' },
+    { label: 'Servicio al Cliente', route: '/support' },
+    { label: 'Registros', route: '/orders' },
+    { label: 'Tarjetas de Regalo', route: '/gift-cards' },
+    { label: 'Vender', route: '/sell' }
   ];
 
-  toggleSidenav(): void {
-    this.sidenavOpened.update((value) => !value);
-  }
-
-  closeSidenavIfMobile(): void {
-    if (this.autoCloseSidenav()) {
-      this.sidenavOpened.set(false);
-    }
+  onSearch(): void {
+    console.log('Searching for:', this.searchQuery());
   }
 }

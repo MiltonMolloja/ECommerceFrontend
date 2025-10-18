@@ -1,111 +1,326 @@
-.sidenav-container {
-  height: 100vh;
-  width: 100%;
-  display: flex;
-}
-
-mat-sidenav-content {
+.layout-container {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  min-height: 100vh;
 }
 
-.sidenav {
-  width: 250px;
-  padding-top: 16px;
-}
+// ============================================
+// HEADER - Amazon Style
+// ============================================
 
-.nav-item {
-  margin-bottom: 8px;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.04);
-  }
-}
-
-.toolbar {
+.main-header {
   position: sticky;
   top: 0;
   z-index: 1000;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.menu-button {
-  margin-right: 16px;
+// Primera fila - Logo, Búsqueda, Acciones
+.top-toolbar {
+  background-color: var(--amazon-dark, #232f3e) !important;
+  color: white !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: 60px !important;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0.5rem 1rem;
+  }
 }
 
 .logo {
-  font-size: 20px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.spacer {
-  flex: 1 1 auto;
-}
-
-.toolbar-actions {
   display: flex;
-  gap: 8px;
   align-items: center;
-}
+  gap: 0.5rem;
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: border-color 0.15s;
 
-.content {
-  min-height: calc(100vh - 64px - 80px); // 100vh - toolbar - footer
-  width: 100%;
-  padding: 24px;
-  background-color: var(--mat-sys-surface-container);
-  overflow-x: hidden;
+  &:hover {
+    border-color: white;
+  }
 
-  @media (max-width: 599px) {
-    padding: 16px;
-    min-height: calc(100vh - 56px - 80px); // Toolbar más pequeño en móvil
+  .logo-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .logo-text {
+    font-size: 1.25rem;
+    font-weight: 700;
+    white-space: nowrap;
   }
 }
 
-.footer {
-  background-color: var(--mat-sys-surface-variant);
-  padding: 24px;
-  margin-top: auto;
+// Barra de búsqueda
+.search-bar {
+  flex: 1;
+  display: flex;
+  max-width: 800px;
+  height: 40px;
 
-  .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+  .search-field {
+    flex: 1;
 
-    p {
-      margin: 0;
-      font-size: 14px;
-      color: var(--mat-sys-on-surface-variant);
-    }
-  }
+    ::ng-deep {
+      .mat-mdc-text-field-wrapper {
+        background-color: white;
+        border-radius: 4px 0 0 4px;
+        padding: 0;
+      }
 
-  .footer-links {
-    display: flex;
-    gap: 24px;
+      .mat-mdc-form-field-flex {
+        height: 40px;
+        padding: 0 0.75rem;
+      }
 
-    a {
-      color: var(--mat-sys-on-surface-variant);
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s;
+      .mat-mdc-form-field-infix {
+        padding: 0;
+        border: none;
+        min-height: 40px;
+      }
 
-      &:hover {
-        color: var(--mat-sys-primary);
+      .mat-mdc-notched-outline {
+        display: none;
+      }
+
+      input {
+        font-size: 14px;
+        color: #111;
       }
     }
   }
 
-  @media (max-width: 599px) {
-    padding: 16px;
+  .search-button {
+    min-width: 45px;
+    width: 45px;
+    height: 40px;
+    padding: 0;
+    background-color: var(--amazon-orange, #ff9900) !important;
+    color: #111 !important;
+    border-radius: 0 4px 4px 0 !important;
+    box-shadow: none !important;
 
-    .container {
-      flex-direction: column;
-      text-align: center;
+    &:hover {
+      background-color: var(--amazon-yellow, #febd69) !important;
     }
+
+    mat-icon {
+      margin: 0;
+    }
+  }
+}
+
+// Acciones del header
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.account-button,
+.returns-button {
+  color: white !important;
+  padding: 0.5rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 2px !important;
+
+  &:hover {
+    border-color: white !important;
+  }
+
+  .account-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    line-height: 1.2;
+  }
+
+  .account-greeting {
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+
+  .account-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+}
+
+.cart-button {
+  color: white !important;
+  padding: 0.5rem !important;
+  border: 1px solid transparent !important;
+  border-radius: 2px !important;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &:hover {
+    border-color: white !important;
+  }
+
+  mat-icon {
+    font-size: 2rem;
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .cart-label {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+}
+
+// Segunda fila - Navegación
+.nav-toolbar {
+  background-color: var(--amazon-light, #37475a) !important;
+  color: white !important;
+  padding: 0 !important;
+  height: 40px !important;
+  min-height: 40px !important;
+
+  .nav-content {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+.nav-button {
+  color: white !important;
+  font-size: 0.875rem !important;
+  padding: 0.5rem 0.75rem !important;
+  min-width: auto !important;
+  height: 40px !important;
+  border: 1px solid transparent !important;
+  border-radius: 2px !important;
+  white-space: nowrap;
+
+  &:hover {
+    border-color: white !important;
+  }
+
+  mat-icon {
+    margin-right: 0.25rem;
+    font-size: 1.125rem;
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+// ============================================
+// CONTENIDO PRINCIPAL
+// ============================================
+
+.content {
+  flex: 1;
+  width: 100%;
+  background-color: var(--amazon-bg, #eaeded);
+  overflow-x: hidden;
+}
+
+// ============================================
+// FOOTER - Amazon Style
+// ============================================
+
+.footer {
+  background-color: var(--amazon-light, #37475a);
+  color: white;
+  margin-top: auto;
+
+  .footer-content {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 2.5rem 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+
+  .footer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      color: white;
+    }
+
+    a {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.15s;
+
+      &:hover {
+        color: white;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .footer-bottom {
+    background-color: var(--amazon-dark, #232f3e);
+    padding: 1rem;
+    text-align: center;
+
+    p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #ddd;
+    }
+  }
+
+  @media (max-width: 599px) {
+    .footer-content {
+      grid-template-columns: 1fr;
+      padding: 1.5rem 1rem;
+      gap: 1.5rem;
+    }
+  }
+}
+
+// ============================================
+// RESPONSIVE UTILITIES
+// ============================================
+
+@media (max-width: 599px) {
+  .top-toolbar .header-content {
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .search-bar {
+    max-width: none;
+  }
+
+  .logo {
+    padding: 0.25rem;
   }
 }

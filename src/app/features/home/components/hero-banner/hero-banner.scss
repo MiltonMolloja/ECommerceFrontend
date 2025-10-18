@@ -1,0 +1,145 @@
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: hidden;
+  background-color: #232f3e;
+
+  @media (min-width: 768px) {
+    height: 400px;
+  }
+
+  @media (min-width: 1024px) {
+    height: 500px;
+  }
+
+  .slides-container {
+    display: flex;
+    height: 100%;
+    transition: transform 500ms ease-in-out;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+
+    .slide-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide-content {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent);
+      display: flex;
+      align-items: center;
+
+      .content-wrapper {
+        max-width: 36rem;
+        padding: 1rem 2rem;
+
+        @media (min-width: 768px) {
+          padding: 2rem;
+        }
+
+        .slide-title {
+          color: white;
+          font-size: 1.875rem;
+          font-weight: 400;
+          margin-bottom: 1rem;
+
+          @media (min-width: 768px) {
+            font-size: 2.25rem;
+          }
+
+          @media (min-width: 1024px) {
+            font-size: 3rem;
+          }
+        }
+
+        .slide-description {
+          color: rgba(255, 255, 255, 0.9);
+          font-size: 1.125rem;
+          margin-bottom: 1.5rem;
+
+          @media (min-width: 768px) {
+            font-size: 1.25rem;
+          }
+        }
+
+        .cta-button {
+          background-color: #ff9900;
+          color: #111;
+          padding: 1.5rem 2rem;
+          font-size: 1.125rem;
+
+          &:hover {
+            background-color: #febd69;
+          }
+        }
+      }
+    }
+  }
+
+  .nav-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 48px;
+    height: 48px;
+    backdrop-filter: blur(4px);
+    transition: background-color 200ms;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+
+    &.prev {
+      left: 1rem;
+    }
+
+    &.next {
+      right: 1rem;
+    }
+
+    mat-icon {
+      font-size: 2rem;
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  .dots-indicator {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+
+    .dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 9999px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border: none;
+      cursor: pointer;
+      transition: all 200ms;
+      padding: 0;
+
+      &.active {
+        background-color: #ff9900;
+        width: 2rem;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+    }
+  }
+}
