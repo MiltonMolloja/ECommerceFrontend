@@ -1,0 +1,10 @@
+<section class="scroll-row">
+  <h2>{{ title }}</h2>
+  <div class="scroll-track">
+    <a class="item" *ngFor="let it of items" [routerLink]="it.link || '/catalog'">
+      <mat-card>
+        <img [src]="it.image" [alt]="it.alt || title" />
+      </mat-card>
+    </a>
+  </div>
+</section>

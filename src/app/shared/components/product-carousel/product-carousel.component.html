@@ -1,0 +1,38 @@
+<section class="product-carousel">
+  <div class="carousel-header">
+    <h2>{{ title }}</h2>
+  </div>
+
+  <div class="carousel-container">
+    <!-- Botón izquierda -->
+    <button
+      mat-icon-button
+      class="nav-button nav-left"
+      (click)="scrollLeft()"
+      aria-label="Anterior"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <!-- Track del carrusel -->
+    <div class="carousel-track" #carouselTrack>
+      <a
+        *ngFor="let product of products; trackBy: trackByIndex"
+        [routerLink]="product.link || '/catalog'"
+        class="product-item"
+      >
+        <img [src]="product.image" alt="Producto" />
+      </a>
+    </div>
+
+    <!-- Botón derecha -->
+    <button
+      mat-icon-button
+      class="nav-button nav-right"
+      (click)="scrollRight()"
+      aria-label="Siguiente"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</section>

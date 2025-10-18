@@ -10,7 +10,10 @@
       "Bash(ng lint:*)",
       "Bash(npx husky init)",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Services/Identity/**)",
+      "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Services/**)",
+      "Read(//c/Source/ECommerceMicroserviceArchitecture/src/Gateways/**)"
     ],
     "deny": [],
     "ask": []

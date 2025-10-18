@@ -10,6 +10,7 @@ import { provideHttpClient, withInterceptors, withFetch } from '@angular/common/
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 import { routes } from './app.routes';
+import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 export const appConfig: ApplicationConfig = {
@@ -31,7 +32,7 @@ export const appConfig: ApplicationConfig = {
     // HttpClient con interceptores y fetch API
     provideHttpClient(
       withFetch(), // Usa Fetch API en lugar de XMLHttpRequest
-      withInterceptors([errorInterceptor])
+      withInterceptors([authInterceptor, errorInterceptor])
     ),
 
     // Animaciones async para mejor rendimiento inicial

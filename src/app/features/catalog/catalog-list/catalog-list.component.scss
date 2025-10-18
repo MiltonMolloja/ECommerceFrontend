@@ -86,6 +86,11 @@
         background-color: var(--mat-sys-error-container);
         color: var(--mat-sys-on-error-container);
       }
+
+      .in-stock {
+        background-color: var(--mat-sys-tertiary-container);
+        color: var(--mat-sys-on-tertiary-container);
+      }
     }
   }
 

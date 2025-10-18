@@ -12,7 +12,7 @@
         <mat-card class="product-card">
           <img
             mat-card-image
-            [src]="product.image"
+            [src]="'https://placehold.co/300x200?text=' + product.name"
             [alt]="product.name || 'Producto'"
             [title]="product.name || 'Producto'"
             [attr.aria-label]="product.name || 'Producto'"
@@ -20,14 +20,16 @@
           />
           <mat-card-header>
             <mat-card-title>{{ product.name }}</mat-card-title>
-            <mat-card-subtitle>{{ product.category }}</mat-card-subtitle>
+            <mat-card-subtitle>ID: {{ product.productId }}</mat-card-subtitle>
           </mat-card-header>
           <mat-card-content>
             <p class="description">{{ product.description }}</p>
             <div class="price-container">
               <span class="price">${{ product.price }}</span>
-              @if (!product.inStock) {
+              @if (product.stock && product.stock.stock === 0) {
                 <mat-chip class="out-of-stock">Sin stock</mat-chip>
+              } @else if (product.stock) {
+                <mat-chip class="in-stock">Stock: {{ product.stock.stock }}</mat-chip>
               }
             </div>
           </mat-card-content>
@@ -35,7 +37,7 @@
             <button
               mat-raised-button
               color="primary"
-              [disabled]="!product.inStock"
+              [disabled]="product.stock && product.stock.stock === 0"
               (click)="addToCart(product)"
             >
               <mat-icon>add_shopping_cart</mat-icon>

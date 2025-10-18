@@ -1,0 +1,48 @@
+<mat-card class="promo-card" [ngClass]="'layout-' + layout">
+  <mat-card-header>
+    <mat-card-title>{{ title }}</mat-card-title>
+  </mat-card-header>
+
+  <!-- Simple layout: 1 imagen -->
+  @if (layout === 'simple' && image) {
+    <a [routerLink]="link" class="image-link">
+      <img [src]="image" [alt]="title" />
+    </a>
+  }
+
+  <!-- Grid layout: 4 imágenes en cuadrícula 2x2 -->
+  @if (layout === 'grid') {
+    <div class="grid-2x2">
+      @for (item of items.slice(0, 4); track $index) {
+        <a [routerLink]="item.link || link" class="grid-item">
+          <img [src]="item.image" [alt]="item.label" />
+          <span class="item-label">{{ item.label }}</span>
+        </a>
+      }
+    </div>
+  }
+
+  <!-- Featured layout: 1 grande + 3 pequeñas -->
+  @if (layout === 'featured') {
+    <div class="featured-layout">
+      @if (items[0]) {
+        <a [routerLink]="items[0].link || link" class="featured-main">
+          <img [src]="items[0].image" [alt]="items[0].label" />
+          <span class="item-label">{{ items[0].label }}</span>
+        </a>
+      }
+      <div class="featured-grid">
+        @for (item of items.slice(1, 4); track $index) {
+          <a [routerLink]="item.link || link" class="featured-item">
+            <img [src]="item.image" [alt]="item.label" />
+            <span class="item-label">{{ item.label }}</span>
+          </a>
+        }
+      </div>
+    </div>
+  }
+
+  <mat-card-actions>
+    <a mat-button color="primary" [routerLink]="link">{{ linkLabel }}</a>
+  </mat-card-actions>
+</mat-card>

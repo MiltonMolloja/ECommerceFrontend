@@ -1,36 +1,136 @@
-<div class="home-container">
-  <section class="hero">
-    <h1>Bienvenido a ECommerce</h1>
-    <p class="subtitle">Los mejores productos de tecnología al mejor precio</p>
-    <button mat-raised-button color="primary" routerLink="/catalog" class="cta-button">
-      <mat-icon>shopping_bag</mat-icon>
-      Ver Catálogo
-    </button>
+<div class="amazon-home">
+  <!-- Hero banner con Angular Material -->
+  <mat-card class="hero-banner" appearance="outlined">
+    <div class="hero-image" role="img" aria-label="Promociones destacadas"></div>
+  </mat-card>
+
+  <!-- Grilla principal con layout tipo Amazon -->
+  <section class="container-max">
+    <mat-grid-list [cols]="gridCols()" rowHeight="350px" gutterSize="16">
+      <!-- Primera fila: Tarjeta Grid 2x2 (Renueva tu espacio) -->
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <app-promo-card
+          [title]="refreshYourSpace.title"
+          [layout]="refreshYourSpace.layout"
+          [items]="refreshYourSpace.items"
+          [linkLabel]="refreshYourSpace.linkLabel"
+        />
+      </mat-grid-tile>
+
+      <!-- Tarjetas simples en primera fila -->
+      @if (promosTop[0]) {
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <app-promo-card
+            [title]="promosTop[0].title"
+            [layout]="promosTop[0].layout"
+            [image]="promosTop[0].image"
+            [link]="promosTop[0].link"
+            [linkLabel]="promosTop[0].linkLabel"
+          />
+        </mat-grid-tile>
+      }
+
+      <!-- Grid 2x2: Computadoras y accesorios -->
+      <mat-grid-tile [colspan]="1" [rowspan]="1">
+        <app-promo-card
+          [title]="computersGrid.title"
+          [layout]="computersGrid.layout"
+          [items]="computersGrid.items"
+          [linkLabel]="computersGrid.linkLabel"
+        />
+      </mat-grid-tile>
+
+      @if (promosTop[2]) {
+        <mat-grid-tile [colspan]="1" [rowspan]="1">
+          <app-promo-card
+            [title]="promosTop[2].title"
+            [layout]="promosTop[2].layout"
+            [image]="promosTop[2].image"
+            [link]="promosTop[2].link"
+            [linkLabel]="promosTop[2].linkLabel"
+          />
+        </mat-grid-tile>
+      }
+
+      <!-- Segunda fila: Featured Kitchen (2 cols en desktop) + Laptop (1 col) + Mujer trabajando (1 col) -->
+      <mat-grid-tile [colspan]="featuredColspan()" [rowspan]="1">
+        <app-promo-card
+          [title]="kitchenCategories.title"
+          [layout]="kitchenCategories.layout"
+          [items]="kitchenCategories.items"
+          [linkLabel]="kitchenCategories.linkLabel"
+        />
+      </mat-grid-tile>
+
+      @if (promosTop[3]) {
+        <mat-grid-tile [colspan]="featuredColspan()" [rowspan]="1">
+          <app-promo-card
+            [title]="promosTop[3].title"
+            [layout]="promosTop[3].layout"
+            [image]="promosTop[3].image"
+            [link]="promosTop[3].link"
+            [linkLabel]="promosTop[3].linkLabel"
+          />
+        </mat-grid-tile>
+      }
+    </mat-grid-list>
   </section>
 
-  <section class="features">
-    <mat-card class="feature-card">
-      <mat-icon color="primary">local_shipping</mat-icon>
-      <h3>Envío Gratis</h3>
-      <p>En compras mayores a $50</p>
-    </mat-card>
+  <!-- Carrusel de productos (solo imágenes) -->
+  <section class="container-max">
+    <app-product-carousel
+      title="Best Sellers in Clothing, Shoes & Jewelry"
+      [products]="clothingProducts"
+    />
+  </section>
 
-    <mat-card class="feature-card">
-      <mat-icon color="primary">verified_user</mat-icon>
-      <h3>Compra Segura</h3>
-      <p>Protección de datos garantizada</p>
-    </mat-card>
+  <!-- Carrusel horizontal reutilizable -->
+  <section class="container-max">
+    <app-horizontal-scroller title="Inspirado en tu actividad" [items]="scrollerItems" />
+  </section>
 
-    <mat-card class="feature-card">
-      <mat-icon color="primary">support_agent</mat-icon>
-      <h3>Soporte 24/7</h3>
-      <p>Asistencia en todo momento</p>
-    </mat-card>
+  <!-- Segunda fila de promociones (Grid 2x2) -->
+  <section class="container-max">
+    <mat-grid-list [cols]="gridCols()" rowHeight="350px" gutterSize="16">
+      <!-- Explora más en Deportes -->
+      <mat-grid-tile>
+        <app-promo-card
+          [title]="exploreMoreSports.title"
+          [layout]="exploreMoreSports.layout"
+          [items]="exploreMoreSports.items"
+          [linkLabel]="exploreMoreSports.linkLabel"
+        />
+      </mat-grid-tile>
 
-    <mat-card class="feature-card">
-      <mat-icon color="primary">assignment_return</mat-icon>
-      <h3>Devoluciones Fáciles</h3>
-      <p>30 días de garantía</p>
-    </mat-card>
+      <!-- Ofertas en categorías destacadas -->
+      <mat-grid-tile>
+        <app-promo-card
+          [title]="dealsTopCategories.title"
+          [layout]="dealsTopCategories.layout"
+          [items]="dealsTopCategories.items"
+          [linkLabel]="dealsTopCategories.linkLabel"
+        />
+      </mat-grid-tile>
+
+      <!-- Mejora tu gaming -->
+      <mat-grid-tile>
+        <app-promo-card
+          [title]="levelUpGaming.title"
+          [layout]="levelUpGaming.layout"
+          [items]="levelUpGaming.items"
+          [linkLabel]="levelUpGaming.linkLabel"
+        />
+      </mat-grid-tile>
+
+      <!-- Las mejores PCs y accesorios -->
+      <mat-grid-tile>
+        <app-promo-card
+          [title]="topPCsAccessories.title"
+          [layout]="topPCsAccessories.layout"
+          [items]="topPCsAccessories.items"
+          [linkLabel]="topPCsAccessories.linkLabel"
+        />
+      </mat-grid-tile>
+    </mat-grid-list>
   </section>
 </div>

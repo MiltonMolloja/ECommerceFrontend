@@ -5,7 +5,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
-import { CatalogService, Product } from '../services/catalog.service';
+import { CatalogService } from '../services/catalog.service';
+import { Product } from '../../../core/models';
 
 @Component({
   selector: 'app-catalog-list',
@@ -33,9 +34,9 @@ export class CatalogListComponent implements OnInit {
 
   private loadProducts(): void {
     this.loading.set(true);
-    this.catalogService.getProducts().subscribe({
-      next: (products) => {
-        this.products.set(products);
+    this.catalogService.getProducts(1, 100).subscribe({
+      next: (response) => {
+        this.products.set(response.items);
         this.loading.set(false);
       },
       error: (err) => {
@@ -51,9 +52,9 @@ export class CatalogListComponent implements OnInit {
   }
 
   /**
-   * trackBy para mejorar performance en *ngFor
+   * trackBy para mejorar performance en @for
    */
   trackByProductId(index: number, product: Product): number {
-    return product.id;
+    return product.productId;
   }
 }
