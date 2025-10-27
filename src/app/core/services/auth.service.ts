@@ -103,6 +103,14 @@ export class AuthService {
   }
 
   /**
+   * Establecer sesión desde tokens externos (microservicio de login)
+   * @param authResult Objeto con los tokens recibidos del microservicio
+   */
+  setSessionFromExternal(authResult: IdentityAccess): void {
+    this.setSession(authResult);
+  }
+
+  /**
    * Obtener el access token actual
    */
   getToken(): string | null {
@@ -160,9 +168,9 @@ export class AuthService {
 
       const payload = JSON.parse(atob(payloadPart));
       return {
-        id: payload.sub || payload.userId || '',
-        firstName: payload.given_name || payload.firstName || '',
-        lastName: payload.family_name || payload.lastName || '',
+        id: payload.sub || payload.userId || payload.nameid || '',
+        firstName: payload.unique_name || payload.given_name || payload.firstName || '',
+        lastName: payload.family_name || payload.lastName || payload.surname || '',
         email: payload.email || ''
       };
     } catch (error) {

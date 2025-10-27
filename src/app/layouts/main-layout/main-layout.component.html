@@ -30,7 +30,7 @@
           <!-- Cuenta y listas -->
           <button mat-button class="account-button hide-xs" [matMenuTriggerFor]="accountMenu">
             <div class="account-info">
-              <span class="account-greeting">Hola, Usuario</span>
+              <span class="account-greeting">Hola, {{ userFirstName() }}</span>
               <span class="account-label">Cuenta y Listas</span>
             </div>
           </button>

@@ -1,10 +1,18 @@
 import { Routes } from '@angular/router';
+import { externalLoginGuard } from './core/guards/external-login.guard';
 
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [externalLoginGuard],
+    children: []
+  },
+  {
+    path: 'auth/callback',
     loadComponent: () =>
-      import('./features/auth/login/login.component').then((m) => m.LoginComponent)
+      import('./features/auth/callback/auth-callback.component').then(
+        (m) => m.AuthCallbackComponent
+      )
   },
   {
     path: '',

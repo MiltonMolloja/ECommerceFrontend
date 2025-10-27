@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, computed } from '@angular/core';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { ThemeService, type ThemeMode } from '../../core/services/theme.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -30,8 +31,15 @@ import { ThemeService, type ThemeMode } from '../../core/services/theme.service'
 })
 export class MainLayoutComponent {
   readonly themeService = inject(ThemeService);
+  readonly authService = inject(AuthService);
   readonly cartItemCount = signal(3);
   readonly searchQuery = signal('');
+
+  // Computed signal for user's first name
+  readonly userFirstName = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.firstName || 'Usuario';
+  });
 
   readonly categories = [
     { label: 'Todo', route: '/catalog' },

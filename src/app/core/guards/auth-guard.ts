@@ -1,17 +1,24 @@
 import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
-  const router = inject(Router);
 
   if (authService.isAuthenticated()) {
     return true;
   }
 
-  // Redirigir al login y guardar la URL intentada
-  return router.createUrlTree(['/login'], {
-    queryParams: { returnUrl: state.url }
-  });
+  // Redirigir al microservicio de login externo
+  const baseUrl = window.location.origin;
+
+  // Construir URL de callback que incluye la página a la que el usuario quería acceder
+  const callbackUrl = `${baseUrl}/auth/callback?next=${encodeURIComponent(state.url)}`;
+
+  // Redirigir al microservicio con la URL de callback
+  window.location.href = `${environment.loginServiceUrl}?returnUrl=${encodeURIComponent(callbackUrl)}`;
+
+  // Retornar false para prevenir la navegación en Angular
+  return false;
 };

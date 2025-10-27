@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mcp-obsidian": {
+      "command": "C:\\Users\\milto\\.local\\bin\\uvx",
+      "args": [
+        "mcp-obsidian"
+      ],
+      "env": {
+        "OBSIDIAN_API_KEY": "09c8d71c30de4298a8bdc2d188504cf2d9bd8d08ffa130a5faaedc16c708734c"
+      }
+    }
+  }
+}
