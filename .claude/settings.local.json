@@ -15,7 +15,10 @@
       "mcp__figma__get_metadata",
       "Bash(dir \"C:\\Source\\ClientsAuthenticationFrontend\\identity-frontend\" /B)",
       "Read(//c/Source/ClientsAuthenticationFrontend/identity-frontend/src/app/**)",
-      "Read(//c/Source/ClientsAuthenticationFrontend/identity-frontend/src/**)"
+      "Read(//c/Source/ClientsAuthenticationFrontend/identity-frontend/src/**)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Correct external authentication redirect URL\n\n- Fix auth-guard to redirect to /auth/login instead of root\n- Add debug logging to authentication guards\n- Update theme service with cross-tab synchronization\n- Add standalone theme toggle component\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Correct external authentication redirect URL\n\n- Fix auth-guard to redirect to /auth/login instead of root\n- Add debug logging to authentication guards\n- Update theme service with cross-tab synchronization\n- Add standalone theme toggle component with inject pattern\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

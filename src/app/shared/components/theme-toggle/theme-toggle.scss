@@ -1,0 +1,30 @@
+.theme-toggle-button {
+  color: var(--text-primary);
+
+  mat-icon {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover mat-icon {
+    transform: rotate(20deg);
+  }
+}
+
+::ng-deep {
+  .mat-mdc-menu-item.active {
+    background-color: rgba(0, 0, 0, 0.04);
+
+    mat-icon {
+      color: var(--amazon-orange);
+    }
+  }
+}
+
+// Dark theme adjustments
+html.dark-theme {
+  ::ng-deep {
+    .mat-mdc-menu-item.active {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+  }
+}

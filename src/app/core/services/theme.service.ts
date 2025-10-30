@@ -15,16 +15,46 @@ export class ThemeService {
   readonly effectiveTheme = signal<'light' | 'dark'>('light');
 
   private mediaQuery: MediaQueryList;
+  private isExternalUpdate = false; // Flag para evitar guardar cuando viene de storage event
 
   constructor() {
+    console.log('🎨 ThemeService constructor called');
+
     // Configurar listener para cambios en preferencias del sistema
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     this.mediaQuery.addEventListener('change', () => this.updateEffectiveTheme());
 
+    // Listener para sincronización cross-tab/cross-project
+    // Detecta cambios en localStorage desde otras pestañas o proyectos
+    window.addEventListener('storage', (event: StorageEvent) => {
+      console.log('📢 Storage event detected:', event.key, event.newValue);
+
+      if (event.key === this.THEME_STORAGE_KEY && event.newValue) {
+        const newTheme = event.newValue as ThemeMode;
+        console.log('🔄 Theme storage key matched, new value:', newTheme);
+
+        if (newTheme === 'light' || newTheme === 'dark' || newTheme === 'auto') {
+          // Marcar como actualización externa para evitar guardar de nuevo
+          this.isExternalUpdate = true;
+          this.themeMode.set(newTheme);
+          this.isExternalUpdate = false;
+          console.log('✅ Theme synced from another tab/project:', newTheme);
+        }
+      }
+    });
+
+    console.log('✅ Storage event listener registered');
+
     // Effect para aplicar el tema cuando cambia
     effect(() => {
       const mode = this.themeMode();
-      this.saveThemePreference(mode);
+      console.log('🎭 Effect triggered, current mode:', mode, 'isExternal:', this.isExternalUpdate);
+
+      // Solo guardar si no es una actualización externa
+      if (!this.isExternalUpdate) {
+        this.saveThemePreference(mode);
+        console.log('💾 Theme saved to localStorage:', mode);
+      }
       this.updateEffectiveTheme();
     });
 

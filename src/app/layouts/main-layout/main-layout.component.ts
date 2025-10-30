@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { ThemeService, type ThemeMode } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
+import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-main-layout',
@@ -24,7 +25,8 @@ import { AuthService } from '../../core/services/auth.service';
     MatBadgeModule,
     MatInputModule,
     MatFormFieldModule,
-    MatMenuModule
+    MatMenuModule,
+    ThemeToggle
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
