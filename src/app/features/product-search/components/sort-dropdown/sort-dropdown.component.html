@@ -1,0 +1,19 @@
+<mat-form-field class="sort-dropdown">
+  <mat-label>{{ 'COMMON.SORT_BY' | translate }}</mat-label>
+  <mat-select [value]="SortOption.RELEVANCE" (selectionChange)="onSortChange($event.value)">
+    <mat-option [value]="SortOption.RELEVANCE">{{
+      'SORT_OPTIONS.RELEVANCE' | translate
+    }}</mat-option>
+    <mat-option [value]="SortOption.PRICE_LOW_HIGH">{{
+      'SORT_OPTIONS.PRICE_LOW_HIGH' | translate
+    }}</mat-option>
+    <mat-option [value]="SortOption.PRICE_HIGH_LOW">{{
+      'SORT_OPTIONS.PRICE_HIGH_LOW' | translate
+    }}</mat-option>
+    <mat-option [value]="SortOption.RATING">{{ 'SORT_OPTIONS.RATING' | translate }}</mat-option>
+    <mat-option [value]="SortOption.NEWEST">{{ 'SORT_OPTIONS.NEWEST' | translate }}</mat-option>
+    <mat-option [value]="SortOption.BEST_SELLER">{{
+      'SORT_OPTIONS.BEST_SELLER' | translate
+    }}</mat-option>
+  </mat-select>
+</mat-form-field>

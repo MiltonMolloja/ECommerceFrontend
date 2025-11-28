@@ -1,0 +1,103 @@
+<div class="search-results-container">
+  <!-- Breadcrumb -->
+  <app-breadcrumb [query]="searchQuery()" [category]="route.snapshot.queryParams['category']">
+  </app-breadcrumb>
+
+  <!-- Search Header -->
+  <app-search-header [resultsText]="resultsText()" [loading]="loading()"> </app-search-header>
+
+  <!-- Active Filters -->
+  @if (activeFilters$ | async; as activeFilters) {
+    @if (activeFilters.length > 0) {
+      <app-active-filters
+        [filters]="activeFilters"
+        (removeFilter)="onRemoveActiveFilter($event)"
+        (clearAll)="onClearAllFilters()"
+      >
+      </app-active-filters>
+    }
+  }
+
+  <div class="results-layout">
+    <!-- Filters Sidebar -->
+    <aside class="filters-sidebar">
+      <app-filters-sidebar
+        [filters]="filters()"
+        [loading]="loading()"
+        (filterChange)="onFilterChange($event)"
+      >
+      </app-filters-sidebar>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="results-main">
+      <!-- Sort & Results Count -->
+      <div class="results-header">
+        <div class="results-count">
+          <span>{{ totalResults() | number }} {{ 'COMMON.RESULTS' | translate }}</span>
+        </div>
+        <app-sort-dropdown (sortChange)="onSortChange($event)"> </app-sort-dropdown>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="loading-skeleton">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="skeleton-card"></div>
+          }
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error()) {
+        <div class="error-state">
+          <p>{{ error() }}</p>
+          <button (click)="performSearch(parseQueryParams(route.snapshot.queryParams))">
+            {{ 'COMMON.RETRY' | translate }}
+          </button>
+        </div>
+      }
+
+      <!-- Products Grid with Infinite Scroll -->
+      @if (!loading() && hasResults()) {
+        <div class="products-container">
+          <div class="products-grid">
+            @for (product of products(); track product.id) {
+              <app-product-card [product]="product" [searchQuery]="searchQuery()">
+              </app-product-card>
+            }
+          </div>
+
+          <!-- Loading more indicator -->
+          @if (loadingMore()) {
+            <div class="loading-more">
+              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+              <p>{{ 'COMMON.LOAD_MORE' | translate }}</p>
+            </div>
+          }
+
+          <!-- Info de paginación (sin botones, solo info) -->
+          <div class="pagination-info">
+            <p>
+              {{
+                'PRODUCT_SEARCH.SHOWING_X_OF_Y'
+                  | translate: { count: products().length, total: (totalResults() | number) }
+              }}
+            </p>
+            @if (currentPage() < totalPages()) {
+              <p class="scroll-hint">{{ 'COMMON.SCROLL_HINT' | translate }}</p>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- No Results -->
+      @if (!loading() && !hasResults()) {
+        <div class="no-results">
+          <h3>{{ 'PRODUCT_SEARCH.NO_RESULTS_FOR' | translate: { query: searchQuery() } }}</h3>
+          <p>{{ 'PRODUCT_SEARCH.TRY_DIFFERENT_TERMS' | translate }}</p>
+        </div>
+      }
+    </main>
+  </div>
+</div>

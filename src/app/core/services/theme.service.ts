@@ -1,4 +1,5 @@
-import { Injectable, signal, effect } from '@angular/core';
+import { Injectable, signal, effect, inject } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
 
@@ -6,6 +7,7 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
   providedIn: 'root'
 })
 export class ThemeService {
+  private translateService = inject(TranslateService);
   private readonly THEME_STORAGE_KEY = 'app-theme-preference';
 
   // Signal para el modo de tema seleccionado por el usuario
@@ -137,17 +139,17 @@ export class ThemeService {
   }
 
   /**
-   * Obtiene el label en español para el modo actual
+   * Obtiene el label traducido para el modo actual
    */
   getThemeLabel(): string {
     const mode = this.themeMode();
     switch (mode) {
       case 'light':
-        return 'Claro';
+        return this.translateService.instant('THEME.LIGHT');
       case 'dark':
-        return 'Oscuro';
+        return this.translateService.instant('THEME.DARK');
       case 'auto':
-        return 'Auto';
+        return this.translateService.instant('THEME.AUTO');
     }
   }
 }

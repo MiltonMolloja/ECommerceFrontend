@@ -8,5 +8,6 @@ export const environment = {
   loginServiceUrl: 'https://login.ecommerce.com',
   tokenKey: 'ecommerce_access_token',
   refreshTokenKey: 'ecommerce_refresh_token',
-  tokenExpirationKey: 'ecommerce_token_expiration'
+  tokenExpirationKey: 'ecommerce_token_expiration',
+  mercadoPagoPublicKey: 'APP-your-production-public-key-here' // Replace with actual MercadoPago production public key
 };

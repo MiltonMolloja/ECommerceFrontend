@@ -84,12 +84,15 @@
       .mat-mdc-form-field-flex {
         height: 40px;
         padding: 0 0.75rem;
+        align-items: center;
       }
 
       .mat-mdc-form-field-infix {
-        padding: 0;
+        padding: 8px 0;
         border: none;
         min-height: 40px;
+        display: flex;
+        align-items: center;
       }
 
       .mat-mdc-notched-outline {
@@ -100,11 +103,20 @@
         font-size: 14px;
         color: var(--search-text);
         transition: color 0.3s ease;
+        height: 24px;
+        line-height: 24px;
+        padding: 0;
 
         &::placeholder {
           color: var(--text-secondary);
           transition: color 0.3s ease;
         }
+      }
+
+      // Asegurar que el input esté centrado verticalmente
+      .mat-mdc-input-element {
+        margin: 0;
+        padding: 0;
       }
     }
   }

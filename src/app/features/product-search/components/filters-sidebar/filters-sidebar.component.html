@@ -1,0 +1,17 @@
+<div class="filters-sidebar">
+  <div class="filters-header">
+    <h2>{{ 'COMMON.FILTERS' | translate }}</h2>
+    @if (hasActiveFilters) {
+      <button mat-button color="primary" class="clear-all" (click)="clearAllFilters()">
+        {{ 'COMMON.CLEAR_ALL' | translate }}
+      </button>
+    }
+  </div>
+
+  <div class="filters-list">
+    @for (filter of filters; track filter.id) {
+      <app-filter-group [filter]="filter" (filterChange)="onFilterChange($event)">
+      </app-filter-group>
+    }
+  </div>
+</div>

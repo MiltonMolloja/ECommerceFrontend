@@ -1,0 +1,89 @@
+{
+  "COMMON": {
+    "SEARCH": "Buscar",
+    "FILTERS": "Filtros",
+    "SORT_BY": "Ordenar por",
+    "CLEAR_ALL": "Limpiar todo",
+    "APPLY": "Aplicar",
+    "CANCEL": "Cancelar",
+    "SHOWING_RESULTS": "Mostrando {{from}} - {{to}} de {{total}} resultados",
+    "NO_RESULTS": "No se encontraron productos",
+    "LOADING": "Cargando...",
+    "ERROR": "Ocurrió un error",
+    "SAVE": "Guardar",
+    "CLOSE": "Cerrar",
+    "RESULTS": "resultados",
+    "PRODUCTS": "productos",
+    "RETRY": "Reintentar",
+    "LOAD_MORE": "Cargando más productos...",
+    "SCROLL_HINT": "Scroll hacia abajo para cargar más"
+  },
+  "PRODUCT_SEARCH": {
+    "TITLE": "Búsqueda de Productos",
+    "SEARCH_PLACEHOLDER": "Buscar productos...",
+    "CATEGORIES": "Categorías",
+    "PRICE_RANGE": "Rango de Precio",
+    "BRANDS": "Marcas",
+    "MIN_PRICE": "Precio Mínimo",
+    "MAX_PRICE": "Precio Máximo",
+    "ACTIVE_FILTERS": "Filtros Activos",
+    "RESULTS_FOR": "Resultados para \"{{query}}\"",
+    "ALL_PRODUCTS": "Todos los Productos",
+    "FILTER_PRICE": "Precio",
+    "FILTER_BRAND": "Marca",
+    "FILTER_AVAILABILITY": "Disponibilidad",
+    "FILTER_DEALS": "Ofertas",
+    "IN_STOCK": "En Stock",
+    "ON_SALE": "En Oferta",
+    "NO_RESULTS_FOR": "No encontramos resultados para \"{{query}}\"",
+    "TRY_DIFFERENT_TERMS": "Intenta con otros términos de búsqueda",
+    "SHOWING_X_OF_Y": "Mostrando {{count}} de {{total}} productos"
+  },
+  "SORT_OPTIONS": {
+    "RELEVANCE": "Relevancia",
+    "PRICE_LOW_HIGH": "Precio: Menor a Mayor",
+    "PRICE_HIGH_LOW": "Precio: Mayor a Menor",
+    "NEWEST": "Más Recientes",
+    "RATING": "Mejor Valorados",
+    "BEST_SELLER": "Más Vendidos"
+  },
+  "PRODUCT": {
+    "ADD_TO_CART": "Agregar al Carrito",
+    "OUT_OF_STOCK": "Agotado",
+    "IN_STOCK": "En Stock",
+    "DETAILS": "Detalles",
+    "SPECIFICATIONS": "Especificaciones",
+    "REVIEWS": "Reseñas",
+    "RELATED_PRODUCTS": "Productos Relacionados",
+    "PRICE": "Precio",
+    "SKU": "SKU",
+    "BRAND": "Marca",
+    "LOAD_ERROR": "No se pudo cargar el producto"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Anterior",
+    "NEXT": "Siguiente",
+    "PAGE": "Página",
+    "OF": "de"
+  },
+  "HEADER": {
+    "HOME": "Inicio",
+    "PRODUCTS": "Productos",
+    "CART": "Carrito",
+    "ACCOUNT": "Cuenta",
+    "LOGOUT": "Cerrar Sesión",
+    "LOGIN": "Iniciar Sesión"
+  },
+  "THEME": {
+    "LIGHT": "Claro",
+    "DARK": "Oscuro",
+    "AUTO": "Auto",
+    "THEME_SETTINGS": "Tema"
+  },
+  "LANGUAGE": {
+    "SPANISH": "Español",
+    "ENGLISH": "English",
+    "SELECT_LANGUAGE": "Seleccionar idioma",
+    "LANGUAGE_SETTINGS": "Idioma"
+  }
+}

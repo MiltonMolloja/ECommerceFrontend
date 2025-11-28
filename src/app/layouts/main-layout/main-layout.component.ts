@@ -1,5 +1,5 @@
 import { Component, signal, inject, computed } from '@angular/core';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,9 +8,11 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
+import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService, type ThemeMode } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
-import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
+import { CartService } from '../../core/services/cart.service';
+import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-main-layout',
@@ -26,7 +28,8 @@ import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
     MatInputModule,
     MatFormFieldModule,
     MatMenuModule,
-    ThemeToggle
+    TranslateModule,
+    LanguageSwitcher
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
@@ -34,8 +37,12 @@ import { ThemeToggle } from '../../shared/components/theme-toggle/theme-toggle';
 export class MainLayoutComponent {
   readonly themeService = inject(ThemeService);
   readonly authService = inject(AuthService);
-  readonly cartItemCount = signal(3);
+  readonly cartService = inject(CartService);
+  private readonly router = inject(Router);
   readonly searchQuery = signal('');
+
+  // Computed signal para el contador del carrito
+  readonly cartItemCount = computed(() => this.cartService.itemCount());
 
   // Computed signal for user's first name
   readonly userFirstName = computed(() => {
@@ -53,7 +60,12 @@ export class MainLayoutComponent {
   ];
 
   onSearch(): void {
-    console.log('Searching for:', this.searchQuery());
+    const query = this.searchQuery().trim();
+    if (query) {
+      this.router.navigate(['/s'], {
+        queryParams: { k: query }
+      });
+    }
   }
 
   setTheme(mode: ThemeMode): void {

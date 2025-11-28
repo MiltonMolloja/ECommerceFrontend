@@ -1,0 +1,55 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 0;
+  flex-wrap: wrap;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination-numbers {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.pagination-number {
+  min-width: 40px;
+  height: 40px;
+
+  &.active {
+    background-color: var(--amazon-orange);
+    color: white;
+  }
+
+  &:hover:not(.active):not([disabled]) {
+    background-color: var(--card-hover-bg);
+  }
+}
+
+.ellipsis {
+  padding: 0 8px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    gap: 4px;
+  }
+
+  .pagination-btn span {
+    display: none;
+  }
+
+  .pagination-number {
+    min-width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+}

@@ -165,3 +165,31 @@ body {
     display: none !important;
   }
 }
+
+// Estilos para resaltado de búsqueda
+.search-highlight {
+  background-color: var(--amazon-yellow);
+  color: #111;
+  padding: 2px 4px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+// Scrollbar personalizado
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--card-hover-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--text-primary);
+  }
+}

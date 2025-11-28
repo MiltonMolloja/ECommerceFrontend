@@ -1,6 +1,6 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -29,21 +29,34 @@ import { switchMap } from 'rxjs';
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private ipService = inject(IpService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   readonly isLoading = signal(false);
   readonly hidePassword = signal(true);
   readonly errorMessage = signal<string | null>(null);
+
+  // Capturar returnUrl desde queryParams
+  private returnUrl = '/';
+  private returnFromLogin = 'false';
 
   readonly loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(6)]],
     rememberMe: [false]
   });
+
+  ngOnInit(): void {
+    // Capturar returnUrl desde los query params
+    this.route.queryParams.subscribe((params) => {
+      this.returnUrl = params['returnUrl'] || '/';
+      this.returnFromLogin = params['returnFromLogin'] || 'false';
+    });
+  }
 
   get emailControl() {
     return this.loginForm.controls.email;
@@ -85,7 +98,14 @@ export class LoginComponent {
         next: (response) => {
           this.isLoading.set(false);
           if (response.succeeded) {
-            this.router.navigate(['/']);
+            // Redirigir a returnUrl o home, manteniendo returnFromLogin si aplica
+            if (this.returnUrl !== '/' && this.returnFromLogin === 'true') {
+              this.router.navigate([this.returnUrl], {
+                queryParams: { returnFromLogin: 'true' }
+              });
+            } else {
+              this.router.navigate([this.returnUrl]);
+            }
           } else {
             this.errorMessage.set('Credenciales inválidas. Por favor, intente nuevamente.');
           }

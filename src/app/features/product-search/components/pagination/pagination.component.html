@@ -1,0 +1,42 @@
+<nav class="pagination" aria-label="Navegación de paginación">
+  <button
+    mat-button
+    class="pagination-btn"
+    [disabled]="!hasPrevious"
+    (click)="onPrevious()"
+    aria-label="Página anterior"
+  >
+    <mat-icon>chevron_left</mat-icon>
+    Anterior
+  </button>
+
+  <div class="pagination-numbers">
+    @for (page of pages; track page) {
+      @if (page === -1) {
+        <span class="ellipsis">...</span>
+      } @else {
+        <button
+          mat-button
+          class="pagination-number"
+          [class.active]="page === currentPage"
+          [attr.aria-current]="page === currentPage ? 'page' : null"
+          (click)="onPageClick(page)"
+          [attr.aria-label]="'Ir a página ' + page"
+        >
+          {{ page }}
+        </button>
+      }
+    }
+  </div>
+
+  <button
+    mat-button
+    class="pagination-btn"
+    [disabled]="!hasNext"
+    (click)="onNext()"
+    aria-label="Página siguiente"
+  >
+    Siguiente
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+</nav>

@@ -6,6 +6,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { OrderService } from '../../../core/services/order.service';
 import { Order, OrderStatus, OrderPayment } from '../../../core/models';
+import { getOrderStatusLabel } from '../../../core/models/order/order-status.enum';
+import { getOrderPaymentLabel } from '../../../core/models/order/order-payment.enum';
 
 @Component({
   selector: 'app-orders-list',
@@ -40,29 +42,11 @@ export class OrdersList implements OnInit {
   }
 
   getStatusLabel(status: OrderStatus): string {
-    switch (status) {
-      case OrderStatus.Pending:
-        return 'Pending';
-      case OrderStatus.Approved:
-        return 'Approved';
-      case OrderStatus.Cancel:
-        return 'Cancelled';
-      default:
-        return 'Unknown';
-    }
+    return getOrderStatusLabel(status);
   }
 
   getPaymentTypeLabel(paymentType: OrderPayment): string {
-    switch (paymentType) {
-      case OrderPayment.CreditCard:
-        return 'CreditCard';
-      case OrderPayment.PayPal:
-        return 'PayPal';
-      case OrderPayment.BankTransfer:
-        return 'BankTransfer';
-      default:
-        return 'Unknown';
-    }
+    return getOrderPaymentLabel(paymentType);
   }
 
   navigateToNewOrder(): void {

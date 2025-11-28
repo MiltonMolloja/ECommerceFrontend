@@ -33,8 +33,41 @@ export const routes: Routes = [
         loadComponent: () => import('./features/cart/cart.component').then((m) => m.CartComponent)
       },
       {
+        path: 'checkout',
+        loadComponent: () => import('./features/checkout/checkout').then((m) => m.CheckoutComponent)
+      },
+      {
+        path: 'order-confirmation',
+        loadComponent: () =>
+          import('./features/order-confirmation/order-confirmation').then(
+            (m) => m.OrderConfirmationComponent
+          )
+      },
+      {
+        path: 'payment-error',
+        loadComponent: () =>
+          import('./features/payment-error/payment-error').then((m) => m.PaymentErrorComponent)
+      },
+      {
         path: 'orders',
         loadChildren: () => import('./features/orders/orders.routes').then((m) => m.ORDERS_ROUTES)
+      },
+      {
+        path: 's',
+        loadChildren: () =>
+          import('./features/product-search/product-search.routes').then(
+            (m) => m.PRODUCT_SEARCH_ROUTES
+          )
+      },
+      {
+        path: 'search',
+        redirectTo: 's',
+        pathMatch: 'full'
+      },
+      {
+        path: 'product/:id',
+        loadComponent: () =>
+          import('./features/product-detail/product-detail').then((m) => m.ProductDetail)
       }
     ]
   },

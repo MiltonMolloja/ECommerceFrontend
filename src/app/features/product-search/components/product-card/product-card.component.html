@@ -1,0 +1,84 @@
+<article class="product-card" [class.sponsored]="product.isSponsored">
+  <!-- Sponsored Badge -->
+  @if (product.isSponsored) {
+    <span class="sponsored-badge">Patrocinado</span>
+  }
+
+  <!-- Product Image -->
+  <a [routerLink]="['/product', product.id]" class="product-image-link">
+    <div class="product-image-container">
+      <img
+        [src]="product.images.main"
+        [alt]="product.title"
+        appLazyLoadImage
+        class="product-image"
+        loading="lazy"
+      />
+
+      <!-- Prime Badge -->
+      @if (product.isPrime) {
+        <div class="prime-badge">
+          <span>prime</span>
+        </div>
+      }
+    </div>
+  </a>
+
+  <!-- Product Info -->
+  <div class="product-info">
+    <!-- Title -->
+    <a [routerLink]="['/product', product.id]" class="product-title">
+      <h3>{{ product.title }}</h3>
+    </a>
+
+    <!-- Rating -->
+    <div class="product-rating">
+      <div class="stars" [attr.aria-label]="'Rating: ' + product.rating.average">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <span
+            class="star"
+            [class.filled]="star <= product.rating.average"
+            [class.half]="
+              star === Math.ceil(product.rating.average) && product.rating.average % 1 !== 0
+            "
+          >
+            ★
+          </span>
+        }
+      </div>
+      <span class="rating-count">({{ product.rating.count | number }})</span>
+    </div>
+
+    <!-- Price -->
+    <div class="product-price">
+      @if (product.price.discount) {
+        <span class="discount-badge">-{{ product.price.discount }}%</span>
+      }
+
+      <div class="price-container">
+        <span class="currency">{{ product.price.currency }}</span>
+        <span class="current-price">{{ product.price.current | priceFormat }}</span>
+
+        @if (product.price.original && product.price.original > product.price.current) {
+          <span class="original-price">{{ product.price.original | priceFormat }}</span>
+        }
+      </div>
+    </div>
+
+    <!-- Delivery Info -->
+    @if (product.availability.deliveryDate) {
+      <div class="delivery-info">
+        <span>Llega el {{ product.availability.deliveryDate | date: 'd MMM' }}</span>
+      </div>
+    }
+
+    <!-- Availability -->
+    <div class="availability" [class.in-stock]="product.availability.inStock">
+      @if (product.availability.inStock) {
+        <span class="stock-status">En stock</span>
+      } @else {
+        <span class="stock-status out">Agotado</span>
+      }
+    </div>
+  </div>
+</article>

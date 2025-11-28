@@ -1,0 +1,230 @@
+<div class="product-detail-container">
+  <!-- Loading State -->
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-spinner></mat-spinner>
+      <p>Cargando producto...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <h2>{{ error() }}</h2>
+      <button mat-raised-button color="primary" (click)="goBack()">Volver a la búsqueda</button>
+    </div>
+  }
+
+  <!-- Product Content -->
+  @if (product() && !loading() && !error()) {
+    <div class="product-content">
+      <!-- Breadcrumb / Back Button -->
+      <div class="back-navigation">
+        <button mat-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Volver a resultados
+        </button>
+      </div>
+
+      <div class="product-layout">
+        <!-- Left: Images -->
+        <div class="product-images">
+          <div class="main-image">
+            <img
+              [src]="
+                product()!.imageUrls?.[selectedImageIndex()] ||
+                product()!.imageUrl ||
+                '/assets/placeholder.png'
+              "
+              [alt]="product()!.name || 'Producto'"
+            />
+          </div>
+
+          @if (product()!.imageUrls && product()!.imageUrls!.length > 1) {
+            <div class="image-thumbnails">
+              @for (image of product()!.imageUrls; track $index) {
+                <div
+                  class="thumbnail"
+                  [class.active]="selectedImageIndex() === $index"
+                  (click)="selectImage($index)"
+                  (keyup.enter)="selectImage($index)"
+                  tabindex="0"
+                >
+                  <img
+                    [src]="image"
+                    [alt]="(product()!.name ?? 'Producto') + ' - imagen ' + ($index + 1)"
+                  />
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="product-info">
+          <!-- Brand -->
+          @if (product()!.brand?.name || product()!.brandName) {
+            <div class="brand">
+              <span>Marca: </span>
+              <strong>{{ product()!.brand?.name || product()!.brandName }}</strong>
+            </div>
+          }
+
+          <!-- Title -->
+          <h1 class="product-title">{{ product()!.name || product()!.title }}</h1>
+
+          <!-- Rating -->
+          @if (product()!.rating || product()!.averageRating) {
+            <div class="product-rating">
+              <div class="stars">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                  <span
+                    class="star"
+                    [class.filled]="star <= (product()!.rating || product()!.averageRating || 0)"
+                  >
+                    ★
+                  </span>
+                }
+              </div>
+              <span class="rating-value">{{
+                product()!.rating || product()!.averageRating || 0
+              }}</span>
+              <span class="rating-count"
+                >({{ product()!.reviewCount || product()!.ratingCount || 0 }} calificaciones)</span
+              >
+            </div>
+          }
+
+          <hr />
+
+          <!-- Price -->
+          <div class="price-section">
+            @if (product()!.discount || product()!.discountPercentage) {
+              <div class="discount-badge">
+                -{{ product()!.discount || product()!.discountPercentage }}%
+              </div>
+            }
+
+            <div class="price-container">
+              <span class="currency">{{ product()!.currency || 'USD' }}</span>
+              <span class="current-price">{{
+                product()!.price || product()!.currentPrice || 0 | number: '1.2-2'
+              }}</span>
+            </div>
+
+            @if (
+              product()!.originalPrice &&
+              product()!.originalPrice! > (product()!.price || product()!.currentPrice || 0)
+            ) {
+              <div class="original-price">
+                Precio anterior: <span>{{ product()!.originalPrice | number: '1.2-2' }}</span>
+              </div>
+            }
+          </div>
+
+          <hr />
+
+          <!-- Availability -->
+          <div class="availability-section">
+            @if (
+              product()!.inStock !== false &&
+              (product()!.stock || product()!.stockQuantity || 0) > 0
+            ) {
+              <div class="in-stock">
+                <mat-icon>check_circle</mat-icon>
+                <span>En stock</span>
+                @if (product()!.stock || product()!.stockQuantity) {
+                  <span class="stock-count"
+                    >({{ product()!.stock || product()!.stockQuantity }} disponibles)</span
+                  >
+                }
+              </div>
+            } @else {
+              <div class="out-of-stock">
+                <mat-icon>cancel</mat-icon>
+                <span>Agotado</span>
+              </div>
+            }
+
+            @if (product()!.deliveryDate) {
+              <div class="delivery-info">
+                <mat-icon>local_shipping</mat-icon>
+                <span>Llega el {{ product()!.deliveryDate | date: 'd MMM' }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Add to Cart Button -->
+          <div class="actions">
+            <button
+              mat-raised-button
+              color="primary"
+              class="add-to-cart-btn"
+              (click)="addToCart()"
+              [disabled]="product()!.inStock === false || addingToCart()"
+            >
+              @if (addingToCart()) {
+                <ng-container>
+                  <mat-icon>hourglass_empty</mat-icon>
+                  Agregando...
+                </ng-container>
+              } @else {
+                <ng-container>
+                  <mat-icon>shopping_cart</mat-icon>
+                  Agregar al carrito
+                </ng-container>
+              }
+            </button>
+          </div>
+
+          <!-- Category & Tags -->
+          @if (product()!.category?.name || product()!.categoryName) {
+            <div class="category-section">
+              <strong>Categoría: </strong>
+              <mat-chip>{{ product()!.category?.name || product()!.categoryName }}</mat-chip>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Product Details Tabs -->
+      <div class="product-details-tabs">
+        <mat-tab-group>
+          <mat-tab label="Descripción">
+            <div class="tab-content">
+              <p>{{ product()!.description || 'Sin descripción disponible' }}</p>
+            </div>
+          </mat-tab>
+
+          @if (product()!.features && product()!.features!.length > 0) {
+            <mat-tab label="Características">
+              <div class="tab-content">
+                <ul class="features-list">
+                  @for (feature of product()!.features!; track $index) {
+                    <li>{{ feature }}</li>
+                  }
+                </ul>
+              </div>
+            </mat-tab>
+          }
+
+          @if (product()!.specifications && Object.keys(product()!.specifications!).length > 0) {
+            <mat-tab label="Especificaciones">
+              <div class="tab-content">
+                <table class="specifications-table">
+                  @for (spec of Object.entries(product()!.specifications!); track spec[0]) {
+                    <tr>
+                      <td class="spec-label">{{ spec[0] }}</td>
+                      <td class="spec-value">{{ spec[1] }}</td>
+                    </tr>
+                  }
+                </table>
+              </div>
+            </mat-tab>
+          }
+        </mat-tab-group>
+      </div>
+    </div>
+  }
+</div>

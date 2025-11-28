@@ -1,0 +1,180 @@
+.search-results-container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-x: hidden; // Evitar scrollbar horizontal
+}
+
+.results-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  margin-top: 20px;
+
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.filters-sidebar {
+  @media (max-width: 968px) {
+    display: none;
+
+    &.mobile-open {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--card-bg);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+  }
+}
+
+.results-main {
+  min-width: 0; // Fix para grid overflow
+  overflow: hidden; // Evitar scrollbar en este contenedor
+}
+
+.results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--card-border);
+
+  .results-count {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+}
+
+.products-container {
+  // Contenedor sin altura fija - fluye naturalmente
+  // Esto evita la doble scrollbar
+  min-height: 400px;
+  margin-bottom: 20px;
+
+  @media (max-width: 968px) {
+    min-height: 300px;
+  }
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  padding: 0 4px; // Espacio para scrollbar
+
+  @media (max-width: 640px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+// Personalizar scrollbar del body (scrollbar principal de la página)
+:host ::ng-deep body::-webkit-scrollbar {
+  width: 8px;
+}
+
+:host ::ng-deep body::-webkit-scrollbar-track {
+  background: var(--card-hover-bg);
+  border-radius: 4px;
+}
+
+:host ::ng-deep body::-webkit-scrollbar-thumb {
+  background: var(--text-secondary);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--text-primary);
+  }
+}
+
+// Loading more indicator
+.loading-more {
+  grid-column: 1 / -1; // Ocupa todo el ancho del grid
+  text-align: center;
+  padding: 20px;
+
+  p {
+    margin-top: 12px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+}
+
+// Pagination info
+.pagination-info {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-secondary);
+  font-size: 14px;
+
+  p {
+    margin: 4px 0;
+  }
+
+  .scroll-hint {
+    color: var(--amazon-orange);
+    font-weight: 500;
+  }
+}
+
+.loading-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+
+  .skeleton-card {
+    height: 400px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    border-radius: 8px;
+  }
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.error-state,
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+
+  h3 {
+    font-size: 24px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 12px 24px;
+    background-color: var(--amazon-orange);
+    color: #111;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+
+    &:hover {
+      background-color: var(--amazon-yellow);
+    }
+  }
+}

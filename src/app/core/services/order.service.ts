@@ -34,7 +34,12 @@ export class OrderService {
   /**
    * Crea una nueva orden
    */
-  createOrder(command: OrderCreateCommand): Observable<{ message: string; success: boolean }> {
-    return this.http.post<{ message: string; success: boolean }>(this.baseUrl, command);
+  createOrder(
+    command: OrderCreateCommand
+  ): Observable<{ message: string; success: boolean; orderId?: number; data?: Order }> {
+    return this.http.post<{ message: string; success: boolean; orderId?: number; data?: Order }>(
+      this.baseUrl,
+      command
+    );
   }
 }

@@ -1,0 +1,89 @@
+{
+  "COMMON": {
+    "SEARCH": "Search",
+    "FILTERS": "Filters",
+    "SORT_BY": "Sort by",
+    "CLEAR_ALL": "Clear all",
+    "APPLY": "Apply",
+    "CANCEL": "Cancel",
+    "SHOWING_RESULTS": "Showing {{from}} - {{to}} of {{total}} results",
+    "NO_RESULTS": "No products found",
+    "LOADING": "Loading...",
+    "ERROR": "An error occurred",
+    "SAVE": "Save",
+    "CLOSE": "Close",
+    "RESULTS": "results",
+    "PRODUCTS": "products",
+    "RETRY": "Retry",
+    "LOAD_MORE": "Loading more products...",
+    "SCROLL_HINT": "Scroll down to load more"
+  },
+  "PRODUCT_SEARCH": {
+    "TITLE": "Product Search",
+    "SEARCH_PLACEHOLDER": "Search products...",
+    "CATEGORIES": "Categories",
+    "PRICE_RANGE": "Price Range",
+    "BRANDS": "Brands",
+    "MIN_PRICE": "Min Price",
+    "MAX_PRICE": "Max Price",
+    "ACTIVE_FILTERS": "Active Filters",
+    "RESULTS_FOR": "Results for \"{{query}}\"",
+    "ALL_PRODUCTS": "All Products",
+    "FILTER_PRICE": "Price",
+    "FILTER_BRAND": "Brand",
+    "FILTER_AVAILABILITY": "Availability",
+    "FILTER_DEALS": "Deals",
+    "IN_STOCK": "In Stock",
+    "ON_SALE": "On Sale",
+    "NO_RESULTS_FOR": "No results found for \"{{query}}\"",
+    "TRY_DIFFERENT_TERMS": "Try different search terms",
+    "SHOWING_X_OF_Y": "Showing {{count}} of {{total}} products"
+  },
+  "SORT_OPTIONS": {
+    "RELEVANCE": "Relevance",
+    "PRICE_LOW_HIGH": "Price: Low to High",
+    "PRICE_HIGH_LOW": "Price: High to Low",
+    "NEWEST": "Newest",
+    "RATING": "Top Rated",
+    "BEST_SELLER": "Best Sellers"
+  },
+  "PRODUCT": {
+    "ADD_TO_CART": "Add to Cart",
+    "OUT_OF_STOCK": "Out of Stock",
+    "IN_STOCK": "In Stock",
+    "DETAILS": "Details",
+    "SPECIFICATIONS": "Specifications",
+    "REVIEWS": "Reviews",
+    "RELATED_PRODUCTS": "Related Products",
+    "PRICE": "Price",
+    "SKU": "SKU",
+    "BRAND": "Brand",
+    "LOAD_ERROR": "Could not load product"
+  },
+  "PAGINATION": {
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "PAGE": "Page",
+    "OF": "of"
+  },
+  "HEADER": {
+    "HOME": "Home",
+    "PRODUCTS": "Products",
+    "CART": "Cart",
+    "ACCOUNT": "Account",
+    "LOGOUT": "Logout",
+    "LOGIN": "Login"
+  },
+  "THEME": {
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "AUTO": "Auto",
+    "THEME_SETTINGS": "Theme"
+  },
+  "LANGUAGE": {
+    "SPANISH": "Español",
+    "ENGLISH": "English",
+    "SELECT_LANGUAGE": "Select language",
+    "LANGUAGE_SETTINGS": "Language"
+  }
+}

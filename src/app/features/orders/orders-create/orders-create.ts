@@ -163,7 +163,15 @@ export class OrdersCreate implements OnInit {
         productId: item.productId,
         quantity: item.quantity,
         price: item.price
-      }))
+      })),
+      // Default shipping address for admin-created orders
+      shippingRecipientName: 'Admin Order',
+      shippingPhone: '000-000-0000',
+      shippingAddressLine1: 'N/A',
+      shippingCity: 'N/A',
+      shippingPostalCode: '00000',
+      shippingCountry: 'N/A',
+      billingSameAsShipping: true
     };
 
     this.orderService.createOrder(command).subscribe({

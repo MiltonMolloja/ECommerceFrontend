@@ -50,10 +50,13 @@
             <mat-icon>account_circle</mat-icon>
           </button>
 
+          <!-- Language Switcher -->
+          <app-language-switcher></app-language-switcher>
+
           <!-- Selector de Tema -->
           <button mat-button class="theme-button hide-xs" [matMenuTriggerFor]="themeMenu">
             <div class="account-info">
-              <span class="account-greeting">Tema</span>
+              <span class="account-greeting">{{ 'THEME.THEME_SETTINGS' | translate }}</span>
               <span class="account-label">{{ themeService.getThemeLabel() }}</span>
             </div>
           </button>
@@ -64,7 +67,7 @@
               [class.active]="themeService.themeMode() === 'light'"
             >
               <mat-icon>light_mode</mat-icon>
-              <span>Claro</span>
+              <span>{{ 'THEME.LIGHT' | translate }}</span>
             </button>
             <button
               mat-menu-item
@@ -72,7 +75,7 @@
               [class.active]="themeService.themeMode() === 'dark'"
             >
               <mat-icon>dark_mode</mat-icon>
-              <span>Oscuro</span>
+              <span>{{ 'THEME.DARK' | translate }}</span>
             </button>
             <button
               mat-menu-item
@@ -80,7 +83,7 @@
               [class.active]="themeService.themeMode() === 'auto'"
             >
               <mat-icon>brightness_auto</mat-icon>
-              <span>Automático</span>
+              <span>{{ 'THEME.AUTO' | translate }}</span>
             </button>
           </mat-menu>
 
@@ -111,7 +114,7 @@
               [class.active]="themeService.themeMode() === 'auto'"
             >
               <mat-icon>brightness_auto</mat-icon>
-              <span>Automático</span>
+              <span>{{ 'THEME.AUTO' | translate }}</span>
             </button>
           </mat-menu>
 

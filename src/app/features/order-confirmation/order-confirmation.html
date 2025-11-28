@@ -1,0 +1,90 @@
+<div class="confirmation-container">
+  <mat-card class="confirmation-card">
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <mat-icon>check_circle</mat-icon>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message">
+      <h1>¡Pedido realizado con éxito!</h1>
+      <p>Gracias por tu compra. Tu pedido ha sido confirmado.</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <!-- Order Details -->
+    <mat-card-content>
+      <div class="order-details">
+        <div class="detail-row">
+          <span class="label">Número de pedido:</span>
+          <span class="value">{{ orderNumber }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Fecha:</span>
+          <span class="value">{{ orderDate | date: 'medium' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="label">Total:</span>
+          <span class="value total">${{ total | number: '1.2-2' }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Shipping Address -->
+      @if (shippingAddress) {
+        <div class="section">
+          <h3>Dirección de envío</h3>
+          <div class="address">
+            <div>{{ shippingAddress.fullName }}</div>
+            <div>{{ shippingAddress.addressLine1 }}</div>
+            @if (shippingAddress.addressLine2) {
+              <div>{{ shippingAddress.addressLine2 }}</div>
+            }
+            <div>
+              {{ shippingAddress.city }}, {{ shippingAddress.state }} {{ shippingAddress.zipCode }}
+            </div>
+            <div>{{ shippingAddress.country }}</div>
+          </div>
+        </div>
+
+        <mat-divider></mat-divider>
+      }
+
+      <!-- Order Items -->
+      @if (items.length > 0) {
+        <div class="section">
+          <h3>Artículos del pedido</h3>
+          <div class="items-list">
+            @for (item of items; track item.productId) {
+              <div class="order-item">
+                <img [src]="item.imageUrl" [alt]="item.name" class="item-image" />
+                <div class="item-info">
+                  <div class="item-name">{{ item.name }}</div>
+                  <div class="item-quantity">Cantidad: {{ item.quantity }}</div>
+                  <div class="item-price">
+                    {{ item.currency }} {{ item.price * item.quantity | number: '1.2-2' }}
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </mat-card-content>
+
+    <!-- Actions -->
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="continueShopping()">
+        Continuar comprando
+      </button>
+    </mat-card-actions>
+
+    <!-- Info Message -->
+    <div class="info-message">
+      <mat-icon>info</mat-icon>
+      <p>Recibirás un correo electrónico de confirmación con los detalles de tu pedido.</p>
+    </div>
+  </mat-card>
+</div>

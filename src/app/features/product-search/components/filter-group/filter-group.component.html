@@ -1,0 +1,100 @@
+<mat-expansion-panel [expanded]="filter.isExpanded !== false" class="filter-panel">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      {{ filter.name }}
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <div class="filter-options">
+    @if (filter.type === FilterType.CHECKBOX) {
+      @for (option of filter.options; track option.id) {
+        <div class="filter-option">
+          <mat-checkbox
+            [checked]="option.isSelected"
+            (change)="onCheckboxChange(option.id, $event.checked)"
+          >
+            <span class="option-label">{{ option.label }}</span>
+            @if (option.count !== undefined) {
+              <span class="option-count">({{ option.count }})</span>
+            }
+          </mat-checkbox>
+        </div>
+      }
+    }
+    @if (filter.type === FilterType.RADIO) {
+      <mat-radio-group class="radio-group">
+        @for (option of filter.options; track option.id) {
+          <mat-radio-button
+            [value]="option.id"
+            [checked]="option.isSelected"
+            (change)="onRadioChange(option.id)"
+          >
+            <span class="option-label">{{ option.label }}</span>
+            @if (option.count !== undefined) {
+              <span class="option-count">({{ option.count }})</span>
+            }
+          </mat-radio-button>
+        }
+      </mat-radio-group>
+    }
+    @if (filter.type === FilterType.RANGE && filter.range) {
+      <div class="price-range-filter">
+        <div class="price-inputs">
+          <mat-form-field appearance="outline" class="price-input">
+            <mat-label>Min</mat-label>
+            <input
+              matInput
+              type="number"
+              [min]="filter.range.min"
+              [max]="filter.range.max"
+              [(ngModel)]="filter.range.selectedMin"
+              (input)="onPriceInputChange()"
+              (blur)="onPriceChange()"
+            />
+            <span matPrefix>$</span>
+          </mat-form-field>
+
+          <span class="price-separator">—</span>
+
+          <mat-form-field appearance="outline" class="price-input">
+            <mat-label>Max</mat-label>
+            <input
+              matInput
+              type="number"
+              [min]="filter.range.min"
+              [max]="filter.range.max"
+              [(ngModel)]="filter.range.selectedMax"
+              (input)="onPriceInputChange()"
+              (blur)="onPriceChange()"
+            />
+            <span matPrefix>$</span>
+          </mat-form-field>
+        </div>
+
+        <mat-slider
+          [min]="filter.range.min"
+          [max]="filter.range.max"
+          [step]="calculateStep(filter.range.min, filter.range.max)"
+          discrete
+          class="price-slider"
+        >
+          <input
+            matSliderStartThumb
+            [(ngModel)]="filter.range.selectedMin"
+            (valueChange)="onSliderChange()"
+          />
+          <input
+            matSliderEndThumb
+            [(ngModel)]="filter.range.selectedMax"
+            (valueChange)="onSliderChange()"
+          />
+        </mat-slider>
+
+        <div class="price-range-labels">
+          <span>{{ formatPrice(filter.range.selectedMin) }}</span>
+          <span>{{ formatPrice(filter.range.selectedMax) }}</span>
+        </div>
+      </div>
+    }
+  </div>
+</mat-expansion-panel>
