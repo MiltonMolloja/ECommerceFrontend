@@ -86,9 +86,9 @@ export class MercadoPagoService {
         locale: 'es-AR'
       });
       this.initialized = true;
-      console.log('MercadoPago SDK initialized successfully');
+
     } catch (error: unknown) {
-      console.error('Error initializing MercadoPago SDK:', error);
+
       throw new Error('No se pudo inicializar el servicio de pagos');
     }
   }
@@ -117,12 +117,14 @@ export class MercadoPagoService {
       throw new Error('MercadoPago SDK not initialized');
     }
 
+    const mp = this.mp; // Store in local variable to satisfy TypeScript null check
+
     try {
-      const token = await this.mp.createCardToken(cardData);
-      console.log('Card token created successfully');
+      const token = await mp.createCardToken(cardData);
+
       return token;
     } catch (error: unknown) {
-      console.error('Error creating card token:', error);
+
       throw new Error(
         'Error al procesar la información de la tarjeta. Verifique los datos ingresados.'
       );
@@ -145,7 +147,7 @@ export class MercadoPagoService {
     try {
       return await this.mp.getIdentificationTypes();
     } catch (error) {
-      console.error('Error getting identification types:', error);
+
       throw error;
     }
   }
@@ -168,7 +170,7 @@ export class MercadoPagoService {
       const methods = await this.mp.getPaymentMethods({ bin });
       return methods;
     } catch (error) {
-      console.error('Error getting payment methods:', error);
+
       throw error;
     }
   }
@@ -194,7 +196,7 @@ export class MercadoPagoService {
         amount: amount.toString()
       });
     } catch (error) {
-      console.error('Error getting installments:', error);
+
       throw error;
     }
   }

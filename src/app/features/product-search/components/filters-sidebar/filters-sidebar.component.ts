@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatBadgeModule } from '@angular/material/badge';
 import { TranslateModule } from '@ngx-translate/core';
 import { FilterOption, ActiveFilter } from '../../models';
 import { FilterGroupComponent } from '../filter-group/filter-group.component';
@@ -18,13 +19,14 @@ interface FilterChangeEvent {
   optionId?: string;
   checked?: boolean;
   priceRange?: { min: number; max: number };
+  attributeRange?: { min: number; max: number };
 }
 
 @Component({
   selector: 'app-filters-sidebar',
   standalone: true,
-  imports: [CommonModule, FilterGroupComponent, MatButtonModule, TranslateModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FilterGroupComponent, MatButtonModule, MatBadgeModule, TranslateModule],
+  // changeDetection: ChangeDetectionStrategy.OnPush, // ← REMOVIDO para detectar cambios automáticamente
   templateUrl: './filters-sidebar.component.html',
   styles: [
     `
@@ -36,7 +38,6 @@ interface FilterChangeEvent {
         position: sticky;
         top: 20px;
         align-self: flex-start;
-        /* Removido max-height y overflow-y para que no tenga scrollbar propia */
       }
 
       .filters-header {
@@ -64,11 +65,27 @@ interface FilterChangeEvent {
         flex-direction: column;
         gap: 8px;
       }
+
+      .active-filter-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 6px;
+        background-color: var(--primary-color);
+        color: white;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 8px;
+      }
     `
   ]
 })
 export class FiltersSidebarComponent {
   @Input({ required: true }) filters: FilterOption[] = [];
+  
   @Input() loading = false;
   @Output() filterChange = new EventEmitter<
     Record<string, string[]> & { priceRange?: { min: number; max: number } }
@@ -81,7 +98,7 @@ export class FiltersSidebarComponent {
   }
 
   onFilterChange(event: FilterChangeEvent): void {
-    const { filterId, optionId, checked, priceRange } = event;
+    const { filterId, optionId, checked, priceRange, attributeRange } = event;
 
     // Manejar filtro de rango de precio
     if (priceRange) {
@@ -89,6 +106,14 @@ export class FiltersSidebarComponent {
       this.filterChange.emit({ ...filters, priceRange } as Record<string, string[]> & {
         priceRange: { min: number; max: number };
       });
+      return;
+    }
+
+    // Manejar filtro de rango de atributo
+    if (attributeRange && filterId.startsWith('attr_')) {
+      const filters = this.filterService.getActiveFiltersAsParams();
+      // El attributeRange se manejará en el componente padre
+      this.filterChange.emit({ ...filters, [`${filterId}_range`]: attributeRange } as any);
       return;
     }
 
@@ -117,6 +142,16 @@ export class FiltersSidebarComponent {
       const activeFilters = this.filterService.getActiveFiltersAsParams();
       this.filterChange.emit(activeFilters);
     }
+  }
+
+  /**
+   * Obtiene el conteo total de filtros activos
+   */
+  get activeFilterCount(): number {
+    return this.filters.reduce((count, filter) => {
+      const activeOptions = filter.options.filter(o => o.isSelected).length;
+      return count + activeOptions;
+    }, 0);
   }
 
   clearAllFilters(): void {

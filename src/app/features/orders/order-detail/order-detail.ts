@@ -37,7 +37,7 @@ export class OrderDetail implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading order:', error);
+
         this.loading.set(false);
       }
     });

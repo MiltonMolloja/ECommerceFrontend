@@ -88,7 +88,7 @@ export class OrdersCreate implements OnInit {
         this.clients.set(response.items);
       },
       error: (error) => {
-        console.error('Error loading clients:', error);
+
       }
     });
   }
@@ -99,7 +99,7 @@ export class OrdersCreate implements OnInit {
         this.products.set(response.items);
       },
       error: (error) => {
-        console.error('Error loading products:', error);
+
       }
     });
   }
@@ -184,12 +184,12 @@ export class OrdersCreate implements OnInit {
           }, 2000);
         } else {
           this.processing.set(false);
-          console.error('Error creating order:', response.message);
+
         }
       },
       error: (error) => {
         this.processing.set(false);
-        console.error('Error creating order:', error);
+
       }
     });
   }

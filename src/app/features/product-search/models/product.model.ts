@@ -1,4 +1,5 @@
 import { FilterOption } from './filter.model';
+import { SearchFacets, SearchMetadata } from './facets.model';
 
 export interface Product {
   id: string;
@@ -46,6 +47,16 @@ export interface ProductListResponse {
   filters: FilterOption[];
   totalResults: number;
   searchQuery: string;
+}
+
+/**
+ * Respuesta extendida con facetas y metadata de performance
+ */
+export interface AdvancedProductListResponse extends ProductListResponse {
+  facets?: SearchFacets;
+  metadata?: SearchMetadata;
+  pageCount?: number;
+  hasMore?: boolean;
 }
 
 export interface PaginationInfo {

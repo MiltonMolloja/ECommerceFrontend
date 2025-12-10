@@ -1,0 +1,159 @@
+.breadcrumb-container {
+  padding: 12px 0;
+  font-size: 14px;
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 8px;
+  }
+
+  .breadcrumb-item {
+    display: flex;
+    align-items: center;
+  }
+
+  .breadcrumb-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: rgba(0, 0, 0, 0.6);
+    transition: color 0.2s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+
+    &:hover {
+      color: #1976d2;
+      background-color: rgba(25, 118, 210, 0.08);
+    }
+
+    .breadcrumb-text {
+      font-weight: 400;
+    }
+
+    .home-icon {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+  }
+
+  .breadcrumb-current {
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.87);
+    font-weight: 500;
+    padding: 4px 8px;
+  }
+
+  .breadcrumb-separator {
+    display: flex;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.4);
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .breadcrumb-error {
+    color: #d32f2f;
+    font-size: 12px;
+    padding: 8px;
+    background-color: #ffebee;
+    border-radius: 4px;
+  }
+}
+
+// Dark theme support
+:host-context(.dark-theme) {
+  .breadcrumb-container {
+    .breadcrumb-link {
+      color: rgba(255, 255, 255, 0.6) !important;
+
+      &:hover {
+        color: #90caf9 !important;
+        background-color: rgba(144, 202, 249, 0.08) !important;
+      }
+    }
+
+    .breadcrumb-current {
+      color: rgba(255, 255, 255, 0.87) !important;
+    }
+
+    .breadcrumb-separator {
+      color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    .breadcrumb-error {
+      color: #f44336 !important;
+      background-color: rgba(244, 67, 54, 0.1) !important;
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .breadcrumb-container {
+    padding: 8px 0;
+    font-size: 13px;
+
+    .breadcrumb-link {
+      padding: 2px 6px;
+
+      .home-icon {
+        width: 16px;
+        height: 16px;
+      }
+
+      .breadcrumb-text {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+
+    .breadcrumb-current {
+      padding: 2px 6px;
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .breadcrumb-separator svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// Animación de entrada
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.breadcrumb-item {
+  animation: slideIn 0.2s ease-out;
+  animation-fill-mode: both;
+
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}

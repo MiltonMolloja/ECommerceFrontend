@@ -76,7 +76,6 @@ export class CartService {
     this.cartItems.set(updatedItems);
     this.saveCartToStorage(updatedItems);
 
-    console.log('✅ Producto agregado al carrito:', product.name);
   }
 
   /**
@@ -87,7 +86,6 @@ export class CartService {
     this.cartItems.set(updatedItems);
     this.saveCartToStorage(updatedItems);
 
-    console.log('🗑️ Producto removido del carrito');
   }
 
   /**
@@ -114,7 +112,6 @@ export class CartService {
     this.cartItems.set([]);
     this.saveCartToStorage([]);
 
-    console.log('🧹 Carrito limpiado');
   }
 
   /**
@@ -146,7 +143,7 @@ export class CartService {
         return JSON.parse(stored);
       }
     } catch (error) {
-      console.error('Error loading cart from storage:', error);
+
     }
 
     return [];
@@ -163,7 +160,7 @@ export class CartService {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
     } catch (error) {
-      console.error('Error saving cart to storage:', error);
+
     }
   }
 
@@ -176,7 +173,7 @@ export class CartService {
         const newItems = JSON.parse(event.newValue);
         this.cartItems.set(newItems);
       } catch (error) {
-        console.error('Error handling storage change:', error);
+
       }
     }
   }

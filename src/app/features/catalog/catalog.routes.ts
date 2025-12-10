@@ -5,5 +5,10 @@ export const CATALOG_ROUTES: Routes = [
     path: '',
     loadComponent: () =>
       import('./catalog-list/catalog-list.component').then((m) => m.CatalogListComponent)
+  },
+  {
+    path: ':categorySlug',
+    loadComponent: () =>
+      import('./catalog-list/catalog-list.component').then((m) => m.CatalogListComponent)
   }
 ];

@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>
+  <mat-icon>bookmark_add</mat-icon>
+  {{ 'SAVED_SEARCHES.DIALOG.TITLE' | translate }}
+</h2>
+
+<mat-dialog-content>
+  <div class="dialog-info">
+    <div class="info-row">
+      <mat-icon>search</mat-icon>
+      <span>{{ data.query || ('SAVED_SEARCHES.DIALOG.NO_QUERY' | translate) }}</span>
+    </div>
+    <div class="info-row">
+      <mat-icon>filter_list</mat-icon>
+      <span>{{ data.filterCount }} {{ 'SAVED_SEARCHES.DIALOG.FILTERS' | translate }}</span>
+    </div>
+  </div>
+
+  <mat-form-field appearance="outline" class="search-name-field">
+    <mat-label>{{ 'SAVED_SEARCHES.DIALOG.NAME_LABEL' | translate }}</mat-label>
+    <input
+      matInput
+      [(ngModel)]="searchName"
+      [placeholder]="'SAVED_SEARCHES.DIALOG.NAME_PLACEHOLDER' | translate"
+      maxlength="50"
+      (keyup.enter)="onSave()"
+      autofocus
+    />
+    <mat-hint align="end">{{ searchName.length }}/50</mat-hint>
+  </mat-form-field>
+
+  <p class="hint">
+    {{ 'SAVED_SEARCHES.DIALOG.HINT' | translate }}
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">
+    {{ 'COMMON.CANCEL' | translate }}
+  </button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!isValid">
+    <mat-icon>bookmark</mat-icon>
+    {{ 'COMMON.SAVE' | translate }}
+  </button>
+</mat-dialog-actions>

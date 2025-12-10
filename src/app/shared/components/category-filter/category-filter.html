@@ -1,0 +1,128 @@
+<div class="category-filter-container">
+  <!-- Header -->
+  <div class="filter-header">
+    <h3 class="filter-title">Categorías</h3>
+    <div class="filter-actions">
+      @if (selectedCategorySlug) {
+        <button mat-icon-button 
+                (click)="clearFilter()" 
+                matTooltip="Limpiar filtro"
+                class="clear-button">
+          <mat-icon>clear</mat-icon>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p>Cargando...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @else if (error()) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Categorías -->
+  @else {
+    <div class="category-list">
+      @for (category of categories(); track category.categoryId) {
+        <div class="category-item">
+          <!-- Categoría principal -->
+          <div class="category-row" 
+               [class.selected]="isCategorySelected(category.slug)"
+               [class.has-children]="category.subCategories.length > 0">
+            
+            @if (category.subCategories.length > 0) {
+              <button mat-icon-button 
+                      class="expand-button"
+                      (click)="toggleCategory(category.categoryId)">
+                <mat-icon class="expand-icon">
+                  {{ isCategoryExpanded(category.categoryId) ? 'expand_more' : 'chevron_right' }}
+                </mat-icon>
+              </button>
+            } @else {
+              <span class="expand-placeholder"></span>
+            }
+
+            <button mat-button 
+                    class="category-button"
+                    (click)="onCategoryClick(category, $event)">
+              <span class="category-name">{{ category.name }}</span>
+              @if (category.productCount > 0) {
+                <span class="product-count">{{ category.productCount }}</span>
+              }
+            </button>
+          </div>
+
+          <!-- Subcategorías -->
+          @if (category.subCategories.length > 0 && isCategoryExpanded(category.categoryId)) {
+            <div class="subcategory-list">
+              @for (subcat of category.subCategories; track subcat.categoryId) {
+                <div class="subcategory-item">
+                  <div class="category-row"
+                       [class.selected]="isCategorySelected(subcat.slug)">
+                    
+                    @if (subcat.subCategories.length > 0) {
+                      <button mat-icon-button 
+                              class="expand-button"
+                              (click)="toggleCategory(subcat.categoryId)">
+                        <mat-icon class="expand-icon">
+                          {{ isCategoryExpanded(subcat.categoryId) ? 'expand_more' : 'chevron_right' }}
+                        </mat-icon>
+                      </button>
+                    } @else {
+                      <span class="expand-placeholder"></span>
+                    }
+
+                    <button mat-button 
+                            class="category-button"
+                            (click)="onCategoryClick(subcat, $event)">
+                      <span class="category-name">{{ subcat.name }}</span>
+                      @if (subcat.productCount > 0) {
+                        <span class="product-count">{{ subcat.productCount }}</span>
+                      }
+                    </button>
+                  </div>
+
+                  <!-- Nivel 3 de subcategorías -->
+                  @if (subcat.subCategories.length > 0 && isCategoryExpanded(subcat.categoryId)) {
+                    <div class="subcategory-list level-3">
+                      @for (subcat3 of subcat.subCategories; track subcat3.categoryId) {
+                        <div class="category-row"
+                             [class.selected]="isCategorySelected(subcat3.slug)">
+                          <span class="expand-placeholder"></span>
+                          <button mat-button 
+                                  class="category-button"
+                                  (click)="onCategoryClick(subcat3, $event)">
+                            <span class="category-name">{{ subcat3.name }}</span>
+                            @if (subcat3.productCount > 0) {
+                              <span class="product-count">{{ subcat3.productCount }}</span>
+                            }
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @if (categories().length === 0) {
+        <div class="empty-state">
+          <mat-icon>category</mat-icon>
+          <p>No hay categorías disponibles</p>
+        </div>
+      }
+    </div>
+  }
+</div>

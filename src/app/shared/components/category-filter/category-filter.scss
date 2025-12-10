@@ -1,0 +1,294 @@
+.category-filter-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    .filter-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .filter-actions {
+      .clear-button {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  }
+
+  .loading-container,
+  .error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.6);
+
+    mat-icon {
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+
+  .category-list {
+    padding: 8px 0;
+    max-height: 600px;
+    overflow-y: auto;
+
+    .category-item {
+      .category-row {
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+        transition: background-color 0.2s ease;
+
+        &.selected {
+          background-color: rgba(25, 118, 210, 0.08);
+
+          .category-button .category-name {
+            color: #1976d2;
+            font-weight: 500;
+          }
+        }
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        .expand-button,
+        .expand-placeholder {
+          width: 36px;
+          height: 36px;
+          flex-shrink: 0;
+          margin-left: 4px;
+        }
+
+        .expand-button {
+          .expand-icon {
+            transition: transform 0.2s ease;
+          }
+        }
+
+        .category-button {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          text-align: left;
+          padding: 8px 12px;
+          height: 36px;
+          min-height: auto;
+          border-radius: 4px;
+
+          .category-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.87);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .product-count {
+            margin-left: 8px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            flex-shrink: 0;
+          }
+        }
+      }
+
+      .subcategory-list {
+        padding-left: 16px;
+        animation: slideDown 0.2s ease-out;
+
+        .subcategory-item {
+          .subcategory-list.level-3 {
+            padding-left: 16px;
+          }
+        }
+      }
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      color: rgba(0, 0, 0, 0.6);
+
+      mat-icon {
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Dark theme support
+:host-context(.dark-theme) {
+  .category-filter-container {
+    background-color: #1e1e1e !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+
+    .filter-header {
+      border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+
+      .filter-title {
+        color: rgba(255, 255, 255, 0.87) !important;
+      }
+    }
+
+    .loading-container,
+    .error-container {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .category-list {
+      .category-item {
+        .category-row {
+          &.selected {
+            background-color: rgba(144, 202, 249, 0.08) !important;
+
+            .category-button .category-name {
+              color: #90caf9 !important;
+            }
+          }
+
+          &:hover {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+          }
+
+          .category-button {
+            .category-name {
+              color: rgba(255, 255, 255, 0.87) !important;
+            }
+
+            .product-count {
+              color: rgba(255, 255, 255, 0.6) !important;
+              background-color: rgba(255, 255, 255, 0.12) !important;
+            }
+          }
+        }
+      }
+
+      .empty-state {
+        color: rgba(255, 255, 255, 0.6) !important;
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    max-height: 1000px;
+    transform: translateY(0);
+  }
+}
+
+// Scrollbar personalizada
+.category-list {
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.3);
+    }
+  }
+}
+
+:host-context(.dark-theme) .category-list {
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 960px) {
+  .category-filter-container {
+    .filter-header {
+      padding: 12px;
+
+      .filter-title {
+        font-size: 15px;
+      }
+    }
+
+    .category-list {
+      max-height: 400px;
+
+      .category-item .category-row {
+        min-height: 36px;
+
+        .category-button {
+          padding: 6px 10px;
+
+          .category-name {
+            font-size: 13px;
+          }
+
+          .product-count {
+            font-size: 11px;
+            padding: 1px 6px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,15 +1,64 @@
 .catalog-container {
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
 
-  h1 {
-    font-size: 32px;
-    font-weight: 500;
-    margin-bottom: 32px;
-    color: var(--mat-sys-on-surface);
+  .breadcrumb-section {
+    margin-bottom: 16px;
+  }
 
-    @media (max-width: 599px) {
-      font-size: 24px;
-      margin-bottom: 24px;
+  .catalog-header {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 32px;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      color: var(--mat-sys-on-surface);
+
+      @media (max-width: 599px) {
+        font-size: 24px;
+      }
+    }
+
+    .category-description {
+      font-size: 16px;
+      color: var(--mat-sys-on-surface-variant);
+      margin: 0;
+      line-height: 1.5;
+
+      @media (max-width: 599px) {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .catalog-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+    align-items: start;
+
+    @media (max-width: 960px) {
+      grid-template-columns: 1fr;
+    }
+
+    .catalog-sidebar {
+      position: sticky;
+      top: 80px; // Altura del header + margen
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+
+      @media (max-width: 960px) {
+        position: static;
+        max-height: none;
+        order: 2; // Sidebar debajo en móvil
+      }
+    }
+
+    .catalog-main {
+      min-height: 400px;
     }
   }
 }

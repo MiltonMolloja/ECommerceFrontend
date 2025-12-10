@@ -1,0 +1,122 @@
+<!-- Loading State -->
+<div class="loading-container" *ngIf="loading()">
+  <div class="loading-content">
+    <mat-spinner diameter="60"></mat-spinner>
+    <p class="loading-text">Cargando producto...</p>
+  </div>
+</div>
+
+<!-- Error State -->
+<div class="error-container" *ngIf="error() && !loading()">
+  <mat-card class="error-card" appearance="outlined">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <h2 class="error-title">Error al cargar el producto</h2>
+    <p class="error-message">{{ error() }}</p>
+    <div class="error-actions">
+      <button mat-raised-button color="primary" (click)="retry()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+      <button mat-button (click)="goBack()">Volver</button>
+    </div>
+  </mat-card>
+</div>
+
+<!-- Product Detail Content -->
+<div class="product-detail-container" *ngIf="!loading() && !error() && productInfo()">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <ol class="breadcrumb-list">
+      <li *ngFor="let crumb of breadcrumbs(); let last = last" class="breadcrumb-item">
+        <a
+          *ngIf="!last && crumb.url"
+          [routerLink]="crumb.url"
+          class="breadcrumb-link"
+        >
+          {{ crumb.label }}
+        </a>
+        <span *ngIf="last" class="breadcrumb-current">{{ crumb.label }}</span>
+        <mat-icon *ngIf="!last" class="breadcrumb-separator">chevron_right</mat-icon>
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Back Button (Mobile) -->
+  <button mat-icon-button class="back-button-mobile" (click)="goBack()" aria-label="Volver">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+
+  <!-- Main Content Grid -->
+  <div class="product-detail-grid">
+    <!-- Left Column: Images -->
+    <div class="images-column">
+      <app-product-detail-images
+        [images]="productImages()"
+        [productName]="productInfo()!.name"
+      ></app-product-detail-images>
+    </div>
+
+    <!-- Right Column: Product Info -->
+    <div class="info-column">
+      <app-product-detail-info
+        [product]="productInfo()!"
+        (addToCartClicked)="onAddToCart($event)"
+        (reviewsLinkClicked)="scrollToReviews()"
+      ></app-product-detail-info>
+    </div>
+  </div>
+
+  <mat-divider class="section-divider"></mat-divider>
+
+  <!-- Product Description -->
+  <section class="description-section" *ngIf="productResponse()?.description">
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>Descripción del producto</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p class="description-text">{{ productResponse()!.description }}</p>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Product Specifications -->
+  <section class="specifications-section" *ngIf="productSpecifications() && Object.keys(productSpecifications()).length > 0">
+    <app-product-specifications
+      [specifications]="productSpecifications()"
+    ></app-product-specifications>
+  </section>
+
+  <mat-divider class="section-divider"></mat-divider>
+
+  <!-- Product Reviews -->
+  <section id="reviews-section" class="reviews-section">
+    <app-product-reviews
+      [productId]="productIdNumber()"
+      [pageSize]="10"
+      [showSummary]="true"
+    ></app-product-reviews>
+  </section>
+
+  <!-- Sticky Add to Cart (Mobile) -->
+  <div class="sticky-cart-mobile" *ngIf="productInfo()">
+    <div class="sticky-cart-content">
+      <div class="sticky-price">
+        <span class="price-label">Precio:</span>
+        <span class="price-value">
+          {{ productInfo()!.price.current | currency: productInfo()!.price.currency:'symbol':'1.0-0' }}
+        </span>
+      </div>
+      <button
+        mat-raised-button
+        color="primary"
+        class="sticky-cart-button"
+        (click)="onAddToCart(1)"
+        [disabled]="!productInfo()!.availability.inStock"
+      >
+        <mat-icon>shopping_cart</mat-icon>
+        <span>Agregar</span>
+      </button>
+    </div>
+  </div>
+</div>

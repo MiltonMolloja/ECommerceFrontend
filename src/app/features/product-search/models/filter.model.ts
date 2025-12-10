@@ -11,6 +11,11 @@ export interface FilterOption {
     selectedMin?: number;
     selectedMax?: number;
   };
+  // Nuevas propiedades para facetas avanzadas
+  expandable?: boolean;      // Para "Show more/less"
+  searchable?: boolean;      // Para búsqueda dentro del filtro
+  maxVisibleOptions?: number; // Opciones visibles por defecto
+  unit?: string;             // Unidad de medida (para atributos numéricos)
 }
 
 export enum FilterType {
@@ -18,7 +23,9 @@ export enum FilterType {
   RADIO = 'radio',
   RANGE = 'range',
   COLOR = 'color',
-  SIZE = 'size'
+  SIZE = 'size',
+  CATEGORY = 'category',  // NUEVO: Para jerarquía de categorías
+  ATTRIBUTE = 'attribute' // NUEVO: Para atributos genéricos
 }
 
 export interface FilterValue {
@@ -28,6 +35,7 @@ export interface FilterValue {
   isSelected?: boolean;
   value?: string | number | boolean;
   color?: string;
+  disabled?: boolean;  // NUEVO: Para opciones sin resultados
 }
 
 export interface ActiveFilter {

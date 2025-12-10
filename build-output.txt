@@ -1,0 +1,12 @@
+[33m❯[39m Building...
+[32m✔[39m Building...
+Application bundle generation failed. [2.408 seconds] - 2025-12-02T13:51:05.206Z
+
+[1m[31m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/product-search/components/search-results/search-results.component.ts:296:39:
+[37m      296 │       searchParams.rating = parseFloat([32mratingValue[37m);
+          ╵                                        [32m~~~~~~~~~~~[0m
+
+[39m[22m

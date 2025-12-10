@@ -23,7 +23,7 @@ export class IpService {
       this.ipCache$ = this.http.get<{ ip: string }>('https://api.ipify.org?format=json').pipe(
         map((response) => response.ip),
         catchError((error) => {
-          console.warn('Error obteniendo IP del cliente, usando fallback:', error);
+
           return of('127.0.0.1'); // Fallback si falla la API
         }),
         shareReplay(1) // Cachea el resultado

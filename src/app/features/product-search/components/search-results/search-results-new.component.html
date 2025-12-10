@@ -1,0 +1,164 @@
+<!-- Amazon-style Search Results Page -->
+<div class="amazon-search-container">
+  <!-- Main Layout -->
+  <div class="amazon-layout">
+    <!-- Left Sidebar - Filters -->
+    <aside class="amazon-sidebar">
+      <!-- Filters -->
+      <app-filters-sidebar
+        [filters]="filters()"
+        [loading]="loading()"
+        (filterChange)="onFilterChange($event)"
+      >
+      </app-filters-sidebar>
+    </aside>
+
+    <!-- Right Content -->
+    <main class="amazon-main">
+      <!-- Search Results Header -->
+      <div class="amazon-results-header">
+        <h1 class="amazon-results-title">
+          Resultados para <span class="amazon-query-highlight">"{{ searchQuery() }}"</span>
+        </h1>
+      </div>
+
+      <!-- Sort Dropdown -->
+      <div class="amazon-sort-container">
+        <span class="amazon-sort-label">Ordenar por:</span>
+        <app-sort-dropdown (sortChange)="onSortChange($event)"></app-sort-dropdown>
+      </div>
+
+      <!-- Loading State -->
+      @if (loading()) {
+        <div class="amazon-loading-grid">
+          @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+            <div class="amazon-skeleton-card"></div>
+          }
+        </div>
+      }
+
+      <!-- Products Grid -->
+      @if (!loading() && hasResults()) {
+        <div class="amazon-products-grid">
+          @for (product of products(); track product.productId) {
+            <div class="amazon-product-card">
+              <!-- Product Image Container -->
+              <div class="amazon-product-image-container">
+                <img
+                  [src]="product.imageUrl || product.primaryImageUrl || '/assets/placeholder.png'"
+                  [alt]="product.name"
+                  class="amazon-product-image"
+                  loading="lazy"
+                />
+
+                <!-- Badges -->
+                @if (product.isFeatured) {
+                  <span class="amazon-badge amazon-badge-bestseller">
+                    🔥 Best Seller
+                  </span>
+                }
+
+                @if (product.hasDiscount && product.discountPercentage > 0) {
+                  <span class="amazon-badge amazon-badge-discount">
+                    -{{ product.discountPercentage | number:'1.0-0' }}%
+                  </span>
+                }
+
+                @if (product.averageRating >= 4.5) {
+                  <span class="amazon-badge amazon-badge-choice">
+                    ✓ Amazon's Choice
+                  </span>
+                }
+              </div>
+
+              <!-- Product Info -->
+              <div class="amazon-product-info">
+                <!-- Title -->
+                <h3 class="amazon-product-title" [title]="product.name">
+                  <a [routerLink]="['/product', product.productId]">
+                    {{ product.name }}
+                  </a>
+                </h3>
+
+                <!-- Rating -->
+                <div class="amazon-product-rating">
+                  <div class="amazon-stars">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span 
+                        class="amazon-star"
+                        [class.amazon-star-filled]="star <= (product.averageRating || 0)"
+                      >
+                        ★
+                      </span>
+                    }
+                  </div>
+                  <span class="amazon-reviews-count">
+                    {{ product.totalReviews || 0 | number }}
+                  </span>
+                </div>
+
+                <!-- Price -->
+                <div class="amazon-product-price">
+                  <div class="amazon-price-row">
+                    <span class="amazon-current-price">
+                      ${{ product.price | number:'1.2-2' }}
+                    </span>
+                    @if (product.hasDiscount && product.originalPrice) {
+                      <span class="amazon-original-price">
+                        ${{ product.originalPrice | number:'1.2-2' }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Delivery -->
+                <div class="amazon-delivery">
+                  <span class="amazon-delivery-text">FREE delivery Tomorrow</span>
+                </div>
+
+                <!-- Stock -->
+                @if (product.stock?.stock > 0) {
+                  <div class="amazon-stock">
+                    <span class="amazon-stock-text">In Stock</span>
+                  </div>
+                }
+
+                <!-- Add to Cart Button -->
+                <button 
+                  class="amazon-add-to-cart-btn"
+                  (click)="addToCart(product)"
+                  [disabled]="!product.stock || product.stock.stock <= 0"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !hasResults()) {
+        <div class="amazon-empty-state">
+          <div class="amazon-empty-icon">🔍</div>
+          <h2 class="amazon-empty-title">No se encontraron resultados</h2>
+          <p class="amazon-empty-text">
+            Intenta con otros términos de búsqueda o ajusta los filtros.
+          </p>
+        </div>
+      }
+
+      <!-- Error State -->
+      @if (error()) {
+        <div class="amazon-error-state">
+          <div class="amazon-error-icon">⚠️</div>
+          <h2 class="amazon-error-title">Error al cargar los productos</h2>
+          <p class="amazon-error-text">{{ error() }}</p>
+          <button class="amazon-retry-btn" (click)="retry()">
+            Reintentar
+          </button>
+        </div>
+      }
+    </main>
+  </div>
+</div>

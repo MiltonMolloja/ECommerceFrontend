@@ -1,14 +1,42 @@
 <div class="catalog-container">
-  <h1>Catálogo de Productos</h1>
-
-  @if (loading()) {
-    <div class="loading-container">
-      <mat-spinner></mat-spinner>
-      <p>Cargando productos...</p>
+  <!-- Breadcrumbs de navegación -->
+  @if (currentCategorySlug()) {
+    <div class="breadcrumb-section">
+      <app-category-breadcrumb [categorySlug]="currentCategorySlug()" />
     </div>
-  } @else {
-    <div class="products-grid">
-      @for (product of products(); track trackByProductId($index, product)) {
+  }
+
+  <!-- Header con título -->
+  <div class="catalog-header">
+    @if (currentCategory()) {
+      <h1>{{ currentCategory()!.name }}</h1>
+      @if (currentCategory()!.description) {
+        <p class="category-description">{{ currentCategory()!.description }}</p>
+      }
+    } @else {
+      <h1>Catálogo de Productos</h1>
+    }
+  </div>
+
+  <!-- Layout con sidebar y contenido -->
+  <div class="catalog-layout">
+    <!-- Sidebar con filtro de categorías -->
+    <aside class="catalog-sidebar">
+      <app-category-filter 
+        [selectedCategorySlug]="currentCategorySlug()"
+        (categorySelected)="onCategorySelected($event)" />
+    </aside>
+
+    <!-- Contenido principal -->
+    <main class="catalog-main">
+      @if (loading()) {
+        <div class="loading-container">
+          <mat-spinner></mat-spinner>
+          <p>Cargando productos...</p>
+        </div>
+      } @else {
+        <div class="products-grid">
+          @for (product of products(); track trackByProductId($index, product)) {
         <mat-card class="product-card">
           <img
             mat-card-image
@@ -48,12 +76,14 @@
             </button>
           </mat-card-actions>
         </mat-card>
-      } @empty {
-        <div class="empty-state">
-          <mat-icon>inventory_2</mat-icon>
-          <p>No hay productos disponibles</p>
+          } @empty {
+            <div class="empty-state">
+              <mat-icon>inventory_2</mat-icon>
+              <p>No hay productos disponibles</p>
+            </div>
+          }
         </div>
       }
-    </div>
-  }
+    </main>
+  </div>
 </div>

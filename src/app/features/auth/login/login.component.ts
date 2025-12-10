@@ -112,7 +112,7 @@ export class LoginComponent implements OnInit {
         },
         error: (error) => {
           this.isLoading.set(false);
-          console.error('Login error:', error);
+
           this.errorMessage.set(
             'Error al iniciar sesión. Por favor, verifique su conexión e intente nuevamente.'
           );

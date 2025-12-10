@@ -1,0 +1,238 @@
+.rating-summary {
+  padding: 1.5rem;
+  background: var(--card-bg, white);
+  border-radius: 8px;
+
+  .rating-overview {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+
+    .average-rating {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+
+      .rating-number {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #1976d2;
+      }
+
+      .stars-display {
+        display: flex;
+        gap: 0.25rem;
+
+        .star-icon {
+          font-size: 1.75rem;
+          width: 1.75rem;
+          height: 1.75rem;
+
+          &.filled,
+          &.half {
+            color: #ffc107 !important; // Amarillo para estrellas llenas y medias (ambos temas)
+          }
+          
+          &.empty {
+            color: rgba(0, 0, 0, 0.26) !important; // Gris claro para estrellas vacías (tema claro)
+            
+            // Tema oscuro
+            :host-context(.dark-theme) & {
+              color: rgba(255, 255, 255, 0.3) !important;
+      }
+    }
+  }
+}
+
+// Dark theme support
+:host-context(.dark-theme) {
+  .rating-summary {
+    .rating-overview {
+      .average-rating {
+        .total-reviews {
+          color: var(--text-secondary);
+        }
+      }
+    }
+
+    .rating-distribution {
+      .rating-row {
+        .stars-label {
+          .stars-count {
+            color: var(--text-primary);
+          }
+        }
+
+        .count-label {
+          .percentage {
+            color: var(--text-primary);
+          }
+
+          .count {
+            color: var(--text-secondary);
+          }
+        }
+      }
+    }
+
+    .no-reviews {
+      p {
+        color: var(--text-primary);
+      }
+
+      .subtitle {
+        color: var(--text-secondary);
+      }
+    }
+  }
+}
+
+      .total-reviews {
+        font-size: 0.875rem;
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 0.25rem;
+      }
+    }
+  }
+
+  .rating-distribution {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .stars-label {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        min-width: 3rem;
+
+        .stars-count {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: rgba(0, 0, 0, 0.87);
+        }
+
+        .star-icon-small {
+          font-size: 1rem;
+          width: 1rem;
+          height: 1rem;
+          color: #ffc107 !important; // Amarillo para el icono de estrella
+        }
+      }
+
+      .progress-container {
+        flex: 1;
+        min-width: 0;
+
+        mat-progress-bar {
+          height: 8px;
+          border-radius: 4px;
+
+          ::ng-deep .mat-mdc-progress-bar-buffer {
+            background-color: rgba(0, 0, 0, 0.08);
+          }
+
+          ::ng-deep .mdc-linear-progress__bar-inner {
+            border-radius: 4px;
+          }
+        }
+      }
+
+      .count-label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-width: 5rem;
+
+        .percentage {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: rgba(0, 0, 0, 0.87);
+          min-width: 2.5rem;
+          text-align: right;
+        }
+
+        .count {
+          font-size: 0.75rem;
+          color: rgba(0, 0, 0, 0.6);
+        }
+      }
+    }
+  }
+
+  .no-reviews {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    text-align: center;
+
+    .no-reviews-icon {
+      font-size: 3rem;
+      width: 3rem;
+      height: 3rem;
+      color: rgba(0, 0, 0, 0.26);
+      margin-bottom: 1rem;
+    }
+
+    p {
+      margin: 0;
+      color: rgba(0, 0, 0, 0.87);
+      font-weight: 500;
+    }
+
+    .subtitle {
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 400;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .rating-summary {
+    padding: 1rem;
+
+    .rating-overview {
+      margin-bottom: 1.5rem;
+
+      .average-rating {
+        .rating-number {
+          font-size: 3rem;
+        }
+
+        .stars-display {
+          .star-icon {
+            font-size: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+        }
+      }
+    }
+
+    .rating-distribution {
+      gap: 0.5rem;
+
+      .rating-row {
+        gap: 0.75rem;
+
+        .count-label {
+          min-width: 4rem;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.125rem;
+        }
+      }
+    }
+  }
+}

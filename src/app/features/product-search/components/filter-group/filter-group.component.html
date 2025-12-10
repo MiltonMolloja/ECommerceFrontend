@@ -1,16 +1,48 @@
 <mat-expansion-panel [expanded]="filter.isExpanded !== false" class="filter-panel">
   <mat-expansion-panel-header>
-    <mat-panel-title>
-      {{ filter.name }}
+    <mat-panel-title class="filter-title">
+      <span>{{ filter.name }}</span>
+      @if (selectedCount > 0) {
+        <span class="selected-badge">{{ selectedCount }}</span>
+      }
+      @if (filter.unit && filter.type === FilterType.RANGE) {
+        <span class="unit-label">({{ filter.unit }})</span>
+      }
     </mat-panel-title>
   </mat-expansion-panel-header>
 
   <div class="filter-options">
+    <!-- Buscador interno para filtros con muchas opciones -->
+    @if (filter.searchable && filter.type === FilterType.CHECKBOX) {
+      <div class="filter-search">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Buscar</mat-label>
+          <input
+            matInput
+            [value]="searchQuery()"
+            (input)="onSearchChange($any($event.target).value)"
+            placeholder="Buscar..."
+          />
+          @if (searchQuery()) {
+            <button
+              matSuffix
+              mat-icon-button
+              (click)="clearSearch()"
+              aria-label="Limpiar búsqueda"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+      </div>
+    }
+
     @if (filter.type === FilterType.CHECKBOX) {
-      @for (option of filter.options; track option.id) {
+      @for (option of getVisibleOptions(); track option.id) {
         <div class="filter-option">
           <mat-checkbox
             [checked]="option.isSelected"
+            [disabled]="option.disabled"
             (change)="onCheckboxChange(option.id, $event.checked)"
           >
             <span class="option-label">{{ option.label }}</span>
@@ -19,6 +51,28 @@
             }
           </mat-checkbox>
         </div>
+      }
+
+      <!-- Botón "Ver más/menos" -->
+      @if (hasMoreOptions() && !searchQuery()) {
+        <button
+          mat-button
+          color="primary"
+          class="show-more-btn"
+          (click)="toggleShowAll()"
+        >
+          @if (showAllOptions()) {
+            <ng-container>
+              <mat-icon>expand_less</mat-icon>
+              <span>Ver menos</span>
+            </ng-container>
+          } @else {
+            <ng-container>
+              <mat-icon>expand_more</mat-icon>
+              <span>Ver más</span>
+            </ng-container>
+          }
+        </button>
       }
     }
     @if (filter.type === FilterType.RADIO) {
@@ -37,40 +91,71 @@
         }
       </mat-radio-group>
     }
+    @if (filter.type === FilterType.CATEGORY) {
+      @for (option of getVisibleOptions(); track option.id) {
+        <div class="filter-option">
+          <mat-checkbox
+            [checked]="option.isSelected"
+            [disabled]="option.disabled"
+            (change)="onCheckboxChange(option.id, $event.checked)"
+          >
+            <span class="option-label">{{ option.label }}</span>
+            @if (option.count !== undefined) {
+              <span class="option-count">({{ option.count }})</span>
+            }
+          </mat-checkbox>
+        </div>
+      }
+
+      <!-- Botón "Ver más/menos" para categorías -->
+      @if (hasMoreOptions() && !searchQuery()) {
+        <button
+          mat-button
+          color="primary"
+          class="show-more-btn"
+          (click)="toggleShowAll()"
+        >
+          @if (showAllOptions()) {
+            <ng-container>
+              <mat-icon>expand_less</mat-icon>
+              <span>Ver menos</span>
+            </ng-container>
+          } @else {
+            <ng-container>
+              <mat-icon>expand_more</mat-icon>
+              <span>Ver más</span>
+            </ng-container>
+          }
+        </button>
+      }
+    }
     @if (filter.type === FilterType.RANGE && filter.range) {
       <div class="price-range-filter">
-        <div class="price-inputs">
-          <mat-form-field appearance="outline" class="price-input">
-            <mat-label>Min</mat-label>
-            <input
-              matInput
-              type="number"
-              [min]="filter.range.min"
-              [max]="filter.range.max"
-              [(ngModel)]="filter.range.selectedMin"
-              (input)="onPriceInputChange()"
-              (blur)="onPriceChange()"
-            />
-            <span matPrefix>$</span>
-          </mat-form-field>
-
-          <span class="price-separator">—</span>
-
-          <mat-form-field appearance="outline" class="price-input">
-            <mat-label>Max</mat-label>
-            <input
-              matInput
-              type="number"
-              [min]="filter.range.min"
-              [max]="filter.range.max"
-              [(ngModel)]="filter.range.selectedMax"
-              (input)="onPriceInputChange()"
-              (blur)="onPriceChange()"
-            />
-            <span matPrefix>$</span>
-          </mat-form-field>
+        <!-- Inputs en una fila con botón Ir -->
+        <div class="price-inputs-row">
+          <input
+            type="number"
+            class="price-input-simple"
+            placeholder="Min"
+            [min]="filter.range.min"
+            [max]="filter.range.max"
+            [(ngModel)]="filter.range.selectedMin"
+            (input)="onPriceInputChange()"
+          />
+          <span class="price-separator">-</span>
+          <input
+            type="number"
+            class="price-input-simple"
+            placeholder="Máx"
+            [min]="filter.range.min"
+            [max]="filter.range.max"
+            [(ngModel)]="filter.range.selectedMax"
+            (input)="onPriceInputChange()"
+          />
         </div>
 
+
+        <!-- Slider -->
         <mat-slider
           [min]="filter.range.min"
           [max]="filter.range.max"
@@ -90,9 +175,15 @@
           />
         </mat-slider>
 
+        <!-- Labels del rango -->
         <div class="price-range-labels">
-          <span>{{ formatPrice(filter.range.selectedMin) }}</span>
-          <span>{{ formatPrice(filter.range.selectedMax) }}</span>
+          @if (filter.id === 'price') {
+            <span>{{ formatPrice(filter.range.selectedMin) }}</span>
+            <span>{{ formatPrice(filter.range.selectedMax) }}</span>
+          } @else {
+            <span>{{ formatNumericValue(filter.range.selectedMin) }}</span>
+            <span>{{ formatNumericValue(filter.range.selectedMax) }}</span>
+          }
         </div>
       </div>
     }

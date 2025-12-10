@@ -1,0 +1,165 @@
+<div class="product-info" *ngIf="product">
+  <!-- Brand & Category -->
+  <div class="product-meta">
+    <a 
+      *ngIf="product.brandId" 
+      [routerLink]="['/s']" 
+      [queryParams]="{ brandIds: product.brandId }"
+      class="brand-link">
+      {{ product.brand || 'Sin marca' }}
+    </a>
+    <span *ngIf="!product.brandId" class="brand-link">{{ product.brand || 'Sin marca' }}</span>
+    <span class="separator">|</span>
+    <a 
+      *ngIf="product.primaryCategory" 
+      [routerLink]="['/s']" 
+      [queryParams]="{ categoryIds: product.primaryCategory.categoryId }"
+      class="category-link">
+      {{ product.primaryCategory.name }}
+    </a>
+    <span *ngIf="!product.primaryCategory" class="category-link">Sin categoría</span>
+  </div>
+
+  <!-- Title -->
+  <h1 class="product-title">{{ product.name }}</h1>
+
+  <!-- Rating Summary -->
+  <div class="rating-summary">
+    <div class="stars">
+      <mat-icon 
+        *ngFor="let i of [].constructor(getStars(product.rating.average).full)" 
+        class="star filled">
+        star
+      </mat-icon>
+      <mat-icon 
+        *ngIf="getStars(product.rating.average).half" 
+        class="star half">
+        star_half
+      </mat-icon>
+      <mat-icon 
+        *ngFor="let i of [].constructor(getStars(product.rating.average).empty)" 
+        class="star empty">
+        star_border
+      </mat-icon>
+    </div>
+    <span class="rating-value">{{ product.rating.average.toFixed(1) }}</span>
+    <a href="javascript:void(0)" class="reviews-link" (click)="onReviewsLinkClick()">
+      ({{ product.rating.count }} {{ product.rating.count === 1 ? 'valoración' : 'valoraciones' }})
+    </a>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Price -->
+  <div class="price-section">
+    <!-- Discount Badge -->
+    <mat-chip *ngIf="hasDiscount()" class="discount-badge" highlighted>
+      -{{ discountPercentage() }}%
+    </mat-chip>
+
+    <div class="price-container">
+      <div class="current-price">
+        {{ formatPrice(product.price.current, product.price.currency) }}
+      </div>
+      <div class="original-price" *ngIf="hasDiscount()">
+        {{ formatPrice(product.price.original!, product.price.currency) }}
+      </div>
+    </div>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Stock Availability -->
+  <div class="availability-section">
+    <div class="stock-status" [class.in-stock]="isInStock()" [class.out-of-stock]="!isInStock()">
+      <mat-icon>{{ isInStock() ? 'check_circle' : 'cancel' }}</mat-icon>
+      <span *ngIf="isInStock()">En stock</span>
+      <span *ngIf="!isInStock()">Agotado</span>
+    </div>
+    <div class="stock-quantity" *ngIf="isInStock() && stockQuantity() !== undefined">
+      <!-- Stock alto (más de 20 unidades) -->
+      <span *ngIf="stockQuantity()! > 20" class="high-stock">
+        {{ stockQuantity() }} unidades disponibles
+      </span>
+      <!-- Stock medio (11-20 unidades) -->
+      <span *ngIf="stockQuantity()! > 10 && stockQuantity()! <= 20" class="medium-stock">
+        {{ stockQuantity() }} unidades disponibles
+      </span>
+      <!-- Stock bajo (1-10 unidades) -->
+      <span *ngIf="stockQuantity()! <= 10 && stockQuantity()! > 0" class="low-stock">
+        ⚠️ Solo quedan {{ stockQuantity() }} unidades
+      </span>
+    </div>
+  </div>
+
+  <!-- Features -->
+  <div class="features-section" *ngIf="product.features && product.features.length > 0">
+    <h3 class="features-title">Características destacadas:</h3>
+    <ul class="features-list">
+      <li *ngFor="let feature of product.features" class="feature-item">
+        <mat-icon class="feature-icon">check</mat-icon>
+        <span>{{ feature }}</span>
+      </li>
+    </ul>
+  </div>
+
+  <mat-divider class="divider"></mat-divider>
+
+  <!-- Quantity Selector & Add to Cart -->
+  <div class="actions-section">
+    <!-- Quantity Selector -->
+    <div class="quantity-selector">
+      <label class="quantity-label">Cantidad:</label>
+      <div class="quantity-controls">
+        <button
+          mat-icon-button
+          (click)="decrementQuantity()"
+          [disabled]="quantity() <= 1 || !isInStock()"
+          aria-label="Disminuir cantidad"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+        <input
+          type="number"
+          class="quantity-input"
+          [(ngModel)]="quantity"
+          (ngModelChange)="onQuantityChange()"
+          [min]="1"
+          [max]="maxQuantity()"
+          [disabled]="!isInStock()"
+          aria-label="Cantidad"
+        />
+        <button
+          mat-icon-button
+          (click)="incrementQuantity()"
+          [disabled]="quantity() >= maxQuantity() || !isInStock()"
+          aria-label="Aumentar cantidad"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Add to Cart Button -->
+    <button
+      mat-raised-button
+      color="primary"
+      class="add-to-cart-button"
+      (click)="addToCart()"
+      [disabled]="!isInStock() || addingToCart()"
+    >
+      <mat-icon *ngIf="!addingToCart()">shopping_cart</mat-icon>
+      <mat-icon *ngIf="addingToCart()" class="spinner">
+        <span class="loading-spinner"></span>
+      </mat-icon>
+      <span *ngIf="!addingToCart()">Agregar al carrito</span>
+      <span *ngIf="addingToCart()">Agregando...</span>
+    </button>
+  </div>
+
+  <!-- Total Price Display -->
+  <div class="total-price" *ngIf="quantity() > 1">
+    <span class="total-label">Total:</span>
+    <span class="total-value">{{ formatPrice(totalPrice(), product.price.currency) }}</span>
+  </div>
+</div>

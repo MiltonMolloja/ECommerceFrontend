@@ -19,8 +19,6 @@ export const authGuard: CanActivateFn = (route, state) => {
   // Construir URL completa para el microservicio de login
   const loginUrl = `${environment.loginServiceUrl}/auth/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
 
-  console.log('Auth Guard - Redirecting to:', loginUrl);
-
   // Redirigir al microservicio con la URL de callback
   window.location.href = loginUrl;
 

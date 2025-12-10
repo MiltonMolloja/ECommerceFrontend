@@ -1,0 +1,94 @@
+<div class="search-bar-container">
+  <div class="search-bar">
+    <mat-form-field appearance="outline" class="search-field">
+      <input
+        #searchInput
+        matInput
+        [placeholder]="'SEARCH.PLACEHOLDER' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchQueryChange($event)"
+        (keyup.enter)="onSearch()"
+        (focus)="onFocus()"
+        (blur)="onBlur()"
+        autocomplete="off"
+      />
+
+      <!-- Loading spinner -->
+      @if (isLoading()) {
+        <mat-spinner matSuffix diameter="20" class="search-spinner"></mat-spinner>
+      }
+
+      <!-- Clear button -->
+      @if (searchQuery() && !isLoading()) {
+        <button
+          mat-icon-button
+          matSuffix
+          (click)="searchQuery.set(''); searchInput.focus()"
+          class="clear-button"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <button mat-raised-button class="search-button" (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+      <span class="search-button-text hide-xs">{{ 'SEARCH.BUTTON' | translate }}</span>
+    </button>
+  </div>
+
+  <!-- Suggestions dropdown -->
+  @if (showSuggestions() && suggestions().length > 0) {
+    <div class="suggestions-panel">
+      <!-- Clear history button (only if showing history) -->
+      @if (showingHistoryOnly()) {
+        <div class="suggestions-header">
+          <span class="suggestions-title">{{ 'SEARCH.RECENT_SEARCHES' | translate }}</span>
+          <button mat-button class="clear-history-button" (click)="clearHistory()">
+            <mat-icon>delete_outline</mat-icon>
+            <span>{{ 'SEARCH.CLEAR_HISTORY' | translate }}</span>
+          </button>
+        </div>
+      }
+
+      <!-- Suggestions list -->
+      <div class="suggestions-list">
+        @for (suggestion of suggestions(); track $index) {
+          <div class="suggestion-item" (click)="selectSuggestion(suggestion)">
+            <!-- Icon -->
+            <mat-icon class="suggestion-icon">{{ getSuggestionIcon(suggestion.type) }}</mat-icon>
+
+            <!-- Product image (if product) -->
+            @if (suggestion.type === 'product' && suggestion.imageUrl) {
+              <img [src]="suggestion.imageUrl" [alt]="suggestion.text" class="suggestion-image" />
+            }
+
+            <!-- Text -->
+            <div class="suggestion-text">
+              <span class="suggestion-name">{{ suggestion.text }}</span>
+              @if (suggestion.type === 'product' && suggestion.price) {
+                <span class="suggestion-price">${{ suggestion.price | number:'1.2-2' }}</span>
+              }
+            </div>
+
+            <!-- Remove history button -->
+            @if (suggestion.type === 'history') {
+              <button
+                mat-icon-button
+                class="remove-history-button"
+                (click)="removeHistoryItem(suggestion.text, $event)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+
+            <!-- Arrow icon for products -->
+            @if (suggestion.type === 'product') {
+              <mat-icon class="suggestion-arrow">arrow_forward</mat-icon>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

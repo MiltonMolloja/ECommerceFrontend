@@ -1,36 +1,69 @@
-<div class="hero-banner">
-  <div class="slides-container" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
-    @for (banner of banners; track banner.id) {
-      <div class="slide">
-        <img [src]="banner.image" [alt]="banner.title" class="slide-image" />
-        <div class="slide-content">
-          <div class="content-wrapper">
-            <h2 class="slide-title">{{ banner.title }}</h2>
-            <p class="slide-description">{{ banner.description }}</p>
-            <button mat-raised-button class="cta-button">
-              {{ banner.buttonText }}
-            </button>
+<div class="hero-banner" (mouseenter)="onMouseEnter()" (mouseleave)="onMouseLeave()">
+  @if (hasBanners()) {
+    <div class="slides-container" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
+      @for (banner of banners(); track banner.bannerId) {
+        <div class="slide">
+          <img 
+            [src]="getImageUrl(banner)" 
+            [alt]="banner.title" 
+            class="slide-image" 
+            loading="lazy"
+          />
+          <div class="slide-content">
+            <div class="content-wrapper">
+              <h2 class="slide-title">{{ banner.title }}</h2>
+              @if (banner.subtitle) {
+                <p class="slide-subtitle">{{ banner.subtitle }}</p>
+              }
+              @if (banner.buttonText && banner.linkUrl) {
+                <a 
+                  [routerLink]="banner.linkUrl" 
+                  mat-raised-button 
+                  color="primary"
+                  class="cta-button"
+                >
+                  {{ banner.buttonText }}
+                </a>
+              }
+            </div>
           </div>
         </div>
-      </div>
-    }
-  </div>
+      }
+    </div>
 
-  <button mat-icon-button class="nav-button prev" (click)="prev()" aria-label="Previous slide">
-    <mat-icon>chevron_left</mat-icon>
-  </button>
-  <button mat-icon-button class="nav-button next" (click)="next()" aria-label="Next slide">
-    <mat-icon>chevron_right</mat-icon>
-  </button>
+    <button 
+      mat-icon-button 
+      class="nav-button prev" 
+      (click)="prev()" 
+      [disabled]="banners().length <= 1"
+      aria-label="Previous slide"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button 
+      mat-icon-button 
+      class="nav-button next" 
+      (click)="next()" 
+      [disabled]="banners().length <= 1"
+      aria-label="Next slide"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
 
-  <div class="dots-indicator">
-    @for (banner of banners; track banner.id; let i = $index) {
-      <button
-        class="dot"
-        [class.active]="i === currentSlide()"
-        (click)="goToSlide(i)"
-        [attr.aria-label]="'Go to slide ' + (i + 1)"
-      ></button>
-    }
-  </div>
+    <div class="dots-indicator">
+      @for (banner of banners(); track banner.bannerId; let i = $index) {
+        <button
+          class="dot"
+          [class.active]="i === currentSlide()"
+          (click)="goToSlide(i)"
+          [attr.aria-label]="'Go to slide ' + (i + 1)"
+        ></button>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <mat-icon>image_not_supported</mat-icon>
+      <p>No banners available</p>
+    </div>
+  }
 </div>

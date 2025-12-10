@@ -1,3 +1,5 @@
+import { ProductCategory } from './category.model';
+
 /**
  * Modelo de Stock de Producto
  */
@@ -16,4 +18,6 @@ export interface Product {
   description: string;
   price: number;
   stock?: ProductInStock;
+  categories?: ProductCategory[];
+  primaryCategory?: ProductCategory;
 }

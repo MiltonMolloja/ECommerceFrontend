@@ -64,7 +64,7 @@
                   <div class="item-name">{{ item.name }}</div>
                   <div class="item-quantity">Cantidad: {{ item.quantity }}</div>
                   <div class="item-price">
-                    {{ item.currency }} {{ item.price * item.quantity | number: '1.2-2' }}
+                    {{ item.currency || 'USD' }} {{ item.price * item.quantity | number: '1.2-2' }}
                   </div>
                 </div>
               </div>

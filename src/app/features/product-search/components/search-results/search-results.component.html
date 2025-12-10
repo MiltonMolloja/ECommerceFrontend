@@ -1,26 +1,10 @@
-<div class="search-results-container">
-  <!-- Breadcrumb -->
-  <app-breadcrumb [query]="searchQuery()" [category]="route.snapshot.queryParams['category']">
-  </app-breadcrumb>
-
-  <!-- Search Header -->
-  <app-search-header [resultsText]="resultsText()" [loading]="loading()"> </app-search-header>
-
-  <!-- Active Filters -->
-  @if (activeFilters$ | async; as activeFilters) {
-    @if (activeFilters.length > 0) {
-      <app-active-filters
-        [filters]="activeFilters"
-        (removeFilter)="onRemoveActiveFilter($event)"
-        (clearAll)="onClearAllFilters()"
-      >
-      </app-active-filters>
-    }
-  }
-
-  <div class="results-layout">
-    <!-- Filters Sidebar -->
-    <aside class="filters-sidebar">
+<!-- Amazon-style Search Results Page -->
+<div class="amazon-search-container">
+  <!-- Main Layout -->
+  <div class="amazon-layout">
+    <!-- Left Sidebar - Filters -->
+    <aside class="amazon-sidebar">
+      <!-- Filters -->
       <app-filters-sidebar
         [filters]="filters()"
         [loading]="loading()"
@@ -29,73 +13,212 @@
       </app-filters-sidebar>
     </aside>
 
-    <!-- Main Content -->
-    <main class="results-main">
-      <!-- Sort & Results Count -->
-      <div class="results-header">
-        <div class="results-count">
-          <span>{{ totalResults() | number }} {{ 'COMMON.RESULTS' | translate }}</span>
+    <!-- Right Content -->
+    <main class="amazon-main">
+      <!-- Search Results Header with Sort -->
+      <div class="amazon-header-row">
+        <div class="amazon-results-header">
+          <h1 class="amazon-results-title">
+            @if (searchQuery()) {
+              Resultados para <span class="amazon-query-highlight">"{{ searchQuery() }}"</span>
+            } @else {
+              Todos los productos
+            }
+          </h1>
         </div>
-        <app-sort-dropdown (sortChange)="onSortChange($event)"> </app-sort-dropdown>
+
+        <!-- Sort Dropdown -->
+        <div class="amazon-sort-container">
+          <span class="amazon-sort-label">Ordenar por:</span>
+          <app-sort-dropdown (sortChange)="onSortChange($event)"></app-sort-dropdown>
+        </div>
       </div>
+
+      <!-- Active Filters -->
+      @if (activeFilters$ | async; as activeFilters) {
+        @if (activeFilters.length > 0) {
+          <div class="amazon-active-filters-wrapper">
+            <app-active-filters
+              [filters]="activeFilters"
+              (removeFilter)="onRemoveActiveFilter($event)"
+              (clearAll)="onClearAllFilters()"
+            >
+            </app-active-filters>
+          </div>
+        }
+      }
 
       <!-- Loading State -->
       @if (loading()) {
-        <div class="loading-skeleton">
+        <div class="amazon-loading-grid">
           @for (i of [1, 2, 3, 4, 5, 6]; track i) {
-            <div class="skeleton-card"></div>
+            <div class="amazon-skeleton-card"></div>
           }
+        </div>
+      }
+
+      <!-- Products Grid -->
+      @if (!loading() && hasResults()) {
+        <div class="amazon-products-grid">
+          @for (product of products(); track product.id) {
+            <div class="amazon-product-card">
+              <!-- Product Image Container -->
+              <div class="amazon-product-image-container">
+                <img
+                  [src]="product.images.main || product.images.large || '/assets/placeholder.png'"
+                  [alt]="product.title"
+                  class="amazon-product-image"
+                  loading="lazy"
+                />
+
+                <!-- Badges -->
+                @if (product.isPrime) {
+                  <span class="amazon-badge amazon-badge-bestseller">
+                    Best Seller
+                  </span>
+                }
+
+                @if (product.price.discount && product.price.discount > 0) {
+                  <span class="amazon-badge amazon-badge-discount">
+                    -{{ product.price.discount | number:'1.0-0' }}%
+                  </span>
+                }
+
+                @if (product.isSponsored) {
+                  <span class="amazon-badge amazon-badge-choice">
+                    ✓ Sponsored
+                  </span>
+                }
+
+                @if (!product.isSponsored && product.rating.average >= 4.5 && product.rating.count > 100) {
+                  <span class="amazon-badge amazon-badge-choice">
+                    ✓ Amazon's Choice
+                  </span>
+                }
+              </div>
+
+              <!-- Product Info -->
+              <div class="amazon-product-info">
+                <!-- Title -->
+                <h3 class="amazon-product-title" [title]="product.title">
+                  <a [routerLink]="['/product', product.id]">
+                    {{ product.title }}
+                  </a>
+                </h3>
+
+                <!-- Rating -->
+                <div class="amazon-product-rating">
+                  <div class="amazon-stars">
+                    @for (star of [1, 2, 3, 4, 5]; track star) {
+                      <span 
+                        class="amazon-star"
+                        [class.amazon-star-filled]="star <= (product.rating.average || 0)"
+                      >
+                        ★
+                      </span>
+                    }
+                  </div>
+                  <span class="amazon-reviews-count">
+                    {{ product.rating.count || 0 | number }}
+                  </span>
+                </div>
+
+                <!-- Price -->
+                <div class="amazon-product-price">
+                  <div class="amazon-price-row">
+                    <span class="amazon-current-price">
+                      ${{ product.price.current | number:'1.2-2' }}
+                    </span>
+                    @if (product.price.original && product.price.original > product.price.current) {
+                      <span class="amazon-original-price">
+                        ${{ product.price.original | number:'1.2-2' }}
+                      </span>
+                    }
+                  </div>
+                </div>
+
+                <!-- Delivery -->
+                @if (product.availability.inStock) {
+                  <div class="amazon-delivery">
+                    <span class="amazon-delivery-text">
+                      @if (product.isPrime) {
+                        FREE delivery Tomorrow
+                      } @else {
+                        Delivery in 2-3 days
+                      }
+                    </span>
+                  </div>
+                }
+
+                <!-- Stock -->
+                <div class="amazon-stock">
+                  @if (product.availability.inStock) {
+                    <span class="amazon-stock-text amazon-stock-in">
+                      @if (product.availability.quantity && product.availability.quantity > 0) {
+                        In Stock ({{ product.availability.quantity }} available)
+                      } @else {
+                        In Stock
+                      }
+                    </span>
+                  } @else {
+                    <span class="amazon-stock-text amazon-stock-out">
+                      Out of Stock
+                    </span>
+                  }
+                </div>
+
+                <!-- Add to Cart Button -->
+                <button 
+                  class="amazon-add-to-cart-btn"
+                  (click)="addToCart(product)"
+                  [disabled]="!product.availability.inStock"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Loading more indicator -->
+        @if (loadingMore()) {
+          <div class="amazon-loading-more">
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+            <p>Cargando más productos...</p>
+          </div>
+        }
+
+        <!-- Pagination Info -->
+        <div class="amazon-pagination-info">
+          <p>
+            Mostrando {{ products().length }} de {{ totalResults() | number }} resultados
+          </p>
+          @if (currentPage() < totalPages()) {
+            <p class="amazon-scroll-hint">Desplázate hacia abajo para ver más productos</p>
+          }
+        </div>
+      }
+
+      <!-- Empty State -->
+      @if (!loading() && !hasResults()) {
+        <div class="amazon-empty-state">
+          <div class="amazon-empty-icon">🔍</div>
+          <h2 class="amazon-empty-title">No se encontraron resultados</h2>
+          <p class="amazon-empty-text">
+            Intenta con otros términos de búsqueda o ajusta los filtros.
+          </p>
         </div>
       }
 
       <!-- Error State -->
       @if (error()) {
-        <div class="error-state">
-          <p>{{ error() }}</p>
-          <button (click)="performSearch(parseQueryParams(route.snapshot.queryParams))">
-            {{ 'COMMON.RETRY' | translate }}
+        <div class="amazon-error-state">
+          <div class="amazon-error-icon">⚠️</div>
+          <h2 class="amazon-error-title">Error al cargar los productos</h2>
+          <p class="amazon-error-text">{{ error() }}</p>
+          <button class="amazon-retry-btn" (click)="retry()">
+            Reintentar
           </button>
-        </div>
-      }
-
-      <!-- Products Grid with Infinite Scroll -->
-      @if (!loading() && hasResults()) {
-        <div class="products-container">
-          <div class="products-grid">
-            @for (product of products(); track product.id) {
-              <app-product-card [product]="product" [searchQuery]="searchQuery()">
-              </app-product-card>
-            }
-          </div>
-
-          <!-- Loading more indicator -->
-          @if (loadingMore()) {
-            <div class="loading-more">
-              <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-              <p>{{ 'COMMON.LOAD_MORE' | translate }}</p>
-            </div>
-          }
-
-          <!-- Info de paginación (sin botones, solo info) -->
-          <div class="pagination-info">
-            <p>
-              {{
-                'PRODUCT_SEARCH.SHOWING_X_OF_Y'
-                  | translate: { count: products().length, total: (totalResults() | number) }
-              }}
-            </p>
-            @if (currentPage() < totalPages()) {
-              <p class="scroll-hint">{{ 'COMMON.SCROLL_HINT' | translate }}</p>
-            }
-          </div>
-        </div>
-      }
-
-      <!-- No Results -->
-      @if (!loading() && !hasResults()) {
-        <div class="no-results">
-          <h3>{{ 'PRODUCT_SEARCH.NO_RESULTS_FOR' | translate: { query: searchQuery() } }}</h3>
-          <p>{{ 'PRODUCT_SEARCH.TRY_DIFFERENT_TERMS' | translate }}</p>
         </div>
       }
     </main>

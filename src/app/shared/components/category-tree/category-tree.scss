@@ -1,0 +1,210 @@
+.category-tree-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 16px;
+
+  .tree-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+    .tree-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .tree-actions {
+      display: flex;
+      gap: 4px;
+    }
+  }
+
+  .loading-container,
+  .error-container,
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.6);
+
+    mat-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+    }
+
+    p {
+      margin: 8px 0;
+    }
+  }
+
+  .category-tree {
+    flex: 1;
+    overflow: auto;
+
+    .tree-node {
+      display: block;
+      outline: none;
+
+      .tree-node-wrapper {
+        display: flex;
+        align-items: center;
+        height: 48px;
+
+        .expand-button {
+          width: 36px;
+          height: 36px;
+          padding: 0;
+          margin-right: 4px;
+          flex-shrink: 0;
+
+          .expand-icon {
+            transition: transform 0.2s ease;
+          }
+        }
+
+        .category-button {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          text-align: left;
+          padding: 0 12px;
+          height: 36px;
+          border-radius: 4px;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.04);
+          }
+
+          .tree-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: rgba(0, 0, 0, 0.54);
+          }
+
+          .category-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 400;
+            color: rgba(0, 0, 0, 0.87);
+          }
+
+          .product-count {
+            margin-left: 8px;
+            font-size: 12px;
+            color: rgba(0, 0, 0, 0.6);
+            font-weight: 500;
+          }
+        }
+      }
+
+      .tree-children {
+        padding-left: 24px;
+        overflow: hidden;
+      }
+
+      // Nodo hoja sin botón de expandir
+      &:not(.mat-nested-tree-node) {
+        .category-button {
+          margin-left: 40px; // Alineación con nodos que tienen expand button
+        }
+      }
+    }
+  }
+}
+
+// Dark theme support
+:host-context(.dark-theme) {
+  .category-tree-container {
+    .tree-header {
+      border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .loading-container,
+    .error-container,
+    .empty-state {
+      color: rgba(255, 255, 255, 0.6) !important;
+    }
+
+    .category-tree {
+      .tree-node {
+        .tree-node-wrapper {
+          .category-button {
+            &:hover {
+              background-color: rgba(255, 255, 255, 0.08) !important;
+            }
+
+            .tree-icon {
+              color: rgba(255, 255, 255, 0.54) !important;
+            }
+
+            .category-name {
+              color: rgba(255, 255, 255, 0.87) !important;
+            }
+
+            .product-count {
+              color: rgba(255, 255, 255, 0.6) !important;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Animaciones
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tree-children {
+  animation: fadeIn 0.2s ease-out;
+}
+
+// Responsive
+@media (max-width: 600px) {
+  .category-tree-container {
+    padding: 12px;
+
+    .tree-header {
+      .tree-title {
+        font-size: 16px;
+      }
+    }
+
+    .category-tree {
+      .tree-node {
+        .tree-node-wrapper {
+          height: 44px;
+
+          .category-button {
+            .category-name {
+              font-size: 13px;
+            }
+          }
+        }
+      }
+    }
+  }
+}

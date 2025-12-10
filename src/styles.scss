@@ -102,7 +102,12 @@ body {
     color 0.3s ease;
 }
 
-html,
+html {
+  height: 100%;
+  margin: 0;
+  scroll-behavior: smooth; // Scroll suave para enlaces de ancla
+}
+
 body {
   height: 100%;
   margin: 0;
@@ -191,5 +196,47 @@ body {
 
   &:hover {
     background: var(--text-primary);
+  }
+}
+
+// Snackbar Styles
+.success-snackbar {
+  background-color: #4caf50 !important;
+  color: white !important;
+
+  .mat-mdc-snack-bar-label,
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+
+  .mat-mdc-button,
+  .mdc-button {
+    color: white !important;
+    font-weight: 700 !important;
+  }
+}
+
+.error-snackbar {
+  background-color: #f44336 !important;
+  color: white !important;
+
+  .mat-mdc-snack-bar-label,
+  .mdc-snackbar__label {
+    color: white !important;
+  }
+
+  .mat-mdc-button,
+  .mdc-button {
+    color: white !important;
+    font-weight: 700 !important;
+  }
+}
+
+.mat-mdc-snack-bar-container {
+  &.success-snackbar,
+  &.error-snackbar {
+    .mdc-snackbar__surface {
+      background-color: inherit !important;
+    }
   }
 }

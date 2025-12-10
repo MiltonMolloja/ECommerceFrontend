@@ -1,0 +1,80 @@
+<div class="product-images">
+  <!-- Main Image Display -->
+  <div class="main-image-container">
+    <mat-card class="image-card" appearance="outlined">
+      <!-- Loading Skeleton -->
+      <div class="image-skeleton" *ngIf="isImageLoading()">
+        <div class="skeleton-shimmer"></div>
+      </div>
+
+      <!-- Main Image -->
+      <img
+        [src]="currentImage()"
+        [alt]="productName"
+        class="main-image"
+        [class.loading]="isImageLoading()"
+        [class.error]="imageError()"
+        (load)="onImageLoad()"
+        (error)="onImageError()"
+        loading="eager"
+      />
+
+      <!-- Error State -->
+      <div class="image-error" *ngIf="imageError()">
+        <mat-icon>broken_image</mat-icon>
+        <p>Error al cargar imagen</p>
+      </div>
+
+      <!-- Navigation Arrows -->
+      <button
+        mat-icon-button
+        class="nav-button prev"
+        *ngIf="hasPrevious()"
+        (click)="previousImage()"
+        aria-label="Imagen anterior"
+      >
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        class="nav-button next"
+        *ngIf="hasNext()"
+        (click)="nextImage()"
+        aria-label="Imagen siguiente"
+      >
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+
+      <!-- Position Indicators -->
+      <div class="position-indicators" *ngIf="images.length > 1">
+        <span
+          *ngFor="let index of getVisibleThumbnails()"
+          class="indicator"
+          [class.active]="index === selectedIndex()"
+        ></span>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Thumbnail Carousel -->
+  <div class="thumbnails-container" *ngIf="images.length > 1">
+    <div class="thumbnails-scroll">
+      <button
+        *ngFor="let image of images; let i = index"
+        class="thumbnail-button"
+        [class.active]="i === selectedIndex()"
+        (click)="selectImage(i)"
+        [attr.aria-label]="'Ver imagen ' + (i + 1)"
+        type="button"
+      >
+        <img
+          [src]="image"
+          [alt]="productName + ' - imagen ' + (i + 1)"
+          class="thumbnail-image"
+          loading="lazy"
+        />
+      </button>
+    </div>
+  </div>
+</div>

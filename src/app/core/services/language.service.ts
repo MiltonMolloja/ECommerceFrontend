@@ -104,7 +104,7 @@ export class LanguageService {
    */
   setLanguage(language: Language): void {
     if (!this.isValidLanguage(language)) {
-      console.warn(`Invalid language: ${language}`);
+
       return;
     }
 

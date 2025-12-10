@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -6,14 +6,17 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-import { FilterOption, FilterType } from '../../models';
+import { FilterOption, FilterType, FilterValue } from '../../models';
 
 interface FilterChangeEvent {
   filterId: string;
   optionId?: string;
   checked?: boolean;
   priceRange?: { min: number; max: number };
+  attributeRange?: { min: number; max: number };
 }
 
 @Component({
@@ -27,18 +30,36 @@ interface FilterChangeEvent {
     MatSliderModule,
     MatFormFieldModule,
     MatInputModule,
+    MatButtonModule,
+    MatIconModule,
     FormsModule
   ],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush, // ← REMOVIDO para detectar cambios automáticamente
   templateUrl: './filter-group.component.html',
   styleUrls: ['./filter-group.component.scss']
 })
-export class FilterGroupComponent {
+export class FilterGroupComponent implements OnInit {
   @Input({ required: true }) filter!: FilterOption;
+  
   @Output() filterChange = new EventEmitter<FilterChangeEvent>();
 
   FilterType = FilterType;
   private priceChangeTimeout?: ReturnType<typeof setTimeout>;
+
+  // Signals para funcionalidades avanzadas
+  searchQuery = signal('');
+  isExpanded = signal(false);
+  showAllOptions = signal(false);
+
+  ngOnInit(): void {
+    console.log('🎛️ Filter Group:', {
+      id: this.filter.id,
+      name: this.filter.name,
+      type: this.filter.type,
+      optionsCount: this.filter.options?.length || 0,
+      options: this.filter.options
+    });
+  }
 
   onCheckboxChange(optionId: string, checked: boolean): void {
     this.filterChange.emit({
@@ -98,7 +119,7 @@ export class FilterGroupComponent {
   }
 
   /**
-   * Emite el cambio de precio después de validar
+   * Emite el cambio de precio o atributo numérico después de validar
    */
   private emitPriceChange(): void {
     if (
@@ -123,37 +144,37 @@ export class FilterGroupComponent {
         this.filter.range.selectedMax
       );
 
+      // Determinar si es un filtro de precio o atributo numérico
+      const isAttributeRange = this.filter.id.startsWith('attr_');
+
       this.filterChange.emit({
         filterId: this.filter.id,
-        priceRange: {
-          min: this.filter.range.selectedMin,
-          max: this.filter.range.selectedMax
-        }
+        ...(isAttributeRange
+          ? {
+              attributeRange: {
+                min: this.filter.range.selectedMin,
+                max: this.filter.range.selectedMax
+              }
+            }
+          : {
+              priceRange: {
+                min: this.filter.range.selectedMin,
+                max: this.filter.range.selectedMax
+              }
+            })
       });
     }
   }
 
   /**
-   * Formatea el precio de manera compacta para valores grandes
+   * Formatea el precio con separadores de miles (sin abreviar)
    */
   formatPrice(value: number | undefined): string {
     if (value === undefined || value === null) return '$0';
     if (!value && value !== 0) return '$0';
 
-    // Para valores menores a 1000, mostrar completo
-    if (value < 1000) {
-      return `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
-    }
-
-    // Para valores entre 1000 y 999,999, mostrar con K
-    if (value < 1000000) {
-      const thousands = value / 1000;
-      return `$${thousands.toLocaleString('en-US', { maximumFractionDigits: thousands >= 100 ? 0 : 1 })}K`;
-    }
-
-    // Para valores >= 1,000,000, mostrar con M
-    const millions = value / 1000000;
-    return `$${millions.toLocaleString('en-US', { maximumFractionDigits: millions >= 10 ? 1 : 2 })}M`;
+    // Mostrar número completo con separadores de miles
+    return `$${value.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
   }
 
   /**
@@ -171,5 +192,121 @@ export class FilterGroupComponent {
     if (range > 1000) return 100; // 100
 
     return 1; // Default
+  }
+
+  /**
+   * Obtiene las opciones visibles según búsqueda y límite
+   */
+  getVisibleOptions(): FilterValue[] {
+    let options = this.filter.options;
+
+    // Aplicar filtro de búsqueda si existe
+    if (this.searchQuery() && this.filter.searchable) {
+      const query = this.searchQuery().toLowerCase();
+      options = options.filter(opt =>
+        opt.label.toLowerCase().includes(query)
+      );
+    }
+
+    // Aplicar límite de opciones visibles si no se muestra todo
+    if (!this.showAllOptions() && this.filter.expandable && this.filter.maxVisibleOptions) {
+      options = options.slice(0, this.filter.maxVisibleOptions);
+    }
+
+    return options;
+  }
+
+  /**
+   * Verifica si hay más opciones disponibles
+   */
+  hasMoreOptions(): boolean {
+    if (!this.filter.expandable || !this.filter.maxVisibleOptions) {
+      return false;
+    }
+
+    const totalOptions = this.searchQuery() && this.filter.searchable
+      ? this.filter.options.filter(opt =>
+          opt.label.toLowerCase().includes(this.searchQuery().toLowerCase())
+        ).length
+      : this.filter.options.length;
+
+    return totalOptions > this.filter.maxVisibleOptions;
+  }
+
+  /**
+   * Alterna entre mostrar todas las opciones o solo las visibles
+   */
+  toggleShowAll(): void {
+    this.showAllOptions.set(!this.showAllOptions());
+  }
+
+  /**
+   * Actualiza la búsqueda dentro del filtro
+   */
+  onSearchChange(query: string): void {
+    this.searchQuery.set(query);
+    // Resetear el estado de mostrar todo al buscar
+    this.showAllOptions.set(false);
+  }
+
+  /**
+   * Limpia la búsqueda
+   */
+  clearSearch(): void {
+    this.searchQuery.set('');
+  }
+
+  /**
+   * Formatea valores numéricos de atributos con unidad
+   */
+  formatNumericValue(value: number | undefined): string {
+    if (value === undefined || value === null) return '0';
+
+    const unit = this.filter.unit || '';
+
+    // Si es un atributo de precio, usar formato de precio
+    if (this.filter.id === 'price') {
+      return this.formatPrice(value);
+    }
+
+    // Para valores numéricos simples con unidad
+    if (value < 1000) {
+      return `${value.toLocaleString('en-US', { maximumFractionDigits: 1 })}${unit}`;
+    }
+
+    // Para valores grandes (ej: GB, MHz)
+    if (value < 1000000) {
+      const thousands = value / 1000;
+      return `${thousands.toLocaleString('en-US', { maximumFractionDigits: 1 })}K${unit}`;
+    }
+
+    const millions = value / 1000000;
+    return `${millions.toLocaleString('en-US', { maximumFractionDigits: 2 })}M${unit}`;
+  }
+
+  /**
+   * Obtiene el label de rango formateado
+   */
+  getRangeLabel(): string {
+    if (!this.filter.range) return '';
+
+    const min = this.formatNumericValue(this.filter.range.selectedMin);
+    const max = this.formatNumericValue(this.filter.range.selectedMax);
+
+    return `${min} - ${max}`;
+  }
+
+  /**
+   * Determina si es un filtro de atributo dinámico
+   */
+  get isAttributeFilter(): boolean {
+    return this.filter.id.startsWith('attr_');
+  }
+
+  /**
+   * Obtiene el conteo total de opciones seleccionadas
+   */
+  get selectedCount(): number {
+    return this.filter.options.filter(o => o.isSelected).length;
   }
 }

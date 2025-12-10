@@ -1,16 +1,137 @@
 <div class="home-container">
-  <!-- Hero Banner -->
-  <app-hero-banner />
 
-  <!-- Content Section -->
-  <div class="content-section">
-    <!-- Best Sellers Carousel -->
-    <app-product-carousel title="Best Sellers in Electronics" [products]="bestSellers" />
+  <!-- Estado de Error -->
+  @if (error()) {
+    <div class="error-state">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h2>Oops! Algo salió mal</h2>
+      <p>{{ error() }}</p>
+      <button mat-raised-button color="primary" (click)="retry()">
+        <mat-icon>refresh</mat-icon>
+        Reintentar
+      </button>
+    </div>
+  }
 
-    <!-- Offers Grid -->
-    <app-offer-grid title="Today's Deals" [offers]="offers" />
+  <!-- Estado de Carga -->
+  @else if (isLoading()) {
+    <div class="loading-state">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Cargando productos...</p>
+    </div>
+  }
 
-    <!-- Today's Deals Carousel -->
-    <app-product-carousel title="Recommended for You" [products]="todaysDeals" />
-  </div>
+  <!-- Contenido Principal -->
+  @else {
+    <!-- Hero Banner -->
+    @if (banners().length > 0) {
+      <section class="hero-section">
+        <app-hero-banner [banners]="banners()" />
+      </section>
+    }
+
+    <!-- Ofertas del Día (con polling) -->
+    @if (deals().length > 0) {
+      <section class="deals-section">
+        <div class="section-header">
+          <h2>🔥 Ofertas del Día</h2>
+          <p class="subtitle">Actualizadas cada minuto</p>
+        </div>
+        <app-product-carousel
+          [products]="deals()"
+          [viewAllLink]="'/s?hasDiscount=true'"
+          (addToCart)="onAddToCart($event)"
+        />
+      </section>
+    }
+
+    <!-- Best Sellers -->
+    @if (bestSellers().length > 0) {
+      <section class="bestsellers-section">
+        <div class="section-header">
+          <h2>🏆 Los Más Vendidos</h2>
+        </div>
+        <app-product-carousel
+          [products]="bestSellers()"
+          [viewAllLink]="'/s?sortBy=bestseller'"
+          (addToCart)="onAddToCart($event)"
+        />
+      </section>
+    }
+
+    <!-- Productos Destacados -->
+    @if (featuredProducts().length > 0) {
+      <section class="featured-section">
+        <div class="section-header">
+          <h2>⭐ Productos Destacados</h2>
+        </div>
+        <app-product-carousel
+          [products]="featuredProducts()"
+          [viewAllLink]="'/s?isFeatured=true'"
+          (addToCart)="onAddToCart($event)"
+        />
+      </section>
+    }
+
+    <!-- Novedades -->
+    @if (newArrivals().length > 0) {
+      <section class="new-arrivals-section">
+        <div class="section-header">
+          <h2>🆕 Recién Llegados</h2>
+        </div>
+        <app-product-carousel
+          [products]="newArrivals()"
+          [viewAllLink]="'/s?sortBy=newest'"
+          (addToCart)="onAddToCart($event)"
+        />
+      </section>
+    }
+
+    <!-- Mejor Valorados -->
+    @if (topRated().length > 0) {
+      <section class="top-rated-section">
+        <div class="section-header">
+          <h2>⭐ Mejor Valorados</h2>
+          <p class="subtitle">4+ estrellas</p>
+        </div>
+        <app-product-carousel
+          [products]="topRated()"
+          [viewAllLink]="'/s?minRating=4&sortBy=rating'"
+          (addToCart)="onAddToCart($event)"
+        />
+      </section>
+    }
+
+    <!-- Categorías Destacadas -->
+    @if (featuredCategories().length > 0) {
+      <section class="categories-section">
+        <div class="section-header">
+          <h2>📂 Categorías Destacadas</h2>
+          <p class="subtitle">Explora nuestras categorías más populares</p>
+        </div>
+        <app-categories-grid [categories]="featuredCategories()" />
+      </section>
+    }
+
+    <!-- Debug Info (solo en desarrollo) -->
+    @if (metadata() && !isLoading()) {
+      <div class="debug-metadata">
+        <details>
+          <summary>Debug Info</summary>
+          <ul>
+            <li><strong>Strategy:</strong> {{ loadStrategy() }}</li>
+            <li><strong>From Cache:</strong> {{ metadata()?.fromCache ? 'Sí' : 'No' }}</li>
+            <li><strong>Execution Time:</strong> {{ metadata()?.queryExecutionTimeMs }}ms</li>
+            <li><strong>Generated At:</strong> {{ metadata()?.generatedAt | date:'short' }}</li>
+            <li><strong>Cache Age:</strong> {{ cacheInfo().age }}s</li>
+            <li><strong>Cache Expires In:</strong> {{ cacheInfo().expiresIn }}s</li>
+          </ul>
+          <button mat-button (click)="clearCacheAndReload()">
+            <mat-icon>delete</mat-icon>
+            Clear Cache & Reload
+          </button>
+        </details>
+      </div>
+    }
+  }
 </div>

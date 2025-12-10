@@ -1,0 +1,55 @@
+@if (categories().length > 0) {
+  <div class="categories-grid">
+    @for (category of categories(); track category.categoryId) {
+      <mat-card 
+        class="category-card" 
+        [routerLink]="getCategoryLink(category)"
+      >
+        <div class="category-image-container">
+          <img 
+            [src]="getCategoryImage(category)" 
+            [alt]="category.name"
+            class="category-image"
+            loading="lazy"
+          />
+          @if (category.isFeatured) {
+            <div class="featured-badge">
+              <mat-icon>star</mat-icon>
+            </div>
+          }
+        </div>
+        
+        <mat-card-content class="category-content">
+          <h3 class="category-name">{{ category.name }}</h3>
+          
+          @if (category.description) {
+            <p class="category-description">{{ category.description }}</p>
+          }
+          
+          @if (category.productCount !== undefined && category.productCount > 0) {
+            <div class="product-count">
+              <mat-icon>inventory_2</mat-icon>
+              <span>{{ formatProductCount(category.productCount) }}</span>
+            </div>
+          }
+        </mat-card-content>
+
+        <mat-card-actions class="category-actions">
+          <button 
+            mat-button 
+            color="primary"
+            [routerLink]="getCategoryLink(category)"
+          >
+            Ver productos
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+} @else {
+  <div class="empty-state">
+    <mat-icon>category</mat-icon>
+    <p>No hay categorías destacadas disponibles</p>
+  </div>
+}

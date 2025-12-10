@@ -178,6 +178,62 @@
   }
 }
 
+// ============================================
+// CARRITO ESTILO AMAZON (Verde con contador naranja)
+// ============================================
+
+.cart-button-amazon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background-color: transparent;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+  min-width: 60px;
+
+  &:hover {
+    border-color: white;
+  }
+
+  .cart-icon-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cart-count-badge {
+    position: absolute;
+    top: -8px;
+    right: -4px;
+    color: #ff9900; // Naranja Amazon
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    min-width: 16px;
+    text-align: center;
+  }
+
+  .cart-svg-icon {
+    width: 28px;
+    height: 28px;
+    color: white;
+  }
+
+  .cart-text-label {
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    margin-top: 2px;
+    line-height: 1;
+  }
+}
+
+// Estilo antiguo (mantener por compatibilidad)
 .cart-button {
   color: white !important;
   padding: 0.5rem !important;
@@ -363,4 +419,10 @@
   .logo {
     padding: 0.25rem;
   }
+}
+
+// Search bar wrapper
+.search-bar-wrapper {
+  flex: 1;
+  max-width: 800px;
 }

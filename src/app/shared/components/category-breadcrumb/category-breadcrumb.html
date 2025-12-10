@@ -1,0 +1,55 @@
+<nav class="breadcrumb-container" aria-label="Navegación de categorías">
+  @if (!loading() && breadcrumbs().length > 0) {
+    <ol class="breadcrumb-list">
+      <!-- Inicio -->
+      <li class="breadcrumb-item">
+        <a href="/" 
+           class="breadcrumb-link" 
+           (click)="navigateToHome($event)">
+          <svg class="home-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+          </svg>
+          <span class="breadcrumb-text">Inicio</span>
+        </a>
+      </li>
+
+      <!-- Separador -->
+      <li class="breadcrumb-separator" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </li>
+
+      <!-- Categorías -->
+      @for (breadcrumb of breadcrumbs(); track breadcrumb.categoryId; let isLast = $last) {
+        <li class="breadcrumb-item">
+          @if (!isLast) {
+            <a [href]="'/catalog/' + breadcrumb.slug" 
+               class="breadcrumb-link"
+               (click)="navigateToCategory(breadcrumb, $event)">
+              <span class="breadcrumb-text">{{ breadcrumb.name }}</span>
+            </a>
+          } @else {
+            <span class="breadcrumb-current" aria-current="page">
+              {{ breadcrumb.name }}
+            </span>
+          }
+        </li>
+
+        @if (!isLast) {
+          <li class="breadcrumb-separator" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+            </svg>
+          </li>
+        }
+      }
+    </ol>
+  }
+
+  @if (error()) {
+    <div class="breadcrumb-error">
+      <span>{{ error() }}</span>
+    </div>
+  }
+</nav>

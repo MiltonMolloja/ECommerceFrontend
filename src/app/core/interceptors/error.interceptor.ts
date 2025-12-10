@@ -18,7 +18,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       // Aquí puedes integrar un servicio de notificaciones o logging
-      console.error('Error HTTP:', errorMessage);
 
       return throwError(() => error);
     })

@@ -1,0 +1,119 @@
+<div class="product-reviews">
+  <!-- Rating Summary -->
+  @if (showSummary && ratingSummary()) {
+    <div class="summary-section">
+      <app-rating-summary [ratingSummary]="ratingSummary()!"></app-rating-summary>
+    </div>
+  }
+
+  <!-- Reviews Section -->
+  <mat-card class="reviews-card">
+    <!-- Header con filtros -->
+    <div class="reviews-header">
+      <h2 class="reviews-title">
+        Opiniones de clientes
+        @if (totalReviews() > 0) {
+          <span class="reviews-count">({{ totalReviews() }})</span>
+        }
+      </h2>
+
+      @if (reviews().length > 0) {
+        <div class="filters-section">
+          <!-- Ordenamiento -->
+          <mat-form-field appearance="outline" class="sort-field">
+            <mat-label>Ordenar por</mat-label>
+            <mat-select
+              [value]="sortBy()"
+              (selectionChange)="onSortChange($event.value)">
+              @for (option of sortOptions; track option.value) {
+                <mat-option [value]="option.value">
+                  {{ option.label }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- Filtro de compra verificada -->
+          <mat-checkbox
+            [checked]="verifiedOnly()"
+            (change)="onVerifiedFilterChange($event.checked)"
+            class="verified-filter">
+            Solo compras verificadas
+          </mat-checkbox>
+        </div>
+      }
+    </div>
+
+    <!-- Estado de carga -->
+    @if (loading()) {
+      <div class="loading-container">
+        <mat-spinner diameter="48"></mat-spinner>
+        <p class="loading-text">Cargando valoraciones...</p>
+      </div>
+    }
+
+    <!-- Estado de error -->
+    @if (error() && !loading()) {
+      <div class="error-container">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <p class="error-text">{{ error() }}</p>
+        <button mat-raised-button color="primary" (click)="retry()">
+          Reintentar
+        </button>
+      </div>
+    }
+
+    <!-- Lista de reviews -->
+    @if (!loading() && !error() && reviews().length > 0) {
+      <div class="reviews-list">
+        @for (review of reviews(); track review.reviewId) {
+          <app-review-card
+            [review]="review"
+            [showDivider]="!$last"
+            [userHasMarkedHelpful]="hasMarkedHelpful(review.reviewId)"
+            [userHasMarkedNotHelpful]="hasMarkedNotHelpful(review.reviewId)"
+            (helpfulClicked)="onHelpfulClicked($event)"
+            (notHelpfulClicked)="onNotHelpfulClicked($event)">
+          </app-review-card>
+        }
+      </div>
+
+      <!-- Paginación -->
+      @if (totalPages() > 1) {
+        <div class="pagination-container">
+          <mat-paginator
+            [length]="totalReviews()"
+            [pageSize]="pageSize"
+            [pageIndex]="currentPage() - 1"
+            [pageSizeOptions]="[5, 10, 25, 50]"
+            (page)="onPageChange($event)"
+            aria-label="Seleccionar página de valoraciones">
+          </mat-paginator>
+        </div>
+      }
+    }
+
+    <!-- Estado vacío -->
+    @if (!loading() && !error() && reviews().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">rate_review</mat-icon>
+        <h3 class="empty-title">No hay valoraciones</h3>
+        @if (verifiedOnly()) {
+          <p class="empty-subtitle">
+            No se encontraron valoraciones de compras verificadas.
+            <br>
+            <button mat-button color="primary" (click)="onVerifiedFilterChange(false)">
+              Ver todas las valoraciones
+            </button>
+          </p>
+        } @else {
+          <p class="empty-subtitle">
+            Este producto aún no tiene valoraciones.
+            <br>
+            ¡Sé el primero en compartir tu opinión!
+          </p>
+        }
+      </div>
+    }
+  </mat-card>
+</div>

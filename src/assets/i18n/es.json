@@ -85,5 +85,48 @@
     "ENGLISH": "English",
     "SELECT_LANGUAGE": "Seleccionar idioma",
     "LANGUAGE_SETTINGS": "Idioma"
+  },
+  "SEARCH_SUGGESTIONS": {
+    "DID_YOU_MEAN": "¿Quisiste decir",
+    "INSTEAD_OF": "en lugar de",
+    "RELATED_SEARCHES": "Búsquedas relacionadas",
+    "NO_SUGGESTIONS": "No hay sugerencias disponibles"
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "Buscar productos, marcas y más...",
+    "BUTTON": "Buscar",
+    "RECENT_SEARCHES": "Búsquedas recientes",
+    "CLEAR_HISTORY": "Limpiar historial",
+    "NO_SUGGESTIONS": "No hay sugerencias",
+    "POPULAR_SEARCHES": "Búsquedas populares",
+    "SUGGESTIONS": "Sugerencias",
+    "PRODUCTS": "Productos",
+    "CATEGORIES": "Categorías"
+  },
+  "SHARE_SEARCH": {
+    "TOOLTIP": "Compartir búsqueda",
+    "COPIED": "Enlace copiado al portapapeles",
+    "ERROR": "No se pudo copiar el enlace"
+  },
+  "SAVED_SEARCHES": {
+    "TITLE": "Búsquedas Guardadas",
+    "CLEAR_ALL": "Eliminar todas",
+    "EMPTY_STATE": "No tienes búsquedas guardadas",
+    "EMPTY_HINT": "Guarda tus búsquedas favoritas para acceder rápidamente",
+    "SAVE_CURRENT": "Guardar búsqueda actual",
+    "DIALOG": {
+      "TITLE": "Guardar Búsqueda",
+      "NAME_LABEL": "Nombre de la búsqueda",
+      "NAME_PLACEHOLDER": "Ej: Laptops gaming económicas",
+      "NO_QUERY": "Todos los productos",
+      "FILTERS": "filtro(s) aplicados",
+      "HINT": "Dale un nombre descriptivo para encontrarla fácilmente después."
+    }
+  },
+  "CART": {
+    "PRODUCT_ADDED": "Producto agregado al carrito",
+    "VIEW_CART": "Ver Carrito",
+    "OUT_OF_STOCK": "Este producto está agotado",
+    "CLOSE": "Cerrar"
   }
 }

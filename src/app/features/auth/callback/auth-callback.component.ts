@@ -52,11 +52,6 @@ export class AuthCallbackComponent implements OnInit {
       const expiresAt = params['expiresAt'];
       const nextUrl = params['next'] || '/'; // Página a la que el usuario quería ir
 
-      console.log('Callback - Tokens recibidos:', {
-        accessToken: !!accessToken,
-        refreshToken: !!refreshToken
-      });
-
       if (accessToken && refreshToken) {
         // Crear objeto IdentityAccess
         const identityAccess: IdentityAccess = {
@@ -81,7 +76,6 @@ export class AuthCallbackComponent implements OnInit {
       } else {
         // Error: no se recibieron tokens
         this.message = 'Error en la autenticación. Redirigiendo...';
-        console.error('No se recibieron tokens del microservicio de login');
 
         setTimeout(() => {
           this.router.navigate(['/'], { replaceUrl: true });

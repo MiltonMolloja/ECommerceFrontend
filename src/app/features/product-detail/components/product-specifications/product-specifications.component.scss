@@ -1,0 +1,207 @@
+.product-specifications {
+  width: 100%;
+  padding: 24px 0;
+
+  .section-title {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .specifications-accordion {
+    .specification-group {
+      margin-bottom: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      ::ng-deep .mat-expansion-panel-header {
+        padding: 16px 24px;
+        height: auto;
+        min-height: 64px;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.04);
+        }
+
+        .mat-expansion-panel-header-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          flex-grow: 1;
+
+          .group-icon {
+            color: var(--mat-primary-color, #1976d2);
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+          }
+
+          .group-name {
+            font-size: 18px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+          }
+        }
+
+        .mat-expansion-panel-header-description {
+          .specs-count {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.6);
+          }
+        }
+      }
+
+      ::ng-deep .mat-expansion-panel-body {
+        padding: 0;
+      }
+
+      .specifications-table {
+        width: 100%;
+
+        .specification-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          padding: 16px 24px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+          transition: background-color 0.2s ease;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+          }
+
+          .spec-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+          }
+
+          .spec-value {
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.87);
+            display: flex;
+            align-items: center;
+            font-weight: 400;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+
+  .empty-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: rgba(0, 0, 0, 0.26);
+    margin-bottom: 16px;
+  }
+
+  .empty-message {
+    margin: 0;
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+// Responsive design
+@media (max-width: 599px) {
+  .product-specifications {
+    padding: 16px 0;
+
+    .section-title {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .specifications-accordion {
+      .specification-group {
+        ::ng-deep .mat-expansion-panel-header {
+          padding: 12px 16px;
+          min-height: 56px;
+
+          .mat-expansion-panel-header-title {
+            .group-name {
+              font-size: 16px;
+            }
+          }
+        }
+
+        .specifications-table {
+          .specification-row {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            padding: 12px 16px;
+
+            .spec-label {
+              font-weight: 600;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 32px 16px;
+
+    .empty-icon {
+      font-size: 48px;
+      width: 48px;
+      height: 48px;
+    }
+
+    .empty-message {
+      font-size: 14px;
+    }
+  }
+}
+
+@media (min-width: 600px) and (max-width: 959px) {
+  .product-specifications {
+    .specifications-accordion {
+      .specification-group {
+        .specifications-table {
+          .specification-row {
+            grid-template-columns: 40% 60%;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (min-width: 960px) {
+  .product-specifications {
+    .specifications-accordion {
+      .specification-group {
+        .specifications-table {
+          .specification-row {
+            grid-template-columns: 35% 65%;
+          }
+        }
+      }
+    }
+  }
+}

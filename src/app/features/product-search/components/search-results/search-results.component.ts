@@ -8,35 +8,37 @@ import {
   HostListener
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProductSearchService } from '../../services/product-search.service';
 import { FilterService } from '../../services/filter.service';
+import { CartService } from '../../../../core/services/cart.service';
 import { Product, SearchParams, SortOption, FilterOption } from '../../models';
+import { AdvancedSearchParams } from '../../models/search-params.model';
 import { ProductCardComponent } from '../product-card/product-card.component';
 import { FiltersSidebarComponent } from '../filters-sidebar/filters-sidebar.component';
 import { SortDropdownComponent } from '../sort-dropdown/sort-dropdown.component';
 import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
 import { SearchHeaderComponent } from '../search-header/search-header.component';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
   selector: 'app-search-results',
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     ScrollingModule,
     MatProgressBarModule,
+    MatSnackBarModule,
     TranslateModule,
-    ProductCardComponent,
     FiltersSidebarComponent,
     SortDropdownComponent,
-    BreadcrumbComponent,
-    ActiveFiltersComponent,
-    SearchHeaderComponent
+    ActiveFiltersComponent
   ],
   templateUrl: './search-results.component.html',
   styleUrls: ['./search-results.component.scss']
@@ -44,7 +46,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 export class SearchResultsComponent implements OnInit, OnDestroy {
   private productSearchService = inject(ProductSearchService);
   private filterService = inject(FilterService);
+  private cartService = inject(CartService);
   private translateService = inject(TranslateService);
+  private snackBar = inject(MatSnackBar);
   public route = inject(ActivatedRoute); // Public para usar en el template
   private router = inject(Router);
   private destroy$ = new Subject<void>();
@@ -77,7 +81,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     // Register callback for language change reload
     this.productSearchService.onLanguageChangeReload(() => {
       if (this.currentSearchParams) {
-        console.log('🔄 Reloading search results due to language change...');
+
         this.performSearch(this.currentSearchParams);
       }
     });
@@ -100,10 +104,11 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Realizar búsqueda de productos
+   * Realizar búsqueda de productos usando búsqueda avanzada con facetas dinámicas
+   * SIEMPRE usa búsqueda avanzada para obtener filtros dinámicos (Resolución, Año, etc.)
    */
   public performSearch(params: SearchParams): void {
-    console.log('🚀 Iniciando búsqueda con params:', params);
+
     this.loading.set(true);
     this.error.set(null);
 
@@ -114,17 +119,26 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
     if (queryOrCategoryChanged) {
       this.originalPriceRange = null;
-      console.log('🔄 Query o categoría cambió, reseteando rango de precio original');
+
     }
 
     this.currentSearchParams = params; // Store for language change reload
 
+    // Convertir SearchParams a AdvancedSearchParams
+    const advancedParams = this.convertToAdvancedParams(params);
+    console.log('🚀 Advanced Search Params:', advancedParams);
+
     this.productSearchService
-      .searchProducts(params)
+      .searchAdvanced(advancedParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('📦 Respuesta procesada:', response);
+          console.log('🔍 Search Response:', response);
+          console.log('📊 Total Products:', response.products.length);
+          console.log('🎛️ Filters:', response.filters);
+          console.log('📁 Category Filter:', response.filters.find(f => f.id === 'category'));
+          console.log('🎯 Raw Facets:', response.facets);
+
           this.products.set(response.products);
 
           // Guardar el rango de precio original en la primera carga o después de un reset
@@ -135,7 +149,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
                 min: priceFilter.range.min,
                 max: priceFilter.range.max
               };
-              console.log('💰 Rango de precio original guardado:', this.originalPriceRange);
+
             }
           }
 
@@ -145,6 +159,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
             params.filters || {},
             params.priceRange
           );
+          console.log('✅ Filters with selection:', filtersWithSelection);
           this.filters.set(filtersWithSelection);
 
           this.totalResults.set(response.totalResults);
@@ -156,11 +171,94 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
         error: (err) => {
-          console.error('💥 Error en componente:', err);
+
           this.error.set('Error al cargar los productos. Por favor intenta nuevamente.');
           this.loading.set(false);
         }
       });
+  }
+
+  /**
+   * Convertir SearchParams a AdvancedSearchParams
+   */
+  private convertToAdvancedParams(params: SearchParams): AdvancedSearchParams {
+    const advancedParams: AdvancedSearchParams = {
+      query: params.query || '',
+      page: params.page,
+      pageSize: params.pageSize,
+      // Habilitar todas las facetas
+      includeBrandFacets: true,
+      includeCategoryFacets: true,
+      includePriceFacets: true,
+      includeRatingFacets: true,
+      includeAttributeFacets: true
+    };
+
+    // Agregar sortBy solo si está definido
+    if (params.sortBy) {
+      advancedParams.sortBy = params.sortBy;
+    }
+
+    // Agregar priceRange solo si está definido
+    if (params.priceRange) {
+      advancedParams.priceRange = params.priceRange;
+    }
+
+    // Convertir category (string) a categoryIds (number[])
+    if (params.category) {
+      const categoryId = parseInt(params.category, 10);
+      if (!isNaN(categoryId)) {
+        advancedParams.categoryIds = [categoryId];
+      }
+    }
+
+    // Procesar filtros activos
+    if (params.filters) {
+      // BrandIds
+      if (params.filters['brand']) {
+        advancedParams.brandIds = params.filters['brand']
+          .map(id => parseInt(id, 10))
+          .filter(id => !isNaN(id));
+      }
+
+      // CategoryIds
+      if (params.filters['category']) {
+        advancedParams.categoryIds = params.filters['category']
+          .map(id => parseInt(id, 10))
+          .filter(id => !isNaN(id));
+      }
+
+      // Rating
+      if (params.filters['rating'] && params.filters['rating'].length > 0) {
+        const ratingValue = params.filters['rating'][0];
+        if (ratingValue) {
+          const rating = parseInt(ratingValue, 10);
+          if (!isNaN(rating)) {
+            advancedParams.minAverageRating = rating;
+          }
+        }
+      }
+
+      // Atributos dinámicos (attr_*)
+      const attributes: Record<string, string[]> = {};
+      Object.entries(params.filters).forEach(([key, values]) => {
+        if (key.startsWith('attr_')) {
+          const attrId = key.replace('attr_', '');
+          attributes[attrId] = values;
+        }
+      });
+
+      if (Object.keys(attributes).length > 0) {
+        advancedParams.attributes = attributes;
+      }
+    }
+
+    // Rating desde params.rating
+    if (params.rating !== undefined) {
+      advancedParams.minAverageRating = params.rating;
+    }
+
+    return advancedParams;
   }
 
   /**
@@ -280,12 +378,54 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       filters: this.parseFilters(params)
     };
 
+    // Parsear brandIds si existe (puede venir como brandIds o filter_brand)
+    if (params['brandIds']) {
+      const brandIdsValue = Array.isArray(params['brandIds'])
+        ? params['brandIds']
+        : [params['brandIds']];
+      
+      // Agregar a filters como 'brand'
+      if (!searchParams.filters) {
+        searchParams.filters = {};
+      }
+      searchParams.filters['brand'] = brandIdsValue as string[];
+      console.log('🏷️ Brand filter from URL:', searchParams.filters['brand']);
+    }
+
+    // Parsear categoryIds si existe (puede venir como categoryIds o filter_category)
+    if (params['categoryIds']) {
+      const categoryIdsValue = Array.isArray(params['categoryIds'])
+        ? params['categoryIds']
+        : [params['categoryIds']];
+      
+      // Agregar a filters como 'category'
+      if (!searchParams.filters) {
+        searchParams.filters = {};
+      }
+      searchParams.filters['category'] = categoryIdsValue as string[];
+      console.log('📁 Category filter from URL:', searchParams.filters['category']);
+    }
+
     // Parsear rango de precio si existe
     if (params['minPrice'] || params['maxPrice']) {
       searchParams.priceRange = {
         min: parseFloat((params['minPrice'] as string) || '0'),
         max: parseFloat((params['maxPrice'] as string) || String(Number.MAX_VALUE))
       };
+    }
+
+    // Parsear rating mínimo si existe (puede venir como filter_rating o minRating)
+    if (params['filter_rating']) {
+      const ratingValue = Array.isArray(params['filter_rating'])
+        ? params['filter_rating'][0]
+        : params['filter_rating'];
+      if (ratingValue) {
+        searchParams.rating = parseFloat(ratingValue as string);
+
+      }
+    } else if (params['minRating']) {
+      searchParams.rating = parseFloat(params['minRating'] as string);
+
     }
 
     return searchParams;
@@ -355,12 +495,14 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
     this.loadingMore.set(true);
 
+    // Convertir a AdvancedSearchParams
+    const advancedParams = this.convertToAdvancedParams(searchParams);
+
     this.productSearchService
-      .searchProducts(searchParams)
+      .searchAdvanced(advancedParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('✨ Productos adicionales cargados:', response.products.length);
 
           // Agregar productos nuevos al final de la lista existente
           const currentProducts = this.products();
@@ -372,7 +514,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           this.loadingMore.set(false);
         },
         error: (err) => {
-          console.error('💥 Error cargando más productos:', err);
+
           this.loadingMore.set(false);
         }
       });
@@ -408,5 +550,58 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       // No usamos 'merge' para que reemplace completamente los params
       // Esto permite limpiar filtros correctamente
     });
+  }
+
+  /**
+   * Agregar producto al carrito
+   */
+  addToCart(product: Product): void {
+    if (!product.availability.inStock) {
+      this.snackBar.open('Product is out of stock', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top',
+        panelClass: ['error-snackbar']
+      });
+      return;
+    }
+
+    // Agregar al carrito
+    this.cartService.addToCart({
+      id: product.id,
+      name: product.title,
+      price: product.price.current,
+      currency: product.price.currency,
+      imageUrl: product.images.main,
+      brand: product.brand,
+      inStock: product.availability.inStock
+    });
+
+    // Mostrar confirmación
+    const message = this.translateService.instant('CART.PRODUCT_ADDED') || 'Product added to cart';
+    const action = this.translateService.instant('CART.VIEW_CART') || 'View Cart';
+    
+    const snackBarRef = this.snackBar.open(message, action, {
+      duration: 5000,
+      horizontalPosition: 'end',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar']
+    });
+
+    // Si hace clic en "View Cart", navegar al carrito
+    snackBarRef.onAction().subscribe(() => {
+      this.router.navigate(['/cart']);
+    });
+
+    console.log('🛒 Product added to cart:', product.title);
+  }
+
+  /**
+   * Reintentar búsqueda después de un error
+   */
+  retry(): void {
+    if (this.currentSearchParams) {
+      this.performSearch(this.currentSearchParams);
+    }
   }
 }

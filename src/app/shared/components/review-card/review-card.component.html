@@ -1,0 +1,65 @@
+<div class="review-card">
+  <div class="review-header">
+    <div class="rating-section">
+      <div class="stars">
+        @for (star of getStarArray(); track $index) {
+          <mat-icon 
+            class="star-icon"
+            [class.filled]="$index < review.rating"
+            [class.empty]="$index >= review.rating">
+            {{ getStarIcon($index) }}
+          </mat-icon>
+        }
+      </div>
+      @if (review.isVerifiedPurchase) {
+        <mat-chip class="verified-chip" color="primary">
+          <mat-icon class="verified-icon">verified</mat-icon>
+          Compra verificada
+        </mat-chip>
+      }
+    </div>
+    <div class="review-meta">
+      <span class="review-date" [title]="getFormattedDate()">{{ getTimeAgo() }}</span>
+    </div>
+  </div>
+
+  @if (review.title) {
+    <h3 class="review-title">{{ review.title }}</h3>
+  }
+
+  @if (review.comment) {
+    <p class="review-comment">{{ review.comment }}</p>
+  }
+
+  <div class="review-footer">
+    <div class="helpful-section">
+      <span class="helpful-label">¿Te resultó útil esta opinión?</span>
+      <div class="helpful-buttons">
+        <button
+          mat-button
+          class="helpful-button"
+          [class.active]="userHasMarkedHelpful"
+          [disabled]="userHasMarkedHelpful || userHasMarkedNotHelpful"
+          (click)="onHelpfulClick()"
+          aria-label="Marcar como útil">
+          <mat-icon>thumb_up</mat-icon>
+          <span class="count">{{ review.helpfulCount > 0 ? review.helpfulCount : '' }}</span>
+        </button>
+        <button
+          mat-button
+          class="helpful-button"
+          [class.active]="userHasMarkedNotHelpful"
+          [disabled]="userHasMarkedHelpful || userHasMarkedNotHelpful"
+          (click)="onNotHelpfulClick()"
+          aria-label="Marcar como no útil">
+          <mat-icon>thumb_down</mat-icon>
+          <span class="count">{{ review.notHelpfulCount > 0 ? review.notHelpfulCount : '' }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (showDivider) {
+    <mat-divider class="review-divider"></mat-divider>
+  }
+</div>

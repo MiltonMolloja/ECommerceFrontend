@@ -7,6 +7,11 @@ export * from './common/data-collection.model';
 
 // Catalog
 export * from './catalog/product.model';
+export * from './catalog/category.model';
+export * from './catalog.model';
+
+// Home
+export * from './home.model';
 
 // Customer
 export * from './customer/client.model';
@@ -16,3 +21,4 @@ export * from './order/order.model';
 
 // Identity
 export * from './identity/user.model';
+export * from './catalog/review.model';

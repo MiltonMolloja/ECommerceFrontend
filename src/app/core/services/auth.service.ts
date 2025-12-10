@@ -174,7 +174,7 @@ export class AuthService {
         email: payload.email || ''
       };
     } catch (error) {
-      console.error('Error parsing token:', error);
+
       return null;
     }
   }

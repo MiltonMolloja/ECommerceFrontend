@@ -1,0 +1,40 @@
+<div class="search-suggestions-container">
+  <!-- Did You Mean? -->
+  @if (didYouMean()) {
+    <div class="did-you-mean">
+      <mat-icon class="suggestion-icon">auto_fix_high</mat-icon>
+      <span class="suggestion-label">{{ 'SEARCH_SUGGESTIONS.DID_YOU_MEAN' | translate }}</span>
+      <button
+        mat-button
+        class="suggestion-button"
+        (click)="onDidYouMeanClick()"
+      >
+        <strong>{{ didYouMean() }}</strong>
+      </button>
+      <span class="suggestion-hint">{{ 'SEARCH_SUGGESTIONS.INSTEAD_OF' | translate }} <em>"{{ currentQuery() }}"</em></span>
+    </div>
+  }
+
+  <!-- Related Searches -->
+  @if (relatedSearches() && relatedSearches().length > 0) {
+    <div class="related-searches">
+      <div class="related-header">
+        <mat-icon class="related-icon">saved_search</mat-icon>
+        <span class="related-label">{{ 'SEARCH_SUGGESTIONS.RELATED_SEARCHES' | translate }}</span>
+      </div>
+      <div class="related-chips">
+        @for (search of relatedSearches(); track $index) {
+          <mat-chip
+            class="related-chip"
+            (click)="onRelatedSearchClick(search)"
+            [attr.role]="'button'"
+            [attr.tabindex]="0"
+          >
+            <mat-icon>search</mat-icon>
+            {{ search }}
+          </mat-chip>
+        }
+      </div>
+    </div>
+  }
+</div>

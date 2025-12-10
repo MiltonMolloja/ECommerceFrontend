@@ -1,0 +1,39 @@
+<div class="product-specifications" *ngIf="specificationGroups().length > 0">
+  <h2 class="section-title">Especificaciones Técnicas</h2>
+
+  <mat-accordion class="specifications-accordion" multi>
+    <mat-expansion-panel
+      *ngFor="let group of specificationGroups(); let first = first"
+      [expanded]="group.isExpanded"
+      class="specification-group"
+    >
+      <!-- Panel Header -->
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon class="group-icon">info</mat-icon>
+          <span class="group-name">{{ group.groupName }}</span>
+        </mat-panel-title>
+        <mat-panel-description>
+          <span class="specs-count">{{ group.specifications.length }} especificaciones</span>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <!-- Panel Content -->
+      <div class="specifications-table">
+        <div
+          *ngFor="let spec of group.specifications"
+          class="specification-row"
+        >
+          <div class="spec-label">{{ spec.label }}</div>
+          <div class="spec-value">{{ formatValue(spec.value) }}</div>
+        </div>
+      </div>
+    </mat-expansion-panel>
+  </mat-accordion>
+</div>
+
+<!-- Empty State -->
+<div class="empty-state" *ngIf="specificationGroups().length === 0">
+  <mat-icon class="empty-icon">info_outline</mat-icon>
+  <p class="empty-message">No hay especificaciones técnicas disponibles</p>
+</div>

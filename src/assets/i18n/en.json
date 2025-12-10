@@ -85,5 +85,48 @@
     "ENGLISH": "English",
     "SELECT_LANGUAGE": "Select language",
     "LANGUAGE_SETTINGS": "Language"
+  },
+  "SEARCH_SUGGESTIONS": {
+    "DID_YOU_MEAN": "Did you mean",
+    "INSTEAD_OF": "instead of",
+    "RELATED_SEARCHES": "Related searches",
+    "NO_SUGGESTIONS": "No suggestions available"
+  },
+  "SEARCH": {
+    "PLACEHOLDER": "Search for products, brands and more...",
+    "BUTTON": "Search",
+    "RECENT_SEARCHES": "Recent searches",
+    "CLEAR_HISTORY": "Clear history",
+    "NO_SUGGESTIONS": "No suggestions",
+    "POPULAR_SEARCHES": "Popular searches",
+    "SUGGESTIONS": "Suggestions",
+    "PRODUCTS": "Products",
+    "CATEGORIES": "Categories"
+  },
+  "SHARE_SEARCH": {
+    "TOOLTIP": "Share search",
+    "COPIED": "Link copied to clipboard",
+    "ERROR": "Could not copy link"
+  },
+  "SAVED_SEARCHES": {
+    "TITLE": "Saved Searches",
+    "CLEAR_ALL": "Delete all",
+    "EMPTY_STATE": "You have no saved searches",
+    "EMPTY_HINT": "Save your favorite searches for quick access",
+    "SAVE_CURRENT": "Save current search",
+    "DIALOG": {
+      "TITLE": "Save Search",
+      "NAME_LABEL": "Search name",
+      "NAME_PLACEHOLDER": "E.g: Budget gaming laptops",
+      "NO_QUERY": "All products",
+      "FILTERS": "filter(s) applied",
+      "HINT": "Give it a descriptive name to find it easily later."
+    }
+  },
+  "CART": {
+    "PRODUCT_ADDED": "Product added to cart",
+    "VIEW_CART": "View Cart",
+    "OUT_OF_STOCK": "This product is out of stock",
+    "CLOSE": "Close"
   }
 }

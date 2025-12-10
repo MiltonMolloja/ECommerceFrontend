@@ -1,0 +1,16 @@
+.share-button {
+  mat-icon {
+    color: var(--mat-text-secondary, #666);
+  }
+
+  &:hover:not([disabled]) {
+    mat-icon {
+      color: var(--mat-primary, #ff9900);
+    }
+  }
+
+  &[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

@@ -68,7 +68,7 @@ export class CartComponent {
       .onAction()
       .subscribe(() => {
         // TODO: Implementar deshacer
-        console.log('Deshacer remover item');
+
       });
   }
 

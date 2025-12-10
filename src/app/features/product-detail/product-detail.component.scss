@@ -1,0 +1,361 @@
+// Container principal
+.product-detail-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+  min-height: 100vh;
+}
+
+// Loading State
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 40px;
+
+  .loading-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+
+    .loading-text {
+      margin: 0;
+      font-size: 18px;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 500;
+    }
+  }
+}
+
+// Error State
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 24px;
+
+  .error-card {
+    max-width: 500px;
+    padding: 40px;
+    text-align: center;
+
+    .error-icon {
+      font-size: 64px;
+      width: 64px;
+      height: 64px;
+      color: #d32f2f;
+      margin: 0 auto 24px;
+    }
+
+    .error-title {
+      margin: 0 0 16px 0;
+      font-size: 24px;
+      font-weight: 500;
+      color: rgba(0, 0, 0, 0.87);
+    }
+
+    .error-message {
+      margin: 0 0 32px 0;
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.6);
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+
+      button {
+        min-width: 120px;
+      }
+    }
+  }
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  margin-bottom: 16px;
+
+  .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    .breadcrumb-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+
+      .breadcrumb-link {
+        color: var(--mat-primary-color, #1976d2);
+        text-decoration: none;
+        transition: color 0.2s ease;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+      .breadcrumb-current {
+        color: rgba(0, 0, 0, 0.87);
+        font-weight: 500;
+      }
+
+      .breadcrumb-separator {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: rgba(0, 0, 0, 0.38);
+      }
+    }
+  }
+}
+
+// Back Button Mobile
+.back-button-mobile {
+  display: none;
+  margin-bottom: 16px;
+}
+
+// Main Grid Layout
+.product-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  margin-bottom: 40px;
+
+  .images-column {
+    position: relative;
+  }
+
+  .info-column {
+    position: relative;
+  }
+}
+
+// Section Divider
+.section-divider {
+  margin: 40px 0;
+}
+
+// Sections
+.description-section,
+.specifications-section,
+.reviews-section {
+  margin-bottom: 40px;
+
+  mat-card {
+    mat-card-header {
+      margin-bottom: 16px;
+
+      mat-card-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: var(--text-primary, rgba(0, 0, 0, 0.87));
+        margin: 0;
+      }
+    }
+
+    mat-card-content {
+      .description-text {
+        font-size: 16px;
+        line-height: 1.6;
+        color: var(--text-primary, rgba(0, 0, 0, 0.87));
+        margin: 0;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+      }
+    }
+  }
+}
+
+// Dark theme support for description
+:host-context(.dark-theme) {
+  .description-section {
+    mat-card {
+      background-color: var(--card-bg);
+
+      mat-card-header {
+        mat-card-title {
+          color: var(--text-primary);
+        }
+      }
+
+      mat-card-content {
+        .description-text {
+          color: var(--text-primary);
+        }
+      }
+    }
+  }
+}
+
+// Sticky Cart Mobile
+.sticky-cart-mobile {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  padding: 12px 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+
+  .sticky-cart-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    .sticky-price {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .price-label {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.6);
+      }
+
+      .price-value {
+        font-size: 20px;
+        font-weight: 600;
+        color: #d32f2f;
+      }
+    }
+
+    .sticky-cart-button {
+      flex-shrink: 0;
+      min-width: 140px;
+      height: 44px;
+      font-size: 16px;
+      font-weight: 600;
+      gap: 8px;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 599px) {
+  .product-detail-container {
+    padding: 12px;
+    padding-bottom: 80px; // Space for sticky cart
+  }
+
+  .breadcrumbs {
+    display: none; // Hide breadcrumbs on mobile
+  }
+
+  .back-button-mobile {
+    display: inline-flex;
+  }
+
+  .product-detail-grid {
+    gap: 20px;
+    margin-bottom: 32px;
+  }
+
+  .section-divider {
+    margin: 32px 0;
+  }
+
+  .description-section,
+  .specifications-section,
+  .reviews-section {
+    margin-bottom: 32px;
+
+    mat-card {
+      mat-card-header {
+        mat-card-title {
+          font-size: 20px;
+        }
+      }
+
+      mat-card-content {
+        .description-text {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .sticky-cart-mobile {
+    display: block;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 959px) {
+  .product-detail-container {
+    padding: 20px;
+  }
+
+  .product-detail-grid {
+    gap: 28px;
+  }
+}
+
+@media (min-width: 960px) {
+  .product-detail-container {
+    padding: 32px;
+  }
+
+  .product-detail-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .breadcrumbs {
+    margin-bottom: 24px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .product-detail-grid {
+    grid-template-columns: 55% 45%;
+    gap: 48px;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.product-detail-container {
+  animation: fadeIn 0.3s ease-out;
+}
+
+// Print styles
+@media print {
+  .breadcrumbs,
+  .back-button-mobile,
+  .sticky-cart-mobile,
+  .reviews-section {
+    display: none;
+  }
+
+  .product-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}

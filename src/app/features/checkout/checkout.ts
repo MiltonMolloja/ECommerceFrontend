@@ -224,9 +224,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       await this.mercadoPagoService.initialize();
       this.identificationTypes = await this.mercadoPagoService.getIdentificationTypes();
-      console.log('Loaded identification types:', this.identificationTypes);
+
     } catch (error) {
-      console.error('Error initializing MercadoPago:', error);
+
       this.snackBar.open('Error al inicializar el servicio de pagos', '', {
         duration: 5000,
         horizontalPosition: 'end',
@@ -245,13 +245,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       const methods = await this.mercadoPagoService.getPaymentMethods(bin);
       if (methods && methods.results && methods.results.length > 0) {
         const method = methods.results[0];
-        if (method && method.id && method.name) {
+        if (method && typeof method.id === 'string' && typeof method.name === 'string') {
           this.paymentMethodInfo = { id: method.id, name: method.name };
-          console.log('Payment method detected:', this.paymentMethodInfo);
+
         }
       }
     } catch (error) {
-      console.error('Error detecting payment method:', error);
+
     }
   }
 
@@ -325,12 +325,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * Place order - Main checkout flow
    */
   async placeOrder(): Promise<void> {
-    console.log('=== CHECKOUT FLOW STARTED ===');
+
     const currentUser = this.authService.currentUser();
 
     // Verify authentication
     if (!currentUser) {
-      console.log('❌ User not authenticated');
+
       this.snackBar.open('Sesión expirada. Por favor inicie sesión nuevamente.', '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -346,7 +346,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     // Validate cart has items
     if (this.items().length === 0) {
-      console.log('❌ Cart is empty');
+
       this.snackBar.open('No hay productos en el carrito', '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -359,36 +359,28 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     try {
       // Step 1: Create order with address information (ClientId is extracted from JWT token in backend)
-      console.log('📦 STEP 1: Creating order...');
+
       await this.createOrder();
-      console.log('✅ STEP 1: Order created successfully with OrderId:', this.createdOrderId);
 
       // Step 2: Tokenize card with MercadoPago
-      console.log('💳 STEP 2: Tokenizing card with MercadoPago...');
+
       const token = await this.tokenizeCard();
-      console.log('✅ STEP 2: Card tokenized successfully, token:', token);
 
       // Step 3: Process payment with token
-      console.log('💰 STEP 3: Processing payment...');
-      console.log('Payment request data:', {
-        orderId: this.createdOrderId,
-        token: token,
-        paymentMethodId: this.paymentMethodInfo?.id || 'credit_card',
-        installments: 1
-      });
+
+
       await this.processPayment(token);
-      console.log('✅ STEP 3: Payment processed successfully');
 
       // Success - navigate to confirmation
-      console.log('🎉 All steps completed successfully, navigating to confirmation...');
+
       this.handleOrderSuccess();
     } catch (error: unknown) {
-      console.error('❌ ERROR in checkout flow:', error);
+
       this.handleOrderError(error);
     } finally {
       this.isProcessing = false;
       this.pendingOrderAfterLogin = false;
-      console.log('=== CHECKOUT FLOW ENDED ===');
+
     }
   }
 
@@ -430,14 +422,14 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         next: (response) => {
           if (response.success && response.orderId) {
             this.createdOrderId = response.orderId;
-            console.log('Order created successfully with OrderId:', this.createdOrderId);
+
             resolve();
           } else {
             reject(new Error(response.message || 'Error al crear la orden'));
           }
         },
         error: (error) => {
-          console.error('Error creating order:', error);
+
           reject(error);
         }
       });
@@ -462,10 +454,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     try {
       const token = await this.mercadoPagoService.createCardToken(cardForm);
-      console.log('Card tokenized successfully');
+
       return token.id;
     } catch (error) {
-      console.error('Error tokenizing card:', error);
+
       throw new Error('Error al procesar la información de la tarjeta');
     }
   }
@@ -478,12 +470,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.log('💰 processPayment() called with token:', token);
 
       if (!this.createdOrderId) {
-        console.error('❌ No OrderId found! this.createdOrderId:', this.createdOrderId);
+
         reject(new Error('No se encontró el ID de la orden'));
         return;
       }
-
-      console.log('✅ OrderId found:', this.createdOrderId);
 
       // Get billing address (use shipping if billingSameAsShipping is true)
       const billingSameAsShipping = this.paymentForm.get('billingSameAsShipping')?.value;
@@ -502,27 +492,20 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         billingZipCode: billingAddress.zipCode || ''
       };
 
-      console.log('🚀 Sending payment request to backend:', paymentRequest);
-
       this.paymentService.processPayment(paymentRequest).subscribe({
         next: (response) => {
-          console.log('📨 Payment response received:', response);
+
           if (response.success) {
-            console.log('✅ Payment processed successfully');
+
             resolve();
           } else {
-            console.error('❌ Payment failed:', response.message);
+
             reject(new Error(response.message || 'Error al procesar el pago'));
           }
         },
         error: (error) => {
-          console.error('❌ HTTP Error processing payment:', error);
-          console.error('Error details:', {
-            status: error.status,
-            statusText: error.statusText,
-            message: error.message,
-            error: error.error
-          });
+
+
           reject(error);
         }
       });
@@ -558,7 +541,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * Handle order errors
    */
   private handleOrderError(error: unknown): void {
-    console.error('Error during checkout:', error);
 
     const err = error as { error?: { message?: string; error?: string }; message?: string };
     const errorMessage =

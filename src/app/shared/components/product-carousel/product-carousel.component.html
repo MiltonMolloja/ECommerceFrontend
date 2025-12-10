@@ -1,55 +1,104 @@
 <section class="product-carousel">
   <div class="carousel-header">
-    <h2>{{ title }}</h2>
+    @if (viewAllLink()) {
+      <a [routerLink]="viewAllLink()" class="view-all-link">
+        Ver todos
+        <mat-icon>arrow_forward</mat-icon>
+      </a>
+    }
     <div class="nav-buttons">
-      <button mat-icon-button class="nav-btn" (click)="scrollLeft()" aria-label="Anterior">
+      <button 
+        mat-icon-button 
+        class="nav-btn" 
+        (click)="scrollLeft()" 
+        [disabled]="products().length === 0"
+        aria-label="Anterior"
+      >
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button mat-icon-button class="nav-btn" (click)="scrollRight()" aria-label="Siguiente">
+      <button 
+        mat-icon-button 
+        class="nav-btn" 
+        (click)="scrollRight()" 
+        [disabled]="products().length === 0"
+        aria-label="Siguiente"
+      >
         <mat-icon>chevron_right</mat-icon>
       </button>
     </div>
   </div>
 
-  <div class="carousel-track" #carouselTrack>
-    @for (product of products; track trackByIndex($index)) {
-      @if (isProductCard(product)) {
-        <mat-card class="product-card">
+  @if (products().length > 0) {
+    <div class="carousel-track" #carouselTrack>
+      @for (product of products(); track trackByProductId($index, product)) {
+        <mat-card 
+          class="product-card"
+          [routerLink]="getProductLink(product)"
+        >
           <div class="product-image-container">
-            <img [src]="product.image" [alt]="product.name" class="product-image" />
-          </div>
-          <mat-card-content class="product-content">
-            <h3 class="product-name">{{ product.name }}</h3>
-            <div class="rating">
-              @for (star of getStars(product.rating); track $index) {
-                <mat-icon class="star" [class.filled]="star === 1">star</mat-icon>
-              }
-              <span class="reviews">({{ product.reviews }})</span>
-            </div>
-            <div class="prices">
-              <span class="price">${{ product.price.toFixed(2) }}</span>
-              @if (product.originalPrice) {
-                <span class="original-price">${{ product.originalPrice.toFixed(2) }}</span>
-              }
-            </div>
-            @if (product.originalPrice) {
-              <div class="discount">
-                Save ${{ (product.originalPrice - product.price).toFixed(2) }} ({{
-                  getDiscount(product)
-                }}% off)
+            <img 
+              [src]="getProductImage(product)" 
+              [alt]="product.name" 
+              class="product-image"
+              loading="lazy"
+            />
+            @if (hasDiscount(product)) {
+              <div class="discount-badge">
+                -{{ getDiscountPercentage(product) }}%
               </div>
             }
-            <button mat-raised-button class="add-to-cart">
+          </div>
+          
+          <mat-card-content class="product-content">
+            <h3 class="product-name" [title]="product.name">
+              {{ product.name }}
+            </h3>
+            
+            @if (product.averageRating && product.averageRating > 0) {
+              <div class="rating">
+                @for (star of getStars(product.averageRating); track $index) {
+                  <mat-icon class="star" [class.filled]="star === 1">
+                    {{ star === 1 ? 'star' : 'star_border' }}
+                  </mat-icon>
+                }
+                @if (product.totalReviews && product.totalReviews > 0) {
+                  <span class="reviews">({{ product.totalReviews }})</span>
+                }
+              </div>
+            }
+            
+            <div class="prices">
+              <span class="price">${{ product.price.toFixed(2) }}</span>
+              @if (hasDiscount(product)) {
+                <span class="original-price">
+                  ${{ getOriginalPrice(product).toFixed(2) }}
+                </span>
+              }
+            </div>
+            
+            @if (hasDiscount(product)) {
+              <div class="savings">
+                Ahorrás ${{ getSavings(product).toFixed(2) }}
+              </div>
+            }
+            
+            <button 
+              mat-raised-button 
+              color="primary"
+              class="add-to-cart"
+              (click)="onAddToCart(product, $event)"
+            >
               <mat-icon>shopping_cart</mat-icon>
-              Add to Cart
+              Agregar al carrito
             </button>
           </mat-card-content>
         </mat-card>
-      } @else {
-        <a [routerLink]="product.link || '/catalog'" class="product-item-simple">
-          <img [src]="product.image" alt="Producto" />
-        </a>
       }
-    }
-  </div>
+    </div>
+  } @else {
+    <div class="empty-state">
+      <mat-icon>inventory_2</mat-icon>
+      <p>No hay productos disponibles</p>
+    </div>
+  }
 </section>

@@ -35,7 +35,7 @@ export class OrdersList implements OnInit {
         this.loading.set(false);
       },
       error: (error) => {
-        console.error('Error loading orders:', error);
+
         this.loading.set(false);
       }
     });

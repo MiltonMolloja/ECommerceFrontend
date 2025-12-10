@@ -1,0 +1,90 @@
+<div class="category-tree-container">
+  <!-- Header con acciones -->
+  <div class="tree-header">
+    <h3 class="tree-title">Categorías</h3>
+    <div class="tree-actions">
+      <button mat-icon-button (click)="expandAll()" matTooltip="Expandir todo">
+        <mat-icon>unfold_more</mat-icon>
+      </button>
+      <button mat-icon-button (click)="collapseAll()" matTooltip="Colapsar todo">
+        <mat-icon>unfold_less</mat-icon>
+      </button>
+      <button mat-icon-button (click)="refresh()" matTooltip="Actualizar">
+        <mat-icon>refresh</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  @if (loading()) {
+    <div class="loading-container">
+      <p>Cargando categorías...</p>
+    </div>
+  }
+
+  <!-- Error state -->
+  @else if (error()) {
+    <div class="error-container">
+      <mat-icon color="warn">error</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-button (click)="refresh()">Reintentar</button>
+    </div>
+  }
+
+  <!-- Árbol de categorías -->
+  @else {
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="category-tree">
+      <!-- Nodo hoja (sin hijos) -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle class="tree-node">
+        <button mat-button 
+                class="category-button" 
+                (click)="navigateToCategory(node, $event)">
+          <mat-icon class="tree-icon">label</mat-icon>
+          <span class="category-name">{{ node.name }}</span>
+          @if (node.productCount > 0) {
+            <span class="product-count">({{ node.productCount }})</span>
+          }
+        </button>
+      </mat-tree-node>
+
+      <!-- Nodo con hijos -->
+      <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" class="tree-node">
+        <div class="tree-node-wrapper">
+          <button mat-icon-button 
+                  matTreeNodeToggle 
+                  [attr.aria-label]="'Expandir/Colapsar ' + node.name"
+                  class="expand-button">
+            <mat-icon class="expand-icon">
+              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
+            </mat-icon>
+          </button>
+          
+          <button mat-button 
+                  class="category-button" 
+                  (click)="navigateToCategory(node, $event)">
+            <mat-icon class="tree-icon">folder</mat-icon>
+            <span class="category-name">{{ node.name }}</span>
+            @if (node.productCount > 0) {
+              <span class="product-count">({{ node.productCount }})</span>
+            }
+          </button>
+        </div>
+
+        <!-- Subcategorías -->
+        @if (treeControl.isExpanded(node)) {
+          <div class="tree-children" role="group">
+            <ng-container matTreeNodeOutlet></ng-container>
+          </div>
+        }
+      </mat-nested-tree-node>
+    </mat-tree>
+
+    <!-- Empty state -->
+    @if (categories().length === 0) {
+      <div class="empty-state">
+        <mat-icon>category</mat-icon>
+        <p>No hay categorías disponibles</p>
+      </div>
+    }
+  }
+</div>

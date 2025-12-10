@@ -1,0 +1,722 @@
+import { Injectable, inject, effect } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, BehaviorSubject, map, catchError, throwError } from 'rxjs';
+import { Product, ProductListResponse, SearchParams, FilterOption, FilterType } from '../models';
+import { AdvancedSearchParams } from '../models/search-params.model';
+import { AdvancedProductListResponse } from '../models/product.model';
+import { SearchFacets, SearchMetadata } from '../models/facets.model';
+import { LanguageService } from '../../../core/services/language.service';
+import { FacetMapperService } from './facet-mapper.service';
+
+interface BackendProductItem {
+  productId?: string;
+  id?: string;
+  name?: string;
+  title?: string;
+  description?: string;
+  brand?: { name?: string; id?: string; brandId?: string };
+  brandName?: string;
+  brandId?: string;
+  category?: { name?: string; id?: string; categoryId?: string };
+  categoryName?: string;
+  categoryId?: string;
+  price?: number;
+  currentPrice?: number;
+  originalPrice?: number;
+  currency?: string;
+  discount?: number;
+  discountPercentage?: number;
+  rating?: number;
+  averageRating?: number;
+  reviewCount?: number;
+  ratingCount?: number;
+  imageUrls?: string[];
+  imageUrl?: string;
+  mainImage?: string;
+  image?: string;
+  images?: string[];
+  largeImage?: string;
+  thumbnails?: string[];
+  inStock?: boolean;
+  stock?: number;
+  stockQuantity?: number;
+  deliveryDate?: string;
+  features?: string[];
+  specifications?: Record<string, string>;
+  isPrime?: boolean;
+  isSponsored?: boolean;
+  isFeatured?: boolean;
+  seller?: {
+    id?: string;
+    name?: string;
+    rating?: number;
+  };
+}
+
+interface BrandMetadata {
+  brand: string;
+  count: number;
+  id?: string;
+  brandId?: string;
+  name?: string;
+  brandName?: string;
+  productCount?: number;
+}
+
+interface BackendMetadata {
+  availableBrands?: BrandMetadata[];
+}
+
+interface BackendSearchResponse {
+  items?: BackendProductItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  hasMore?: boolean;
+  metadata?: BackendMetadata;
+}
+
+interface BackendAdvancedSearchResponse {
+  items?: BackendProductItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  pageCount?: number;
+  hasMore?: boolean;
+  facets?: SearchFacets;
+  metadata?: {
+    query?: string;
+    performance?: {
+      queryExecutionTime?: number;
+      facetCalculationTime?: number;
+      totalExecutionTime?: number;
+      totalFilteredResults?: number;
+      cacheHit?: boolean;
+    };
+    didYouMean?: string;
+    relatedSearches?: string[];
+  };
+}
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductSearchService {
+  private http = inject(HttpClient);
+  private languageService = inject(LanguageService);
+  private facetMapper = inject(FacetMapperService);
+  private readonly API_URL = '/api/products';
+
+  // Estado reactivo
+  private searchParamsSubject = new BehaviorSubject<SearchParams>({
+    page: 1,
+    pageSize: 24
+  });
+
+  public searchParams$ = this.searchParamsSubject.asObservable();
+
+  // Callback para notificar cuando se debe recargar la búsqueda
+  private reloadCallback?: () => void;
+
+  constructor() {
+    // Watch for language changes and trigger reload
+    effect(() => {
+      const languageChanged = this.languageService.languageChanged();
+      if (languageChanged > 0 && this.reloadCallback) {
+        console.log('🌐 Language changed, reloading products...');
+        this.reloadCallback();
+      }
+    });
+  }
+
+  /**
+   * Register a callback to be called when products should be reloaded
+   */
+  onLanguageChangeReload(callback: () => void): void {
+    this.reloadCallback = callback;
+  }
+
+  /**
+   * Buscar productos con parámetros
+   */
+  searchProducts(params: SearchParams): Observable<ProductListResponse> {
+    const httpParams = this.buildHttpParams(params);
+
+    console.log('🔍 Buscando productos con params:', httpParams.toString());
+    console.log('🌐 Idioma actual:', this.languageService.currentLanguage());
+
+    return this.http
+      .get<BackendSearchResponse>(`${this.API_URL}/search`, {
+        params: httpParams,
+        headers: {
+          Accept: 'application/json'
+        }
+      })
+      .pipe(
+        map((response) => {
+          console.log('✅ Respuesta del backend:', response);
+          return this.transformResponse(response);
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   * Búsqueda avanzada con facetas dinámicas
+   */
+  searchAdvanced(params: AdvancedSearchParams): Observable<AdvancedProductListResponse> {
+    const body = this.buildAdvancedSearchBody(params);
+
+    console.log('🔍 Búsqueda avanzada con params:', body);
+    console.log('🌐 Idioma actual:', this.languageService.currentLanguage());
+
+    return this.http
+      .post<BackendAdvancedSearchResponse>(`${this.API_URL}/search/advanced`, body, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      .pipe(
+        map((response) => {
+          console.log('✅ Respuesta avanzada del backend:', response);
+          console.log('📊 Facetas recibidas:', response.facets);
+          console.log('⚡ Performance:', response.metadata?.performance);
+          return this.transformAdvancedResponse(response, params);
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   * Obtener producto por ID
+   */
+  getProductById(id: string): Observable<Product> {
+    return this.http.get<Product>(`${this.API_URL}/${id}`);
+  }
+
+  /**
+   * Obtener filtros disponibles para una búsqueda
+   */
+  getAvailableFilters(query: string, category?: string): Observable<FilterOption[]> {
+    const params = new HttpParams().set('query', query).set('category', category || '');
+
+    return this.http.get<FilterOption[]>(`${this.API_URL}/filters`, { params });
+  }
+
+  /**
+   * Actualizar parámetros de búsqueda
+   */
+  updateSearchParams(params: Partial<SearchParams>): void {
+    const current = this.searchParamsSubject.value;
+    this.searchParamsSubject.next({ ...current, ...params });
+  }
+
+  /**
+   * Construir HttpParams desde SearchParams - Formato de API Backend
+   */
+  private buildHttpParams(params: SearchParams): HttpParams {
+    let httpParams = new HttpParams()
+      .set('Page', params.page.toString())
+      .set('PageSize', params.pageSize.toString());
+
+    // Query de búsqueda (Query con mayúscula)
+    if (params.query) {
+      httpParams = httpParams.set('Query', params.query);
+    }
+
+    // CategoryId
+    if (params.category) {
+      httpParams = httpParams.set('CategoryId', params.category);
+    }
+
+    // SortBy y SortOrder
+    if (params.sortBy) {
+      const sortConfig = this.mapSortOption(params.sortBy);
+      httpParams = httpParams
+        .set('SortBy', sortConfig.sortBy)
+        .set('SortOrder', sortConfig.sortOrder);
+    }
+
+    // Filtros específicos
+    if (params.filters) {
+      // BrandIds (pueden ser múltiples separados por coma)
+      if (params.filters['brand'] && params.filters['brand'].length > 0) {
+        httpParams = httpParams.set('BrandIds', params.filters['brand'].join(','));
+      }
+
+      // InStock
+      if (params.filters['inStock'] && params.filters['inStock'][0]) {
+        httpParams = httpParams.set('InStock', params.filters['inStock'][0]);
+      }
+
+      // IsFeatured
+      if (params.filters['featured'] && params.filters['featured'][0]) {
+        httpParams = httpParams.set('IsFeatured', params.filters['featured'][0]);
+      }
+
+      // HasDiscount
+      if (params.filters['discount'] && params.filters['discount'][0]) {
+        httpParams = httpParams.set('HasDiscount', params.filters['discount'][0]);
+      }
+    }
+
+    // MinPrice y MaxPrice
+    if (params.priceRange) {
+      httpParams = httpParams
+        .set('MinPrice', params.priceRange.min.toString())
+        .set('MaxPrice', params.priceRange.max.toString());
+    }
+
+    // MinRating
+    if (params.rating) {
+      httpParams = httpParams.set('MinRating', params.rating.toString());
+    }
+
+    return httpParams;
+  }
+
+  /**
+   * Mapear SortOption a SortBy y SortOrder del backend
+   * SortOrder: 0 = Ascending, 1 = Descending
+   */
+  private mapSortOption(sortOption: string): { sortBy: string; sortOrder: string } {
+    const sortMap: Record<string, { sortBy: string; sortOrder: string }> = {
+      relevance: { sortBy: '0', sortOrder: '0' }, // Name, Ascending
+      price_asc: { sortBy: '2', sortOrder: '0' }, // Price, Ascending
+      price_desc: { sortBy: '2', sortOrder: '1' }, // Price, Descending
+      rating: { sortBy: '3', sortOrder: '1' }, // Rating, Descending
+      newest: { sortBy: '1', sortOrder: '1' }, // CreatedDate, Descending
+      best_seller: { sortBy: '0', sortOrder: '0' } // Name, Ascending (placeholder)
+    };
+
+    return sortMap[sortOption] || { sortBy: '0', sortOrder: '0' };
+  }
+
+  /**
+   * Transformar respuesta de la API del backend al modelo del frontend
+   */
+  private transformResponse(response: BackendSearchResponse): ProductListResponse {
+    console.log('🔄 Transformando respuesta. Total items:', response.total);
+    console.log('📊 Metadata disponible:', response.metadata);
+
+    // Mapear los productos del backend al formato del frontend
+    const products = (response.items || []).map((item) => this.mapProduct(item));
+
+    console.log('✨ Productos mapeados:', products.length);
+
+    return {
+      products: products,
+      pagination: {
+        currentPage: response.page || 1,
+        pageSize: response.pageSize || 24,
+        totalPages: Math.ceil((response.total || 0) / (response.pageSize || 24)),
+        totalItems: response.total || 0,
+        hasNext: response.hasMore || false,
+        hasPrevious: (response.page || 1) > 1
+      },
+      filters: this.generateFilters(products, response.metadata),
+      totalResults: response.total || 0,
+      searchQuery: ''
+    };
+  }
+
+  /**
+   * Generar filtros dinámicos basados en los productos y metadata
+   */
+  private generateFilters(products: Product[], metadata?: BackendMetadata): FilterOption[] {
+    const filters: FilterOption[] = [];
+
+    // Calcular rango de precios
+    if (products.length > 0) {
+      const prices = products.map((p) => p.price.current);
+      const minPrice = Math.floor(Math.min(...prices));
+      const maxPrice = Math.ceil(Math.max(...prices));
+
+      if (minPrice < maxPrice) {
+        filters.push({
+          id: 'price',
+          name: 'Precio',
+          type: FilterType.RANGE,
+          isExpanded: true,
+          options: [],
+          range: {
+            min: minPrice,
+            max: maxPrice,
+            step: 1,
+            selectedMin: minPrice,
+            selectedMax: maxPrice
+          }
+        });
+      }
+    }
+
+    // Usar marcas de metadata si están disponibles, sino extraer de productos
+    if (
+      metadata?.availableBrands &&
+      Array.isArray(metadata.availableBrands) &&
+      metadata.availableBrands.length > 0
+    ) {
+      console.log('📦 Usando marcas de metadata:', metadata.availableBrands);
+      console.log(
+        '📦 Primera marca completa:',
+        JSON.stringify(metadata.availableBrands[0], null, 2)
+      );
+
+      filters.push({
+        id: 'brand',
+        name: 'Marca',
+        type: FilterType.CHECKBOX,
+        isExpanded: true,
+        options: metadata.availableBrands.map((item) => {
+          console.log('🔍 Procesando marca:', item);
+
+          // La estructura del backend es: { brand: "Lenovo", count: 8 }
+          // donde "brand" es un string con el nombre de la marca
+          const brandName = typeof item.brand === 'string' ? item.brand : 'Sin nombre';
+
+          // Generar un ID basado en el nombre si no existe uno
+          const brandId =
+            item.id?.toString() ||
+            item.brandId?.toString() ||
+            brandName.toLowerCase().replace(/\s+/g, '-');
+
+          return {
+            id: brandId,
+            label: brandName,
+            count: item.count || item.productCount || 1,
+            isSelected: false
+          };
+        })
+      });
+    } else {
+      // Fallback: Extraer marcas únicas de los productos
+      console.log('⚠️ Metadata no disponible, extrayendo marcas de productos');
+
+      const brandsMap = new Map<string, { id: string; name: string; count: number }>();
+      products.forEach((p) => {
+        const brandId = p.brandId || p.brand.toLowerCase().replace(/\s+/g, '-');
+        const brandName = p.brand || 'Sin marca';
+
+        if (brandsMap.has(brandId)) {
+          const existing = brandsMap.get(brandId)!;
+          existing.count++;
+        } else {
+          brandsMap.set(brandId, {
+            id: brandId,
+            name: brandName,
+            count: 1
+          });
+        }
+      });
+
+      if (brandsMap.size > 0) {
+        filters.push({
+          id: 'brand',
+          name: 'Marca',
+          type: FilterType.CHECKBOX,
+          isExpanded: true,
+          options: Array.from(brandsMap.values()).map((brand) => ({
+            id: brand.id,
+            label: brand.name,
+            count: brand.count,
+            isSelected: false
+          }))
+        });
+      }
+    }
+
+    // Filtro de disponibilidad
+    filters.push({
+      id: 'inStock',
+      name: 'Disponibilidad',
+      type: FilterType.CHECKBOX,
+      isExpanded: true,
+      options: [
+        {
+          id: 'true',
+          label: 'En stock',
+          isSelected: false
+        }
+      ]
+    });
+
+    // Filtro de descuento
+    filters.push({
+      id: 'discount',
+      name: 'Ofertas',
+      type: FilterType.CHECKBOX,
+      isExpanded: true,
+      options: [
+        {
+          id: 'true',
+          label: 'Con descuento',
+          isSelected: false
+        }
+      ]
+    });
+
+    // Filtro de calificación
+    filters.push({
+      id: 'rating',
+      name: 'Calificación',
+      type: FilterType.CHECKBOX,
+      isExpanded: true,
+      options: [
+        {
+          id: '4',
+          label: '4 estrellas o más',
+          isSelected: false
+        },
+        {
+          id: '3',
+          label: '3 estrellas o más',
+          isSelected: false
+        },
+        {
+          id: '2',
+          label: '2 estrellas o más',
+          isSelected: false
+        }
+      ]
+    });
+
+    return filters;
+  }
+
+  /**
+   * Mapear un producto del backend al modelo del frontend
+   */
+  private mapProduct(item: BackendProductItem): Product {
+    // Build base product object
+    const product: Product = {
+      id: item.productId?.toString() || item.id?.toString() || '',
+      title: item.name || item.title || 'Sin título',
+      description: item.description || '',
+      brand: item.brand?.name || item.brandName || 'Sin marca',
+      category: item.category?.name || item.categoryName || 'Sin categoría',
+      price: {
+        current: item.price || item.currentPrice || 0,
+        currency: item.currency || 'USD',
+        ...(item.originalPrice !== undefined && { original: item.originalPrice }),
+        ...(item.discount !== undefined && { discount: item.discount }),
+        ...(item.discountPercentage !== undefined &&
+          !item.discount && { discount: item.discountPercentage })
+      },
+      rating: {
+        average: item.rating || item.averageRating || 0,
+        count: item.reviewCount || item.ratingCount || 0
+      },
+      images: {
+        main: this.getMainImage(item),
+        thumbnails: item.imageUrls || item.images || item.thumbnails || [],
+        ...(item.largeImage && { large: item.largeImage })
+      },
+      availability: {
+        inStock: item.inStock !== undefined ? item.inStock : item.stock ? item.stock > 0 : true,
+        ...(item.stock !== undefined && { quantity: item.stock }),
+        ...(item.stockQuantity !== undefined &&
+          item.stock === undefined && { quantity: item.stockQuantity }),
+        ...(item.deliveryDate && { deliveryDate: new Date(item.deliveryDate) })
+      },
+      features: item.features || [],
+      specifications: item.specifications || {},
+      ...(item.brandId && { brandId: item.brandId.toString() }),
+      ...(item.brand?.id && !item.brandId && { brandId: item.brand.id.toString() }),
+      ...(item.brand?.brandId &&
+        !item.brandId &&
+        !item.brand.id && { brandId: item.brand.brandId.toString() }),
+      ...(item.categoryId && { categoryId: item.categoryId.toString() }),
+      ...(item.category?.id && !item.categoryId && { categoryId: item.category.id.toString() }),
+      ...(item.category?.categoryId &&
+        !item.categoryId &&
+        !item.category.id && { categoryId: item.category.categoryId.toString() }),
+      ...(item.isPrime && { isPrime: true }),
+      ...(item.isSponsored && { isSponsored: true }),
+      ...(item.isFeatured && !item.isSponsored && { isSponsored: true }),
+      ...(item.seller && {
+        seller: {
+          id: item.seller.id?.toString() || '',
+          name: item.seller.name || 'Vendedor',
+          ...(item.seller.rating !== undefined && { rating: item.seller.rating })
+        }
+      })
+    };
+
+    return product;
+  }
+
+  /**
+   * Obtener la imagen principal del producto
+   */
+  private getMainImage(item: BackendProductItem): string {
+    // Prioridad:
+    // 1. Primer elemento de imageUrls (array)
+    // 2. imageUrl (string)
+    // 3. mainImage
+    // 4. image
+    // 5. Primer elemento de images
+    // 6. Placeholder
+
+    if (item.imageUrls && Array.isArray(item.imageUrls) && item.imageUrls.length > 0) {
+      return item.imageUrls[0] ?? '/assets/placeholder.png';
+    }
+
+    if (item.imageUrl) {
+      return item.imageUrl;
+    }
+
+    if (item.mainImage) {
+      return item.mainImage;
+    }
+
+    if (item.image) {
+      return item.image;
+    }
+
+    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+      return item.images[0] ?? '/assets/placeholder.png';
+    }
+
+    return '/assets/placeholder.png';
+  }
+
+  /**
+   * Construir request body para búsqueda avanzada
+   */
+  private buildAdvancedSearchBody(params: AdvancedSearchParams): any {
+    const body: any = {
+      query: params.query || '',
+      page: params.page,
+      pageSize: params.pageSize
+    };
+
+    // CategoryIds
+    if (params.categoryIds && params.categoryIds.length > 0) {
+      body.categoryIds = params.categoryIds;
+    }
+
+    // BrandIds
+    if (params.brandIds && params.brandIds.length > 0) {
+      body.brandIds = params.brandIds;
+    }
+
+    // Precio
+    if (params.priceRange) {
+      body.minPrice = params.priceRange.min;
+      body.maxPrice = params.priceRange.max;
+    }
+
+    // Rating
+    if (params.minAverageRating !== undefined) {
+      body.minAverageRating = params.minAverageRating;
+    }
+
+    if (params.minReviewCount !== undefined) {
+      body.minReviewCount = params.minReviewCount;
+    }
+
+    // Atributos dinámicos
+    if (params.attributes && Object.keys(params.attributes).length > 0) {
+      body.attributes = params.attributes;
+    }
+
+    if (params.attributeRanges && Object.keys(params.attributeRanges).length > 0) {
+      body.attributeRanges = params.attributeRanges;
+    }
+
+    // Ordenamiento
+    if (params.sortBy) {
+      const sortConfig = this.mapSortOption(params.sortBy);
+      body.sortBy = parseInt(sortConfig.sortBy);
+      body.sortOrder = parseInt(sortConfig.sortOrder);
+    }
+
+    // Flags de facetas (solicitar facetas específicas)
+    body.includeBrandFacets = params.includeBrandFacets !== false; // Default true
+    body.includeCategoryFacets = params.includeCategoryFacets !== false;
+    body.includePriceFacets = params.includePriceFacets !== false;
+    body.includeRatingFacets = params.includeRatingFacets !== false;
+    body.includeAttributeFacets = params.includeAttributeFacets !== false;
+
+    return body;
+  }
+
+  /**
+   * Transformar respuesta de búsqueda avanzada
+   */
+  private transformAdvancedResponse(
+    response: BackendAdvancedSearchResponse,
+    params: AdvancedSearchParams
+  ): AdvancedProductListResponse {
+    console.log('🔄 Transformando respuesta avanzada. Total items:', response.total);
+    console.log('📊 Facetas disponibles:', response.facets);
+
+    // Mapear productos
+    const products = (response.items || []).map((item) => this.mapProduct(item));
+
+    console.log('✨ Productos mapeados:', products.length);
+
+    // Convertir facetas del backend a filtros del frontend
+    let filters: FilterOption[] = [];
+    if (response.facets) {
+      // Obtener filtros actuales si existen (para preservar estado)
+      const currentFilters: FilterOption[] = [];
+      filters = this.facetMapper.mapFacetsToFilters(response.facets, currentFilters);
+      console.log('🎨 Filtros generados desde facetas:', filters.length);
+    } else {
+      // Fallback a generación de filtros tradicional
+      filters = this.generateFilters(products);
+      console.log('⚠️ Usando generación de filtros tradicional');
+    }
+
+    // Mapear metadata
+    const metadata: SearchMetadata | undefined = response.metadata
+      ? {
+          ...(response.metadata.query && { query: response.metadata.query }),
+          ...(response.metadata.performance && {
+            performance: {
+              queryExecutionTime: response.metadata.performance.queryExecutionTime || 0,
+              facetCalculationTime: response.metadata.performance.facetCalculationTime || 0,
+              totalExecutionTime: response.metadata.performance.totalExecutionTime || 0,
+              totalFilteredResults: response.metadata.performance.totalFilteredResults || 0,
+              cacheHit: response.metadata.performance.cacheHit || false
+            }
+          }),
+          ...(response.metadata.didYouMean && { didYouMean: response.metadata.didYouMean }),
+          ...(response.metadata.relatedSearches && { relatedSearches: response.metadata.relatedSearches })
+        }
+      : undefined;
+
+    return {
+      products: products,
+      pagination: {
+        currentPage: response.page || 1,
+        pageSize: response.pageSize || 24,
+        totalPages: response.pageCount || Math.ceil((response.total || 0) / (response.pageSize || 24)),
+        totalItems: response.total || 0,
+        hasNext: response.hasMore || false,
+        hasPrevious: (response.page || 1) > 1
+      },
+      filters: filters,
+      totalResults: response.total || 0,
+      searchQuery: params.query || '',
+      ...(response.facets && { facets: response.facets }),
+      ...(metadata && { metadata }),
+      ...(response.pageCount !== undefined && { pageCount: response.pageCount }),
+      ...(response.hasMore !== undefined && { hasMore: response.hasMore })
+    };
+  }
+
+  /**
+   * Manejo de errores
+   */
+  private handleError(error: unknown): Observable<never> {
+    console.error('❌ Error en búsqueda de productos:', error);
+    const err = error as { status?: number; message?: string };
+    console.error('Status:', err.status);
+    console.error('Message:', err.message);
+    console.error('Error completo:', JSON.stringify(error, null, 2));
+    return throwError(() => error);
+  }
+}

@@ -2,7 +2,11 @@ import { Injectable, inject, effect } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, BehaviorSubject, map, catchError, throwError } from 'rxjs';
 import { Product, ProductListResponse, SearchParams, FilterOption, FilterType } from '../models';
+import { AdvancedSearchParams } from '../models/search-params.model';
+import { AdvancedProductListResponse } from '../models/product.model';
+import { SearchFacets, SearchMetadata } from '../models/facets.model';
 import { LanguageService } from '../../../core/services/language.service';
+import { FacetMapperService } from './facet-mapper.service';
 
 interface BackendProductItem {
   productId?: string;
@@ -10,10 +14,10 @@ interface BackendProductItem {
   name?: string;
   title?: string;
   description?: string;
-  brand?: { name?: string; id?: string; brandId?: string };
+  brand?: string | { name?: string; id?: string; brandId?: string }; // Soportar string o objeto
   brandName?: string;
   brandId?: string;
-  category?: { name?: string; id?: string; categoryId?: string };
+  category?: string | { name?: string; id?: string; categoryId?: string }; // Soportar string o objeto
   categoryName?: string;
   categoryId?: string;
   price?: number;
@@ -25,6 +29,7 @@ interface BackendProductItem {
   rating?: number;
   averageRating?: number;
   reviewCount?: number;
+  totalReviews?: number;
   ratingCount?: number;
   imageUrls?: string[];
   imageUrl?: string;
@@ -34,7 +39,7 @@ interface BackendProductItem {
   largeImage?: string;
   thumbnails?: string[];
   inStock?: boolean;
-  stock?: number;
+  stock?: { stock?: number; isOutOfStock?: boolean; isLowStock?: boolean } | number;
   stockQuantity?: number;
   deliveryDate?: string;
   features?: string[];
@@ -72,12 +77,35 @@ interface BackendSearchResponse {
   metadata?: BackendMetadata;
 }
 
+interface BackendAdvancedSearchResponse {
+  items?: BackendProductItem[];
+  total?: number;
+  page?: number;
+  pageSize?: number;
+  pageCount?: number;
+  hasMore?: boolean;
+  facets?: SearchFacets;
+  metadata?: {
+    query?: string;
+    performance?: {
+      queryExecutionTime?: number;
+      facetCalculationTime?: number;
+      totalExecutionTime?: number;
+      totalFilteredResults?: number;
+      cacheHit?: boolean;
+    };
+    didYouMean?: string;
+    relatedSearches?: string[];
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ProductSearchService {
   private http = inject(HttpClient);
   private languageService = inject(LanguageService);
+  private facetMapper = inject(FacetMapperService);
   private readonly API_URL = '/api/products';
 
   // Estado reactivo
@@ -96,7 +124,7 @@ export class ProductSearchService {
     effect(() => {
       const languageChanged = this.languageService.languageChanged();
       if (languageChanged > 0 && this.reloadCallback) {
-        console.log('🌐 Language changed, reloading products...');
+
         this.reloadCallback();
       }
     });
@@ -127,8 +155,36 @@ export class ProductSearchService {
       })
       .pipe(
         map((response) => {
-          console.log('✅ Respuesta del backend:', response);
+
           return this.transformResponse(response);
+        }),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  /**
+   * Búsqueda avanzada con facetas dinámicas
+   */
+  searchAdvanced(params: AdvancedSearchParams): Observable<AdvancedProductListResponse> {
+    const body = this.buildAdvancedSearchBody(params);
+
+    console.log('🌐 Idioma actual:', this.languageService.currentLanguage());
+    console.log('📤 Request Body:', body);
+    console.log('🔗 Request URL:', `${this.API_URL}/search/advanced`);
+
+    return this.http
+      .post<BackendAdvancedSearchResponse>(`${this.API_URL}/search/advanced`, body, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      .pipe(
+        map((response) => {
+
+
+
+          return this.transformAdvancedResponse(response, params);
         }),
         catchError((error) => this.handleError(error))
       );
@@ -217,8 +273,10 @@ export class ProductSearchService {
     // MinRating
     if (params.rating) {
       httpParams = httpParams.set('MinRating', params.rating.toString());
+
     }
 
+    console.log('🌐 Final HTTP params:', httpParams.toString());
     return httpParams;
   }
 
@@ -243,13 +301,10 @@ export class ProductSearchService {
    * Transformar respuesta de la API del backend al modelo del frontend
    */
   private transformResponse(response: BackendSearchResponse): ProductListResponse {
-    console.log('🔄 Transformando respuesta. Total items:', response.total);
-    console.log('📊 Metadata disponible:', response.metadata);
+
 
     // Mapear los productos del backend al formato del frontend
     const products = (response.items || []).map((item) => this.mapProduct(item));
-
-    console.log('✨ Productos mapeados:', products.length);
 
     return {
       products: products,
@@ -303,7 +358,7 @@ export class ProductSearchService {
       Array.isArray(metadata.availableBrands) &&
       metadata.availableBrands.length > 0
     ) {
-      console.log('📦 Usando marcas de metadata:', metadata.availableBrands);
+
       console.log(
         '📦 Primera marca completa:',
         JSON.stringify(metadata.availableBrands[0], null, 2)
@@ -315,7 +370,6 @@ export class ProductSearchService {
         type: FilterType.CHECKBOX,
         isExpanded: true,
         options: metadata.availableBrands.map((item) => {
-          console.log('🔍 Procesando marca:', item);
 
           // La estructura del backend es: { brand: "Lenovo", count: 8 }
           // donde "brand" es un string con el nombre de la marca
@@ -337,7 +391,6 @@ export class ProductSearchService {
       });
     } else {
       // Fallback: Extraer marcas únicas de los productos
-      console.log('⚠️ Metadata no disponible, extrayendo marcas de productos');
 
       const brandsMap = new Map<string, { id: string; name: string; count: number }>();
       products.forEach((p) => {
@@ -439,8 +492,14 @@ export class ProductSearchService {
       id: item.productId?.toString() || item.id?.toString() || '',
       title: item.name || item.title || 'Sin título',
       description: item.description || '',
-      brand: item.brand?.name || item.brandName || 'Sin marca',
-      category: item.category?.name || item.categoryName || 'Sin categoría',
+      // Soportar brand como string o como objeto { name: string }
+      brand: typeof item.brand === 'string' 
+        ? item.brand 
+        : (item.brand?.name || item.brandName || 'Sin marca'),
+      // Soportar category como string o como objeto { name: string }
+      category: typeof item.category === 'string'
+        ? item.category
+        : (item.category?.name || item.categoryName || 'Sin categoría'),
       price: {
         current: item.price || item.currentPrice || 0,
         currency: item.currency || 'USD',
@@ -451,7 +510,7 @@ export class ProductSearchService {
       },
       rating: {
         average: item.rating || item.averageRating || 0,
-        count: item.reviewCount || item.ratingCount || 0
+        count: item.totalReviews || item.reviewCount || item.ratingCount || 0
       },
       images: {
         main: this.getMainImage(item),
@@ -459,8 +518,8 @@ export class ProductSearchService {
         ...(item.largeImage && { large: item.largeImage })
       },
       availability: {
-        inStock: item.inStock !== undefined ? item.inStock : item.stock ? item.stock > 0 : true,
-        ...(item.stock !== undefined && { quantity: item.stock }),
+        inStock: item.inStock !== undefined ? item.inStock : (typeof item.stock === "object" ? !(item.stock.isOutOfStock ?? false) : (item.stock ?? 0) > 0),
+        ...((typeof item.stock === "object" && item.stock.stock !== undefined) ? { quantity: item.stock.stock } : (typeof item.stock === "number" ? { quantity: item.stock } : {})),
         ...(item.stockQuantity !== undefined &&
           item.stock === undefined && { quantity: item.stockQuantity }),
         ...(item.deliveryDate && { deliveryDate: new Date(item.deliveryDate) })
@@ -468,13 +527,13 @@ export class ProductSearchService {
       features: item.features || [],
       specifications: item.specifications || {},
       ...(item.brandId && { brandId: item.brandId.toString() }),
-      ...(item.brand?.id && !item.brandId && { brandId: item.brand.id.toString() }),
-      ...(item.brand?.brandId &&
+      ...(typeof item.brand === 'object' && item.brand?.id && !item.brandId && { brandId: item.brand.id.toString() }),
+      ...(typeof item.brand === 'object' && item.brand?.brandId &&
         !item.brandId &&
         !item.brand.id && { brandId: item.brand.brandId.toString() }),
       ...(item.categoryId && { categoryId: item.categoryId.toString() }),
-      ...(item.category?.id && !item.categoryId && { categoryId: item.category.id.toString() }),
-      ...(item.category?.categoryId &&
+      ...(typeof item.category === 'object' && item.category?.id && !item.categoryId && { categoryId: item.category.id.toString() }),
+      ...(typeof item.category === 'object' && item.category?.categoryId &&
         !item.categoryId &&
         !item.category.id && { categoryId: item.category.categoryId.toString() }),
       ...(item.isPrime && { isPrime: true }),
@@ -528,14 +587,134 @@ export class ProductSearchService {
   }
 
   /**
+   * Construir request body para búsqueda avanzada
+   */
+  private buildAdvancedSearchBody(params: AdvancedSearchParams): any {
+    const body: any = {
+      query: params.query || '',
+      page: params.page,
+      pageSize: params.pageSize
+    };
+
+    // CategoryIds
+    if (params.categoryIds && params.categoryIds.length > 0) {
+      body.categoryIds = params.categoryIds;
+    }
+
+    // BrandIds
+    if (params.brandIds && params.brandIds.length > 0) {
+      body.brandIds = params.brandIds;
+    }
+
+    // Precio
+    if (params.priceRange) {
+      body.minPrice = params.priceRange.min;
+      body.maxPrice = params.priceRange.max;
+    }
+
+    // Rating
+    if (params.minAverageRating !== undefined) {
+      body.minAverageRating = params.minAverageRating;
+    }
+
+    if (params.minReviewCount !== undefined) {
+      body.minReviewCount = params.minReviewCount;
+    }
+
+    // Atributos dinámicos
+    if (params.attributes && Object.keys(params.attributes).length > 0) {
+      body.attributes = params.attributes;
+    }
+
+    if (params.attributeRanges && Object.keys(params.attributeRanges).length > 0) {
+      body.attributeRanges = params.attributeRanges;
+    }
+
+    // Ordenamiento
+    if (params.sortBy) {
+      const sortConfig = this.mapSortOption(params.sortBy);
+      body.sortBy = parseInt(sortConfig.sortBy);
+      body.sortOrder = parseInt(sortConfig.sortOrder);
+    }
+
+    // Flags de facetas (solicitar facetas específicas)
+    body.includeBrandFacets = params.includeBrandFacets !== false; // Default true
+    body.includeCategoryFacets = params.includeCategoryFacets !== false;
+    body.includePriceFacets = params.includePriceFacets !== false;
+    body.includeRatingFacets = params.includeRatingFacets !== false;
+    body.includeAttributeFacets = params.includeAttributeFacets !== false;
+
+    return body;
+  }
+
+  /**
+   * Transformar respuesta de búsqueda avanzada
+   */
+  private transformAdvancedResponse(
+    response: BackendAdvancedSearchResponse,
+    params: AdvancedSearchParams
+  ): AdvancedProductListResponse {
+
+
+    // Mapear productos
+    const products = (response.items || []).map((item) => this.mapProduct(item));
+
+    // Convertir facetas del backend a filtros del frontend
+    let filters: FilterOption[] = [];
+    if (response.facets) {
+      console.log('🔍 DEBUG: Facetas del backend:', response.facets);
+      console.log('🔍 DEBUG: Atributos:', response.facets.attributes);
+      // Obtener filtros actuales si existen (para preservar estado)
+      const currentFilters: FilterOption[] = [];
+      filters = this.facetMapper.mapFacetsToFilters(response.facets, currentFilters);
+      console.log('🔍 DEBUG: Filtros generados:', filters);
+    } else {
+      // Fallback a generación de filtros tradicional
+      filters = this.generateFilters(products);
+    }
+
+    // Mapear metadata
+    const metadata: SearchMetadata | undefined = response.metadata
+      ? {
+          ...(response.metadata.query && { query: response.metadata.query }),
+          ...(response.metadata.performance && {
+            performance: {
+              queryExecutionTime: response.metadata.performance.queryExecutionTime || 0,
+              facetCalculationTime: response.metadata.performance.facetCalculationTime || 0,
+              totalExecutionTime: response.metadata.performance.totalExecutionTime || 0,
+              totalFilteredResults: response.metadata.performance.totalFilteredResults || 0,
+              cacheHit: response.metadata.performance.cacheHit || false
+            }
+          }),
+          ...(response.metadata.didYouMean && { didYouMean: response.metadata.didYouMean }),
+          ...(response.metadata.relatedSearches && { relatedSearches: response.metadata.relatedSearches })
+        }
+      : undefined;
+
+    return {
+      products: products,
+      pagination: {
+        currentPage: response.page || 1,
+        pageSize: response.pageSize || 24,
+        totalPages: response.pageCount || Math.ceil((response.total || 0) / (response.pageSize || 24)),
+        totalItems: response.total || 0,
+        hasNext: response.hasMore || false,
+        hasPrevious: (response.page || 1) > 1
+      },
+      filters: filters,
+      totalResults: response.total || 0,
+      searchQuery: params.query || '',
+      ...(response.facets && { facets: response.facets }),
+      ...(metadata && { metadata }),
+      ...(response.pageCount !== undefined && { pageCount: response.pageCount }),
+      ...(response.hasMore !== undefined && { hasMore: response.hasMore })
+    };
+  }
+
+  /**
    * Manejo de errores
    */
   private handleError(error: unknown): Observable<never> {
-    console.error('❌ Error en búsqueda de productos:', error);
-    const err = error as { status?: number; message?: string };
-    console.error('Status:', err.status);
-    console.error('Message:', err.message);
-    console.error('Error completo:', JSON.stringify(error, null, 2));
     return throwError(() => error);
   }
 }

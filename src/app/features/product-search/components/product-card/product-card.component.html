@@ -1,12 +1,31 @@
-<article class="product-card" [class.sponsored]="product.isSponsored">
-  <!-- Sponsored Badge -->
-  @if (product.isSponsored) {
-    <span class="sponsored-badge">Patrocinado</span>
-  }
+<article class="product-card" [class.sponsored]="product.isSponsored" [class.out-of-stock]="!product.availability.inStock">
+  <!-- Top Badges Container -->
+  <div class="badges-container">
+    @if (product.isSponsored) {
+      <span class="sponsored-badge">
+        <mat-icon>campaign</mat-icon>
+        Patrocinado
+      </span>
+    }
+    @if (product.price.discount) {
+      <span class="discount-badge-top">
+        <mat-icon>local_offer</mat-icon>
+        -{{ product.price.discount }}%
+      </span>
+    }
+  </div>
 
   <!-- Product Image -->
   <a [routerLink]="['/product', product.id]" class="product-image-link">
     <div class="product-image-container">
+      <!-- Out of stock overlay -->
+      @if (!product.availability.inStock) {
+        <div class="out-of-stock-overlay">
+          <mat-icon>block</mat-icon>
+          <span>Agotado</span>
+        </div>
+      }
+
       <img
         [src]="product.images.main"
         [alt]="product.title"
@@ -18,6 +37,7 @@
       <!-- Prime Badge -->
       @if (product.isPrime) {
         <div class="prime-badge">
+          <mat-icon>verified</mat-icon>
           <span>prime</span>
         </div>
       }
@@ -31,8 +51,9 @@
       <h3>{{ product.title }}</h3>
     </a>
 
-    <!-- Rating -->
+    <!-- Rating - Enhanced with average number -->
     <div class="product-rating">
+      <span class="rating-number">{{ product.rating.average | number:'1.1-1' }}</span>
       <div class="stars" [attr.aria-label]="'Rating: ' + product.rating.average">
         @for (star of [1, 2, 3, 4, 5]; track star) {
           <span
@@ -49,35 +70,53 @@
       <span class="rating-count">({{ product.rating.count | number }})</span>
     </div>
 
-    <!-- Price -->
+    <!-- Price with discount highlight -->
     <div class="product-price">
-      @if (product.price.discount) {
-        <span class="discount-badge">-{{ product.price.discount }}%</span>
-      }
-
-      <div class="price-container">
+      <div class="price-main">
         <span class="currency">{{ product.price.currency }}</span>
         <span class="current-price">{{ product.price.current | priceFormat }}</span>
-
-        @if (product.price.original && product.price.original > product.price.current) {
-          <span class="original-price">{{ product.price.original | priceFormat }}</span>
-        }
       </div>
+
+      @if (product.price.original && product.price.original > product.price.current) {
+        <div class="price-savings">
+          <span class="original-price">{{ product.price.original | priceFormat }}</span>
+          @if (product.price.discount) {
+            <mat-chip class="discount-chip" highlighted>
+              <mat-icon>trending_down</mat-icon>
+              {{ product.price.discount }}% OFF
+            </mat-chip>
+          }
+        </div>
+      }
     </div>
 
     <!-- Delivery Info -->
     @if (product.availability.deliveryDate) {
       <div class="delivery-info">
+        <mat-icon>local_shipping</mat-icon>
         <span>Llega el {{ product.availability.deliveryDate | date: 'd MMM' }}</span>
       </div>
     }
 
-    <!-- Availability -->
-    <div class="availability" [class.in-stock]="product.availability.inStock">
+    <!-- Stock Status - Enhanced with icon and quantity warning -->
+    <div class="stock-container">
       @if (product.availability.inStock) {
-        <span class="stock-status">En stock</span>
+        @if (product.availability.quantity && product.availability.quantity < 10) {
+          <mat-chip class="stock-chip low-stock">
+            <mat-icon>warning</mat-icon>
+            Quedan solo {{ product.availability.quantity }}
+          </mat-chip>
+        } @else {
+          <mat-chip class="stock-chip in-stock">
+            <mat-icon>check_circle</mat-icon>
+            En stock
+          </mat-chip>
+        }
       } @else {
-        <span class="stock-status out">Agotado</span>
+        <mat-chip class="stock-chip out-of-stock">
+          <mat-icon>cancel</mat-icon>
+          Agotado
+        </mat-chip>
       }
     </div>
   </div>

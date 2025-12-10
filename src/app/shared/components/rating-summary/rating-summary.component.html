@@ -1,0 +1,53 @@
+<div class="rating-summary">
+  <div class="rating-overview">
+    <div class="average-rating">
+      <span class="rating-number">{{ ratingSummary.averageRating | number: '1.1-1' }}</span>
+      <div class="stars-display">
+        @for (star of [0, 1, 2, 3, 4]; track star) {
+          <mat-icon
+            class="star-icon"
+            [class.filled]="star < Math.floor(ratingSummary.averageRating)"
+            [class.half]="star === Math.floor(ratingSummary.averageRating) && hasHalfStar(ratingSummary.averageRating)"
+            [class.empty]="star >= Math.ceil(ratingSummary.averageRating)">
+            {{ getStarIcon(star, ratingSummary.averageRating) }}
+          </mat-icon>
+        }
+      </div>
+      <span class="total-reviews">{{ ratingSummary.totalReviews }}
+        {{ ratingSummary.totalReviews === 1 ? 'valoración' : 'valoraciones' }}
+      </span>
+    </div>
+  </div>
+
+  @if (showDetails && ratingSummary.totalReviews > 0) {
+    <div class="rating-distribution">
+      @for (item of getRatingDistributionData(); track item.stars) {
+        <div class="rating-row">
+          <div class="stars-label">
+            <span class="stars-count">{{ item.stars }}</span>
+            <mat-icon class="star-icon-small">star</mat-icon>
+          </div>
+          <div class="progress-container">
+            <mat-progress-bar
+              mode="determinate"
+              [value]="item.percentage"
+              [color]="item.stars >= 4 ? 'primary' : item.stars === 3 ? 'accent' : 'warn'">
+            </mat-progress-bar>
+          </div>
+          <div class="count-label">
+            <span class="percentage">{{ item.percentage | number: '1.0-0' }}%</span>
+            <span class="count">({{ item.count }})</span>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (ratingSummary.totalReviews === 0) {
+    <div class="no-reviews">
+      <mat-icon class="no-reviews-icon">rate_review</mat-icon>
+      <p>No hay valoraciones aún</p>
+      <p class="subtitle">Sé el primero en valorar este producto</p>
+    </div>
+  }
+</div>

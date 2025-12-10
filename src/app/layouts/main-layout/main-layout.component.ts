@@ -1,18 +1,16 @@
-import { Component, signal, inject, computed } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Component, inject, computed } from '@angular/core';
+import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatBadgeModule } from '@angular/material/badge';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule } from '@angular/material/menu';
 import { TranslateModule } from '@ngx-translate/core';
 import { ThemeService, type ThemeMode } from '../../core/services/theme.service';
 import { AuthService } from '../../core/services/auth.service';
 import { CartService } from '../../core/services/cart.service';
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
+import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -20,16 +18,14 @@ import { LanguageSwitcher } from '../../shared/components/language-switcher/lang
   imports: [
     RouterOutlet,
     RouterLink,
-    FormsModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,
     MatBadgeModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatMenuModule,
     TranslateModule,
-    LanguageSwitcher
+    LanguageSwitcher,
+    SearchBarComponent
   ],
   templateUrl: './main-layout.component.html',
   styleUrl: './main-layout.component.scss'
@@ -38,8 +34,6 @@ export class MainLayoutComponent {
   readonly themeService = inject(ThemeService);
   readonly authService = inject(AuthService);
   readonly cartService = inject(CartService);
-  private readonly router = inject(Router);
-  readonly searchQuery = signal('');
 
   // Computed signal para el contador del carrito
   readonly cartItemCount = computed(() => this.cartService.itemCount());
@@ -58,15 +52,6 @@ export class MainLayoutComponent {
     { label: 'Tarjetas de Regalo', route: '/gift-cards' },
     { label: 'Vender', route: '/sell' }
   ];
-
-  onSearch(): void {
-    const query = this.searchQuery().trim();
-    if (query) {
-      this.router.navigate(['/s'], {
-        queryParams: { k: query }
-      });
-    }
-  }
 
   setTheme(mode: ThemeMode): void {
     this.themeService.setThemeMode(mode);

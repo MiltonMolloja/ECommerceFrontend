@@ -1,0 +1,67 @@
+<button
+  mat-icon-button
+  [matMenuTriggerFor]="savedSearchesMenu"
+  [matBadge]="savedSearchCount"
+  [matBadgeHidden]="!hasSavedSearches"
+  matBadgeColor="accent"
+  matBadgeSize="small"
+  class="saved-searches-button"
+>
+  <mat-icon>bookmark</mat-icon>
+</button>
+
+<mat-menu #savedSearchesMenu="matMenu" class="saved-searches-menu">
+  <div class="menu-header" (click)="$event.stopPropagation()">
+    <h3>{{ 'SAVED_SEARCHES.TITLE' | translate }}</h3>
+    @if (hasSavedSearches) {
+      <button mat-button class="clear-all-button" (click)="onClearAll()">
+        <mat-icon>delete_outline</mat-icon>
+        <span>{{ 'SAVED_SEARCHES.CLEAR_ALL' | translate }}</span>
+      </button>
+    }
+  </div>
+
+  <mat-divider></mat-divider>
+
+  @if (!hasSavedSearches) {
+    <div class="empty-state" (click)="$event.stopPropagation()">
+      <mat-icon>bookmark_border</mat-icon>
+      <p>{{ 'SAVED_SEARCHES.EMPTY_STATE' | translate }}</p>
+      <span class="hint">{{ 'SAVED_SEARCHES.EMPTY_HINT' | translate }}</span>
+    </div>
+  } @else {
+    <div class="searches-list">
+      @for (search of savedSearches; track search.id) {
+        <div class="search-item" (click)="onSelectSearch(search)">
+          <div class="search-item-header">
+            <mat-icon class="search-icon">search</mat-icon>
+            <div class="search-info">
+              <div class="search-name">{{ search.name }}</div>
+              <div class="search-query">{{ search.query || 'Sin búsqueda de texto' }}</div>
+            </div>
+            <button
+              mat-icon-button
+              class="delete-button"
+              (click)="onDeleteSearch(search, $event)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <div class="search-item-meta">
+            <span class="filter-summary">{{ getFilterSummary(search) }}</span>
+            <span class="separator">•</span>
+            <span class="created-date">{{ formatDate(search.createdAt) }}</span>
+            @if (search.useCount > 0) {
+              <span class="separator">•</span>
+              <span class="use-count">{{ search.useCount }} uso(s)</span>
+            }
+          </div>
+        </div>
+        @if (!$last) {
+          <mat-divider></mat-divider>
+        }
+      }
+    </div>
+  }
+</mat-menu>
