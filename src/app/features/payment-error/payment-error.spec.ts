@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { PaymentErrorComponent } from './payment-error';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { provideTranslateService } from '@ngx-translate/core';
 
 describe('PaymentErrorComponent', () => {
   let component: PaymentErrorComponent;
@@ -14,7 +15,10 @@ describe('PaymentErrorComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [PaymentErrorComponent, NoopAnimationsModule],
-      providers: [{ provide: Router, useValue: routerSpy }]
+      providers: [
+        { provide: Router, useValue: routerSpy },
+        provideTranslateService({ defaultLanguage: 'es' })
+      ]
     }).compileComponents();
 
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
@@ -27,6 +31,11 @@ describe('PaymentErrorComponent', () => {
   });
 
   it('should redirect to home if no state data', () => {
+    // Clear history state
+    Object.defineProperty(window, 'history', {
+      value: { state: {} },
+      writable: true
+    });
     fixture.detectChanges();
     expect(router.navigate).toHaveBeenCalledWith(['/']);
   });
@@ -75,7 +84,8 @@ describe('PaymentErrorComponent', () => {
   });
 
   it('should navigate to orders list if no orderId', () => {
-    component.orderId = undefined;
+    // orderId is already undefined by default
+    delete (component as { orderId?: number }).orderId;
     component.viewOrder();
 
     expect(router.navigate).toHaveBeenCalledWith(['/orders']);
