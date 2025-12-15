@@ -94,10 +94,7 @@ export class ProductDetailInfoComponent {
   // Computed signals
   hasDiscount = computed(() => {
     const product = this.product;
-    return (
-      product?.price?.original !== undefined &&
-      product.price.original > product.price.current
-    );
+    return product?.price?.original !== undefined && product.price.original > product.price.current;
   });
 
   discountPercentage = computed(() => {
@@ -172,11 +169,10 @@ export class ProductDetailInfoComponent {
 
     // Simular delay para feedback visual
     setTimeout(() => {
-      // Agregar la cantidad especificada
+      // Agregar la cantidad especificada (sin nombre, se obtiene dinámicamente)
       for (let i = 0; i < this.quantity(); i++) {
         this.cartService.addToCart({
           id: this.product.productId.toString(),
-          name: this.product.name,
           price: this.product.price.current,
           currency: this.product.price.currency,
           imageUrl: this.product.imageUrl || '/assets/placeholder.png',

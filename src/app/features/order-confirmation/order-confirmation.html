@@ -7,8 +7,8 @@
 
     <!-- Success Message -->
     <div class="success-message">
-      <h1>¡Pedido realizado con éxito!</h1>
-      <p>Gracias por tu compra. Tu pedido ha sido confirmado.</p>
+      <h1>{{ 'ORDER_CONFIRMATION.SUCCESS_TITLE' | translate }}</h1>
+      <p>{{ 'ORDER_CONFIRMATION.SUCCESS_MESSAGE' | translate }}</p>
     </div>
 
     <mat-divider></mat-divider>
@@ -17,15 +17,15 @@
     <mat-card-content>
       <div class="order-details">
         <div class="detail-row">
-          <span class="label">Número de pedido:</span>
+          <span class="label">{{ 'ORDER_CONFIRMATION.ORDER_NUMBER' | translate }}</span>
           <span class="value">{{ orderNumber }}</span>
         </div>
         <div class="detail-row">
-          <span class="label">Fecha:</span>
+          <span class="label">{{ 'ORDER_CONFIRMATION.DATE' | translate }}</span>
           <span class="value">{{ orderDate | date: 'medium' }}</span>
         </div>
         <div class="detail-row">
-          <span class="label">Total:</span>
+          <span class="label">{{ 'ORDER_CONFIRMATION.TOTAL' | translate }}</span>
           <span class="value total">${{ total | number: '1.2-2' }}</span>
         </div>
       </div>
@@ -35,7 +35,7 @@
       <!-- Shipping Address -->
       @if (shippingAddress) {
         <div class="section">
-          <h3>Dirección de envío</h3>
+          <h3>{{ 'ORDER_CONFIRMATION.SHIPPING_ADDRESS' | translate }}</h3>
           <div class="address">
             <div>{{ shippingAddress.fullName }}</div>
             <div>{{ shippingAddress.addressLine1 }}</div>
@@ -55,14 +55,16 @@
       <!-- Order Items -->
       @if (items.length > 0) {
         <div class="section">
-          <h3>Artículos del pedido</h3>
+          <h3>{{ 'ORDER_CONFIRMATION.ORDER_ITEMS' | translate }}</h3>
           <div class="items-list">
             @for (item of items; track item.productId) {
               <div class="order-item">
                 <img [src]="item.imageUrl" [alt]="item.name" class="item-image" />
                 <div class="item-info">
                   <div class="item-name">{{ item.name }}</div>
-                  <div class="item-quantity">Cantidad: {{ item.quantity }}</div>
+                  <div class="item-quantity">
+                    {{ 'ORDER_CONFIRMATION.QUANTITY' | translate }} {{ item.quantity }}
+                  </div>
                   <div class="item-price">
                     {{ item.currency || 'USD' }} {{ item.price * item.quantity | number: '1.2-2' }}
                   </div>
@@ -77,14 +79,14 @@
     <!-- Actions -->
     <mat-card-actions>
       <button mat-raised-button color="primary" (click)="continueShopping()">
-        Continuar comprando
+        {{ 'ORDER_CONFIRMATION.CONTINUE_SHOPPING' | translate }}
       </button>
     </mat-card-actions>
 
     <!-- Info Message -->
     <div class="info-message">
       <mat-icon>info</mat-icon>
-      <p>Recibirás un correo electrónico de confirmación con los detalles de tu pedido.</p>
+      <p>{{ 'ORDER_CONFIRMATION.EMAIL_CONFIRMATION' | translate }}</p>
     </div>
   </mat-card>
 </div>

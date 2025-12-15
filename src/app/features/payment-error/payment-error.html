@@ -9,8 +9,8 @@
 
     <!-- Title Section -->
     <div class="title-section">
-      <h1 class="error-title">¡Pago Fallido!</h1>
-      <p class="error-subtitle">No pudimos procesar tu método de pago</p>
+      <h1 class="error-title">{{ 'PAYMENT_ERROR.TITLE' | translate }}</h1>
+      <p class="error-subtitle">{{ 'PAYMENT_ERROR.SUBTITLE' | translate }}</p>
     </div>
 
     <!-- Main Card -->
@@ -19,35 +19,32 @@
       <div class="alert-box">
         <div class="alert-header">
           <mat-icon class="warning-icon">warning</mat-icon>
-          <h4>Acción Requerida</h4>
+          <h4>{{ 'PAYMENT_ERROR.ACTION_REQUIRED' | translate }}</h4>
         </div>
-        <p>
-          Tu pedido expirará en 24 horas si no completas el pago. Reintentar ahora para continuar
-          con tu compra.
-        </p>
+        <p>{{ 'PAYMENT_ERROR.EXPIRATION_WARNING' | translate }}</p>
       </div>
 
       <!-- Payment Details -->
       <div class="payment-details">
         <div class="section-header">
           <mat-icon>receipt</mat-icon>
-          <h3>Detalles del Pago</h3>
+          <h3>{{ 'PAYMENT_ERROR.PAYMENT_DETAILS' | translate }}</h3>
         </div>
         <div class="details-list">
           <div class="detail-row">
-            <span class="detail-label">Número de Pedido</span>
+            <span class="detail-label">{{ 'PAYMENT_ERROR.ORDER_NUMBER' | translate }}</span>
             <span class="detail-value">{{ orderNumber }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Fecha del Intento</span>
+            <span class="detail-label">{{ 'PAYMENT_ERROR.ATTEMPT_DATE' | translate }}</span>
             <span class="detail-value">{{ attemptDate }}</span>
           </div>
           <div class="detail-row">
-            <span class="detail-label">Monto</span>
+            <span class="detail-label">{{ 'PAYMENT_ERROR.AMOUNT' | translate }}</span>
             <span class="detail-value">{{ amount }}</span>
           </div>
           <div class="detail-row last">
-            <span class="detail-label">Método de Pago</span>
+            <span class="detail-label">{{ 'PAYMENT_ERROR.PAYMENT_METHOD' | translate }}</span>
             <span class="detail-value">{{ paymentMethod }}</span>
           </div>
         </div>
@@ -57,7 +54,7 @@
       <div class="reason-box">
         <div class="reason-header">
           <mat-icon>search</mat-icon>
-          <h4>Motivo del Rechazo</h4>
+          <h4>{{ 'PAYMENT_ERROR.REJECTION_REASON' | translate }}</h4>
         </div>
         <p>{{ failureReason }}</p>
       </div>
@@ -65,10 +62,10 @@
       <!-- Action Buttons -->
       <div class="action-buttons">
         <button mat-raised-button color="warn" class="retry-button" (click)="retryPayment()">
-          Reintentar Pago
+          {{ 'PAYMENT_ERROR.RETRY_PAYMENT' | translate }}
         </button>
         <button mat-stroked-button class="view-order-button" (click)="viewOrder()">
-          Ver Pedido
+          {{ 'PAYMENT_ERROR.VIEW_ORDER' | translate }}
         </button>
       </div>
 
@@ -76,39 +73,37 @@
       <div class="help-section">
         <div class="help-header">
           <mat-icon>lightbulb</mat-icon>
-          <h4>¿Necesitas Ayuda?</h4>
+          <h4>{{ 'PAYMENT_ERROR.NEED_HELP' | translate }}</h4>
         </div>
         <p>
-          Si continúas teniendo problemas, puedes:<br />
-          • Intentar con otro método de pago<br />
-          • Contactar con tu entidad bancaria<br />
-          • Comunicarte con nuestro equipo de soporte
+          {{ 'PAYMENT_ERROR.HELP_TEXT' | translate }}<br />
+          • {{ 'PAYMENT_ERROR.HELP_OPTION_1' | translate }}<br />
+          • {{ 'PAYMENT_ERROR.HELP_OPTION_2' | translate }}<br />
+          • {{ 'PAYMENT_ERROR.HELP_OPTION_3' | translate }}
         </p>
       </div>
     </mat-card>
 
     <!-- Footer Links -->
     <div class="footer-links">
-      <p class="footer-text">
-        Estamos aquí para ayudarte. Si tienes preguntas, no dudes en contactarnos.
-      </p>
+      <p class="footer-text">{{ 'PAYMENT_ERROR.FOOTER_TEXT' | translate }}</p>
       <div class="links-container">
         <a
           (click)="contactSupport()"
           (keyup.enter)="contactSupport()"
           tabindex="0"
           class="link-item"
-          >Contactar Soporte</a
+          >{{ 'PAYMENT_ERROR.CONTACT_SUPPORT' | translate }}</a
         >
-        <a (click)="goToOrders()" (keyup.enter)="goToOrders()" tabindex="0" class="link-item"
-          >Mis Órdenes</a
-        >
+        <a (click)="goToOrders()" (keyup.enter)="goToOrders()" tabindex="0" class="link-item">{{
+          'PAYMENT_ERROR.MY_ORDERS' | translate
+        }}</a>
         <a
           (click)="goToPaymentMethods()"
           (keyup.enter)="goToPaymentMethods()"
           tabindex="0"
           class="link-item"
-          >Métodos de Pago</a
+          >{{ 'PAYMENT_ERROR.PAYMENT_METHODS' | translate }}</a
         >
       </div>
     </div>

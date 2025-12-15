@@ -112,9 +112,11 @@
   max-width: 1500px;
   margin: 2rem auto;
   padding: 1rem;
-  background: rgba(0, 0, 0, 0.05);
+  background: var(--debug-bg, rgba(0, 0, 0, 0.05));
   border-radius: 8px;
   font-size: 0.875rem;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color, transparent);
 
   details {
     summary {
@@ -122,9 +124,10 @@
       font-weight: 600;
       padding: 0.5rem;
       user-select: none;
+      color: var(--text-primary);
 
       &:hover {
-        background: rgba(0, 0, 0, 0.05);
+        background: var(--debug-hover-bg, rgba(0, 0, 0, 0.05));
         border-radius: 4px;
       }
     }
@@ -137,6 +140,7 @@
       li {
         padding: 0.25rem 0;
         font-family: 'Courier New', monospace;
+        color: var(--text-secondary);
 
         strong {
           color: var(--primary-color);
@@ -147,5 +151,21 @@
     button {
       margin-top: 0.5rem;
     }
+  }
+}
+
+// ========================================
+// DARK THEME SUPPORT
+// ========================================
+
+:host-context(.dark-theme) {
+  .home-container {
+    background: var(--current-bg, #111827);
+  }
+
+  .debug-metadata {
+    --debug-bg: rgba(255, 255, 255, 0.05);
+    --debug-hover-bg: rgba(255, 255, 255, 0.08);
+    --border-color: #374151;
   }
 }

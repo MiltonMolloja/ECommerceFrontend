@@ -2,7 +2,7 @@ import { Injectable, signal, computed } from '@angular/core';
 
 export interface CartItem {
   productId: string;
-  name: string;
+  // name se obtiene dinámicamente del backend según idioma
   price: number;
   currency: string;
   quantity: number;
@@ -41,7 +41,6 @@ export class CartService {
    */
   addToCart(product: {
     id: string;
-    name: string;
     price: number;
     currency: string;
     imageUrl: string;
@@ -59,10 +58,9 @@ export class CartService {
         index === existingItemIndex ? { ...item, quantity: item.quantity + 1 } : item
       );
     } else {
-      // Si es nuevo, agregarlo
+      // Si es nuevo, agregarlo (sin nombre, se obtiene dinámicamente)
       const newItem: CartItem = {
         productId: product.id,
-        name: product.name,
         price: product.price,
         currency: product.currency,
         quantity: 1,
@@ -75,7 +73,6 @@ export class CartService {
 
     this.cartItems.set(updatedItems);
     this.saveCartToStorage(updatedItems);
-
   }
 
   /**
@@ -85,7 +82,6 @@ export class CartService {
     const updatedItems = this.cartItems().filter((item) => item.productId !== productId);
     this.cartItems.set(updatedItems);
     this.saveCartToStorage(updatedItems);
-
   }
 
   /**
@@ -111,7 +107,6 @@ export class CartService {
   clearCart(): void {
     this.cartItems.set([]);
     this.saveCartToStorage([]);
-
   }
 
   /**
@@ -142,8 +137,8 @@ export class CartService {
       if (stored) {
         return JSON.parse(stored);
       }
-    } catch (error) {
-
+    } catch {
+      // Ignore parse errors
     }
 
     return [];
@@ -159,8 +154,8 @@ export class CartService {
 
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(items));
-    } catch (error) {
-
+    } catch {
+      // Ignore storage errors
     }
   }
 
@@ -172,8 +167,8 @@ export class CartService {
       try {
         const newItems = JSON.parse(event.newValue);
         this.cartItems.set(newItems);
-      } catch (error) {
-
+      } catch {
+        // Ignore parse errors
       }
     }
   }

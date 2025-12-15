@@ -3,10 +3,10 @@
     <div class="slides-container" [style.transform]="'translateX(-' + currentSlide() * 100 + '%)'">
       @for (banner of banners(); track banner.bannerId) {
         <div class="slide">
-          <img 
-            [src]="getImageUrl(banner)" 
-            [alt]="banner.title" 
-            class="slide-image" 
+          <img
+            [src]="getImageUrl(banner)"
+            [alt]="banner.title"
+            class="slide-image"
             loading="lazy"
           />
           <div class="slide-content">
@@ -16,14 +16,14 @@
                 <p class="slide-subtitle">{{ banner.subtitle }}</p>
               }
               @if (banner.buttonText && banner.linkUrl) {
-                <a 
-                  [routerLink]="banner.linkUrl" 
-                  mat-raised-button 
+                <button
+                  mat-raised-button
                   color="primary"
                   class="cta-button"
+                  (click)="navigateToBanner(banner, $event)"
                 >
                   {{ banner.buttonText }}
-                </a>
+                </button>
               }
             </div>
           </div>
@@ -31,19 +31,19 @@
       }
     </div>
 
-    <button 
-      mat-icon-button 
-      class="nav-button prev" 
-      (click)="prev()" 
+    <button
+      mat-icon-button
+      class="nav-button prev"
+      (click)="prev()"
       [disabled]="banners().length <= 1"
       aria-label="Previous slide"
     >
       <mat-icon>chevron_left</mat-icon>
     </button>
-    <button 
-      mat-icon-button 
-      class="nav-button next" 
-      (click)="next()" 
+    <button
+      mat-icon-button
+      class="nav-button next"
+      (click)="next()"
       [disabled]="banners().length <= 1"
       aria-label="Next slide"
     >

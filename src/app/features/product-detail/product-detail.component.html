@@ -2,7 +2,7 @@
 <div class="loading-container" *ngIf="loading()">
   <div class="loading-content">
     <mat-spinner diameter="60"></mat-spinner>
-    <p class="loading-text">Cargando producto...</p>
+    <p class="loading-text">{{ 'PRODUCT.LOADING' | translate }}</p>
   </div>
 </div>
 
@@ -10,14 +10,14 @@
 <div class="error-container" *ngIf="error() && !loading()">
   <mat-card class="error-card" appearance="outlined">
     <mat-icon class="error-icon">error_outline</mat-icon>
-    <h2 class="error-title">Error al cargar el producto</h2>
+    <h2 class="error-title">{{ 'PRODUCT.ERROR_LOADING' | translate }}</h2>
     <p class="error-message">{{ error() }}</p>
     <div class="error-actions">
       <button mat-raised-button color="primary" (click)="retry()">
         <mat-icon>refresh</mat-icon>
-        Reintentar
+        {{ 'PRODUCT.RETRY' | translate }}
       </button>
-      <button mat-button (click)="goBack()">Volver</button>
+      <button mat-button (click)="goBack()">{{ 'PRODUCT.GO_BACK' | translate }}</button>
     </div>
   </mat-card>
 </div>
@@ -28,11 +28,7 @@
   <nav class="breadcrumbs" aria-label="Breadcrumb">
     <ol class="breadcrumb-list">
       <li *ngFor="let crumb of breadcrumbs(); let last = last" class="breadcrumb-item">
-        <a
-          *ngIf="!last && crumb.url"
-          [routerLink]="crumb.url"
-          class="breadcrumb-link"
-        >
+        <a *ngIf="!last && crumb.url" [routerLink]="crumb.url" class="breadcrumb-link">
           {{ crumb.label }}
         </a>
         <span *ngIf="last" class="breadcrumb-current">{{ crumb.label }}</span>
@@ -42,7 +38,12 @@
   </nav>
 
   <!-- Back Button (Mobile) -->
-  <button mat-icon-button class="back-button-mobile" (click)="goBack()" aria-label="Volver">
+  <button
+    mat-icon-button
+    class="back-button-mobile"
+    (click)="goBack()"
+    [attr.aria-label]="'PRODUCT.BACK' | translate"
+  >
     <mat-icon>arrow_back</mat-icon>
   </button>
 
@@ -72,7 +73,7 @@
   <section class="description-section" *ngIf="productResponse()?.description">
     <mat-card appearance="outlined">
       <mat-card-header>
-        <mat-card-title>Descripción del producto</mat-card-title>
+        <mat-card-title>{{ 'PRODUCT.DESCRIPTION' | translate }}</mat-card-title>
       </mat-card-header>
       <mat-card-content>
         <p class="description-text">{{ productResponse()!.description }}</p>
@@ -81,7 +82,10 @@
   </section>
 
   <!-- Product Specifications -->
-  <section class="specifications-section" *ngIf="productSpecifications() && Object.keys(productSpecifications()).length > 0">
+  <section
+    class="specifications-section"
+    *ngIf="productSpecifications() && Object.keys(productSpecifications()).length > 0"
+  >
     <app-product-specifications
       [specifications]="productSpecifications()"
     ></app-product-specifications>
@@ -102,9 +106,12 @@
   <div class="sticky-cart-mobile" *ngIf="productInfo()">
     <div class="sticky-cart-content">
       <div class="sticky-price">
-        <span class="price-label">Precio:</span>
+        <span class="price-label">{{ 'PRODUCT.PRICE_LABEL' | translate }}</span>
         <span class="price-value">
-          {{ productInfo()!.price.current | currency: productInfo()!.price.currency:'symbol':'1.0-0' }}
+          {{
+            productInfo()!.price.current
+              | currency: productInfo()!.price.currency : 'symbol' : '1.0-0'
+          }}
         </span>
       </div>
       <button
@@ -115,7 +122,7 @@
         [disabled]="!productInfo()!.availability.inStock"
       >
         <mat-icon>shopping_cart</mat-icon>
-        <span>Agregar</span>
+        <span>{{ 'PRODUCT.ADD' | translate }}</span>
       </button>
     </div>
   </div>

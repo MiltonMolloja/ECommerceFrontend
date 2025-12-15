@@ -1,27 +1,33 @@
-<section class="product-carousel">
+<section class="product-carousel" [attr.data-variant]="variant()">
   <div class="carousel-header">
     @if (viewAllLink()) {
-      <a [routerLink]="viewAllLink()" class="view-all-link">
-        Ver todos
+      <a
+        (click)="navigateToViewAll()"
+        (keydown.enter)="navigateToViewAll()"
+        tabindex="0"
+        role="link"
+        class="view-all-link"
+      >
+        {{ 'PRODUCT.VIEW_ALL' | translate }}
         <mat-icon>arrow_forward</mat-icon>
       </a>
     }
     <div class="nav-buttons">
-      <button 
-        mat-icon-button 
-        class="nav-btn" 
-        (click)="scrollLeft()" 
+      <button
+        mat-icon-button
+        class="nav-btn"
+        (click)="scrollLeft()"
         [disabled]="products().length === 0"
-        aria-label="Anterior"
+        [attr.aria-label]="'PRODUCT.PREVIOUS' | translate"
       >
         <mat-icon>chevron_left</mat-icon>
       </button>
-      <button 
-        mat-icon-button 
-        class="nav-btn" 
-        (click)="scrollRight()" 
+      <button
+        mat-icon-button
+        class="nav-btn"
+        (click)="scrollRight()"
         [disabled]="products().length === 0"
-        aria-label="Siguiente"
+        [attr.aria-label]="'PRODUCT.NEXT' | translate"
       >
         <mat-icon>chevron_right</mat-icon>
       </button>
@@ -31,29 +37,59 @@
   @if (products().length > 0) {
     <div class="carousel-track" #carouselTrack>
       @for (product of products(); track trackByProductId($index, product)) {
-        <mat-card 
-          class="product-card"
-          [routerLink]="getProductLink(product)"
-        >
-          <div class="product-image-container">
-            <img 
-              [src]="getProductImage(product)" 
-              [alt]="product.name" 
-              class="product-image"
-              loading="lazy"
-            />
-            @if (hasDiscount(product)) {
-              <div class="discount-badge">
-                -{{ getDiscountPercentage(product) }}%
+        <mat-card class="product-card" [routerLink]="getProductLink(product)">
+          <!-- Badges según variante -->
+          <div class="badges-container">
+            @if (variant() === 'deals' && hasDiscount(product)) {
+              <div class="discount-badge-large">
+                <span class="discount-percent">-{{ getDiscountPercentage(product) }}%</span>
+                <span class="discount-label">OFF</span>
+              </div>
+            }
+
+            @if (variant() === 'bestseller') {
+              <div class="ranking-badge">
+                <mat-icon>emoji_events</mat-icon>
+                <span>#{{ $index + 1 }}</span>
+              </div>
+            }
+
+            @if (variant() === 'featured') {
+              <div class="featured-badge">
+                <mat-icon>star</mat-icon>
+                <span>{{ 'PRODUCT.FEATURED' | translate }}</span>
+              </div>
+            }
+
+            @if (variant() === 'new') {
+              <div class="new-badge">
+                <mat-icon>fiber_new</mat-icon>
+                <span>{{ 'PRODUCT.NEW' | translate }}</span>
+              </div>
+            }
+
+            @if (variant() === 'top-rated' && product.averageRating) {
+              <div class="rating-badge-large">
+                <mat-icon>star</mat-icon>
+                <span>{{ product.averageRating | number: '1.1-1' }}</span>
               </div>
             }
           </div>
-          
+
+          <div class="product-image-container">
+            <img
+              [src]="getProductImage(product)"
+              [alt]="product.name"
+              class="product-image"
+              loading="lazy"
+            />
+          </div>
+
           <mat-card-content class="product-content">
             <h3 class="product-name" [title]="product.name">
               {{ product.name }}
             </h3>
-            
+
             @if (product.averageRating && product.averageRating > 0) {
               <div class="rating">
                 @for (star of getStars(product.averageRating); track $index) {
@@ -66,30 +102,33 @@
                 }
               </div>
             }
-            
+
             <div class="prices">
               <span class="price">${{ product.price.toFixed(2) }}</span>
               @if (hasDiscount(product)) {
-                <span class="original-price">
-                  ${{ getOriginalPrice(product).toFixed(2) }}
-                </span>
+                <span class="original-price"> ${{ getOriginalPrice(product).toFixed(2) }} </span>
               }
             </div>
-            
-            @if (hasDiscount(product)) {
+
+            @if (hasDiscount(product) && variant() === 'deals') {
+              <div class="savings-large">
+                <mat-icon>trending_down</mat-icon>
+                <span>{{ 'PRODUCT.SAVE' | translate }} ${{ getSavings(product).toFixed(2) }}</span>
+              </div>
+            } @else if (hasDiscount(product)) {
               <div class="savings">
-                Ahorrás ${{ getSavings(product).toFixed(2) }}
+                {{ 'PRODUCT.SAVE' | translate }} ${{ getSavings(product).toFixed(2) }}
               </div>
             }
-            
-            <button 
-              mat-raised-button 
+
+            <button
+              mat-raised-button
               color="primary"
               class="add-to-cart"
               (click)="onAddToCart(product, $event)"
             >
               <mat-icon>shopping_cart</mat-icon>
-              Agregar al carrito
+              {{ 'PRODUCT.ADD_TO_CART' | translate }}
             </button>
           </mat-card-content>
         </mat-card>
@@ -98,7 +137,7 @@
   } @else {
     <div class="empty-state">
       <mat-icon>inventory_2</mat-icon>
-      <p>No hay productos disponibles</p>
+      <p>{{ 'PRODUCT.NO_PRODUCTS' | translate }}</p>
     </div>
   }
 </section>

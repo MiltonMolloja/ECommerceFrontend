@@ -25,10 +25,23 @@ export class AuthService {
   private readonly tokenKey = environment.tokenKey;
   private readonly refreshTokenKey = environment.refreshTokenKey;
   private readonly tokenExpirationKey = environment.tokenExpirationKey;
+  private readonly logoutEventKey = 'auth_logout_event';
 
   // Signals
   private readonly accessTokenSignal = signal<string | null>(this.getStoredToken());
   private readonly currentUserSignal = signal<User | null>(this.getUserFromToken());
+
+  constructor() {
+    // Escuchar eventos de logout desde otras pestañas/aplicaciones
+    if (typeof window !== 'undefined') {
+      window.addEventListener('storage', (event) => {
+        if (event.key === this.logoutEventKey && event.newValue === 'true') {
+          // Otra aplicación cerró sesión, limpiar tokens locales
+          this.clearLocalSession();
+        }
+      });
+    }
+  }
 
   // Computed signals
   readonly isAuthenticated = computed(() => {
@@ -92,14 +105,29 @@ export class AuthService {
 
   /**
    * Logout
+   * Redirige al proyecto de autenticación para cerrar sesión y luego vuelve
    */
   logout(): void {
+    // Limpiar tokens locales primero
+    this.clearLocalSession();
+
+    // Obtener la URL actual para volver después del logout
+    const currentUrl = window.location.href;
+    const returnUrl = encodeURIComponent(currentUrl);
+
+    // Redirigir al logout del proyecto de autenticación con returnUrl
+    window.location.href = `https://localhost:4400/auth/logout?returnUrl=${returnUrl}`;
+  }
+
+  /**
+   * Limpiar sesión local sin notificar a otras aplicaciones
+   */
+  private clearLocalSession(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.tokenExpirationKey);
     this.accessTokenSignal.set(null);
     this.currentUserSignal.set(null);
-    this.router.navigate(['/login']);
   }
 
   /**
@@ -173,8 +201,7 @@ export class AuthService {
         lastName: payload.family_name || payload.lastName || payload.surname || '',
         email: payload.email || ''
       };
-    } catch (error) {
-
+    } catch {
       return null;
     }
   }

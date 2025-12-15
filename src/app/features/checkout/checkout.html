@@ -39,41 +39,41 @@
               <div class="step-icon">
                 <mat-icon>place</mat-icon>
               </div>
-              <mat-card-title>1. Dirección de envío</mat-card-title>
+              <mat-card-title>1. {{ 'CHECKOUT.STEP_SHIPPING' | translate }}</mat-card-title>
             </div>
           </mat-card-header>
           <mat-card-content>
             <form [formGroup]="shippingForm" (ngSubmit)="submitShippingForm()">
               <div class="form-grid">
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Nombre completo *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.FULL_NAME' | translate }} *</mat-label>
                   <input matInput formControlName="fullName" placeholder="Juan Pérez" />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Teléfono *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.PHONE' | translate }} *</mat-label>
                   <input
                     matInput
                     type="tel"
                     formControlName="phoneNumber"
                     placeholder="+54 11 1234-5678"
                   />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Dirección línea 1 *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.ADDRESS_LINE_1' | translate }} *</mat-label>
                   <input
                     matInput
                     formControlName="addressLine1"
                     placeholder="Calle Principal 123"
                   />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Dirección línea 2</mat-label>
+                  <mat-label>{{ 'CHECKOUT.ADDRESS_LINE_2' | translate }}</mat-label>
                   <input
                     matInput
                     formControlName="addressLine2"
@@ -82,35 +82,35 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Ciudad *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.CITY' | translate }} *</mat-label>
                   <input matInput formControlName="city" placeholder="Buenos Aires" />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Estado/Provincia</mat-label>
+                  <mat-label>{{ 'CHECKOUT.STATE_PROVINCE' | translate }}</mat-label>
                   <input matInput formControlName="state" placeholder="CABA" />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Código postal *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.POSTAL_CODE' | translate }} *</mat-label>
                   <input matInput formControlName="zipCode" placeholder="C1000" />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>País *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.COUNTRY' | translate }} *</mat-label>
                   <mat-select formControlName="country">
                     @for (country of countries; track country.value) {
                       <mat-option [value]="country.value">{{ country.label }}</mat-option>
                     }
                   </mat-select>
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
               </div>
 
               <button mat-raised-button type="submit" class="submit-button" color="primary">
-                Continuar al pago
+                {{ 'CHECKOUT.CONTINUE_TO_PAYMENT' | translate }}
               </button>
             </form>
           </mat-card-content>
@@ -126,9 +126,9 @@
               <div class="review-icon completed">
                 <mat-icon>check</mat-icon>
               </div>
-              <mat-card-title>1. Dirección de envío</mat-card-title>
+              <mat-card-title>1. {{ 'CHECKOUT.STEP_SHIPPING' | translate }}</mat-card-title>
               <button mat-button type="button" (click)="goToStep(1)" class="change-button">
-                Cambiar
+                {{ 'CHECKOUT.CHANGE' | translate }}
               </button>
             </div>
           </mat-card-header>
@@ -159,29 +159,74 @@
               <div class="step-icon">
                 <mat-icon>credit_card</mat-icon>
               </div>
-              <mat-card-title>2. Método de pago</mat-card-title>
+              <mat-card-title>2. {{ 'CHECKOUT.STEP_PAYMENT' | translate }}</mat-card-title>
             </div>
           </mat-card-header>
           <mat-card-content>
             <div class="secure-info">
               <mat-icon>lock</mat-icon>
-              <span>Transacción segura y encriptada con MercadoPago</span>
+              <span>{{ 'CHECKOUT.SECURE_TRANSACTION' | translate }}</span>
             </div>
+
+            @if (isDevMode) {
+              <div class="dev-mode-notice">
+                <mat-icon>developer_mode</mat-icon>
+                <div class="dev-mode-content">
+                  <strong>{{ 'CHECKOUT.DEV_MODE' | translate }}</strong>
+                  <span>{{ 'CHECKOUT.DEV_MODE_MESSAGE' | translate }}</span>
+                  <div class="dev-mode-test-codes">
+                    <strong>{{ 'CHECKOUT.DEV_MODE_CARDHOLDER_NAME' | translate }}</strong>
+                    <table class="test-codes-table">
+                      <tbody>
+                        <tr>
+                          <td>APRO</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_APRO' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>CALL</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_CALL' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>FUND</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_FUND' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>SECU</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_SECU' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>EXPI</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_EXPI' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>FORM</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_FORM' | translate }}</td>
+                        </tr>
+                        <tr>
+                          <td>OTHE</td>
+                          <td>{{ 'CHECKOUT.DEV_CODE_OTHE' | translate }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            }
 
             @if (isInitializingPayment) {
               <div class="loading-payment">
                 <mat-spinner diameter="40"></mat-spinner>
-                <p>Inicializando servicio de pagos...</p>
+                <p>{{ 'CHECKOUT.INITIALIZING_PAYMENT' | translate }}</p>
               </div>
             }
 
             <form [formGroup]="paymentForm" (ngSubmit)="submitPaymentForm()">
               <div class="form-grid">
                 <!-- Card Information -->
-                <div class="section-title full-width">Información de la tarjeta</div>
+                <div class="section-title full-width">{{ 'CHECKOUT.CARD_INFO' | translate }}</div>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Número de tarjeta *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.CARD_NUMBER' | translate }} *</mat-label>
                   <input
                     matInput
                     formControlName="cardNumber"
@@ -190,22 +235,22 @@
                     maxlength="19"
                   />
                   <mat-icon matSuffix>credit_card</mat-icon>
-                  <mat-error>Número de tarjeta inválido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.CARD_NUMBER_INVALID' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                  <mat-label>Nombre del titular *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.CARDHOLDER_NAME' | translate }} *</mat-label>
                   <input
                     matInput
                     formControlName="cardholderName"
                     placeholder="JUAN PEREZ"
                     style="text-transform: uppercase"
                   />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Mes (MM) *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.EXPIRY_MONTH' | translate }} *</mat-label>
                   <input
                     matInput
                     formControlName="expirationMonth"
@@ -213,11 +258,11 @@
                     (input)="formatExpirationMonth($event)"
                     maxlength="2"
                   />
-                  <mat-error>Mes inválido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.INVALID_MONTH' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Año (YY) *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.EXPIRY_YEAR' | translate }} *</mat-label>
                   <input
                     matInput
                     formControlName="expirationYear"
@@ -225,11 +270,11 @@
                     (input)="formatExpirationYear($event)"
                     maxlength="2"
                   />
-                  <mat-error>Año inválido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.INVALID_YEAR' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>CVV *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.CVV' | translate }} *</mat-label>
                   <input
                     matInput
                     type="password"
@@ -238,39 +283,41 @@
                     (input)="formatCVV($event)"
                     maxlength="4"
                   />
-                  <mat-icon
-                    matSuffix
-                    matTooltip="Código de seguridad de 3 o 4 dígitos al reverso de la tarjeta"
+                  <mat-icon matSuffix [matTooltip]="'CHECKOUT.CVV_TOOLTIP' | translate"
                     >help_outline</mat-icon
                   >
-                  <mat-error>CVV inválido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.INVALID_CVV' | translate }}</mat-error>
                 </mat-form-field>
 
                 <!-- Cardholder Identification -->
-                <div class="section-title full-width">Identificación del titular</div>
+                <div class="section-title full-width">
+                  {{ 'CHECKOUT.CARDHOLDER_ID' | translate }}
+                </div>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Tipo de documento *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.DOCUMENT_TYPE' | translate }} *</mat-label>
                   <mat-select formControlName="identificationType">
                     @for (idType of identificationTypes; track idType.id) {
                       <mat-option [value]="idType.id">{{ idType.name }}</mat-option>
                     }
                   </mat-select>
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                  <mat-label>Número de documento *</mat-label>
+                  <mat-label>{{ 'CHECKOUT.DOCUMENT_NUMBER' | translate }} *</mat-label>
                   <input matInput formControlName="identificationNumber" placeholder="12345678" />
-                  <mat-error>Este campo es requerido</mat-error>
+                  <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                 </mat-form-field>
 
                 <!-- Billing Address Section -->
-                <div class="section-title full-width">Dirección de facturación</div>
+                <div class="section-title full-width">
+                  {{ 'CHECKOUT.BILLING_ADDRESS' | translate }}
+                </div>
 
                 <div class="checkbox-field full-width">
                   <mat-checkbox formControlName="billingSameAsShipping">
-                    Usar la misma dirección de envío
+                    {{ 'CHECKOUT.USE_SHIPPING_ADDRESS' | translate }}
                   </mat-checkbox>
                 </div>
 
@@ -278,17 +325,17 @@
                   <div class="billing-address-form full-width">
                     <div class="form-grid" [formGroup]="billingForm">
                       <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Dirección línea 1 *</mat-label>
+                        <mat-label>{{ 'CHECKOUT.ADDRESS_LINE_1' | translate }} *</mat-label>
                         <input
                           matInput
                           formControlName="addressLine1"
                           placeholder="Calle Principal 123"
                         />
-                        <mat-error>Este campo es requerido</mat-error>
+                        <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                       </mat-form-field>
 
                       <mat-form-field appearance="outline" class="full-width">
-                        <mat-label>Dirección línea 2</mat-label>
+                        <mat-label>{{ 'CHECKOUT.ADDRESS_LINE_2' | translate }}</mat-label>
                         <input
                           matInput
                           formControlName="addressLine2"
@@ -297,30 +344,30 @@
                       </mat-form-field>
 
                       <mat-form-field appearance="outline">
-                        <mat-label>Ciudad *</mat-label>
+                        <mat-label>{{ 'CHECKOUT.CITY' | translate }} *</mat-label>
                         <input matInput formControlName="city" placeholder="Buenos Aires" />
-                        <mat-error>Este campo es requerido</mat-error>
+                        <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                       </mat-form-field>
 
                       <mat-form-field appearance="outline">
-                        <mat-label>Estado/Provincia</mat-label>
+                        <mat-label>{{ 'CHECKOUT.STATE_PROVINCE' | translate }}</mat-label>
                         <input matInput formControlName="state" placeholder="CABA" />
                       </mat-form-field>
 
                       <mat-form-field appearance="outline">
-                        <mat-label>Código postal *</mat-label>
+                        <mat-label>{{ 'CHECKOUT.POSTAL_CODE' | translate }} *</mat-label>
                         <input matInput formControlName="zipCode" placeholder="C1000" />
-                        <mat-error>Este campo es requerido</mat-error>
+                        <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                       </mat-form-field>
 
                       <mat-form-field appearance="outline">
-                        <mat-label>País *</mat-label>
+                        <mat-label>{{ 'CHECKOUT.COUNTRY' | translate }} *</mat-label>
                         <mat-select formControlName="country">
                           @for (country of countries; track country.value) {
                             <mat-option [value]="country.value">{{ country.label }}</mat-option>
                           }
                         </mat-select>
-                        <mat-error>Este campo es requerido</mat-error>
+                        <mat-error>{{ 'CHECKOUT.FIELD_REQUIRED' | translate }}</mat-error>
                       </mat-form-field>
                     </div>
                   </div>
@@ -329,10 +376,7 @@
 
               <div class="security-notice">
                 <mat-icon>info</mat-icon>
-                <span
-                  >Sus datos de tarjeta son procesados de forma segura por MercadoPago. Nunca
-                  almacenamos información sensible de su tarjeta.</span
-                >
+                <span>{{ 'CHECKOUT.SECURE_DATA_MESSAGE' | translate }}</span>
               </div>
 
               <button
@@ -342,7 +386,7 @@
                 color="primary"
                 [disabled]="isInitializingPayment"
               >
-                Continuar a revisión
+                {{ 'CHECKOUT.CONTINUE_TO_REVIEW' | translate }}
               </button>
             </form>
           </mat-card-content>
@@ -358,9 +402,9 @@
               <div class="review-icon completed">
                 <mat-icon>check</mat-icon>
               </div>
-              <mat-card-title>1. Dirección de envío</mat-card-title>
+              <mat-card-title>1. {{ 'CHECKOUT.STEP_SHIPPING' | translate }}</mat-card-title>
               <button mat-button type="button" (click)="goToStep(1)" class="change-button">
-                Cambiar
+                {{ 'CHECKOUT.CHANGE' | translate }}
               </button>
             </div>
           </mat-card-header>
@@ -391,9 +435,9 @@
               <div class="review-icon completed">
                 <mat-icon>check</mat-icon>
               </div>
-              <mat-card-title>Dirección de facturación</mat-card-title>
+              <mat-card-title>{{ 'CHECKOUT.BILLING_ADDRESS' | translate }}</mat-card-title>
               <button mat-button type="button" (click)="goToStep(2)" class="change-button">
-                Cambiar
+                {{ 'CHECKOUT.CHANGE' | translate }}
               </button>
             </div>
           </mat-card-header>
@@ -402,7 +446,7 @@
               @if (paymentForm.get('billingSameAsShipping')?.value) {
                 <div class="same-address-notice">
                   <mat-icon>check_circle</mat-icon>
-                  <span>Misma dirección que el envío</span>
+                  <span>{{ 'CHECKOUT.SAME_AS_SHIPPING' | translate }}</span>
                 </div>
               } @else {
                 <div>{{ billingForm.get('addressLine1')?.value }}</div>
@@ -429,9 +473,9 @@
               <div class="review-icon completed">
                 <mat-icon>check</mat-icon>
               </div>
-              <mat-card-title>2. Método de pago</mat-card-title>
+              <mat-card-title>2. {{ 'CHECKOUT.STEP_PAYMENT' | translate }}</mat-card-title>
               <button mat-button type="button" (click)="goToStep(2)" class="change-button">
-                Cambiar
+                {{ 'CHECKOUT.CHANGE' | translate }}
               </button>
             </div>
           </mat-card-header>
@@ -440,14 +484,14 @@
               <div class="payment-info">
                 <mat-icon>credit_card</mat-icon>
                 <span
-                  >Tarjeta terminando en
+                  >{{ 'CHECKOUT.CARD_ENDING_IN' | translate }}
                   {{ getLastFourDigits(paymentForm.get('cardNumber')?.value) }}</span
                 >
               </div>
               <div>{{ paymentForm.get('cardholderName')?.value }}</div>
               <div class="payment-security">
                 <mat-icon>lock</mat-icon>
-                <span>Pago seguro con MercadoPago</span>
+                <span>{{ 'CHECKOUT.SECURE_PAYMENT_WITH_MP' | translate }}</span>
               </div>
             </div>
           </mat-card-content>
@@ -460,7 +504,7 @@
               <div class="step-icon">
                 <mat-icon>inventory_2</mat-icon>
               </div>
-              <mat-card-title>3. Revisar pedido</mat-card-title>
+              <mat-card-title>3. {{ 'CHECKOUT.STEP_REVIEW' | translate }}</mat-card-title>
             </div>
           </mat-card-header>
           <mat-card-content>
@@ -490,16 +534,16 @@
     <div class="order-summary">
       <mat-card class="summary-card">
         <mat-card-header>
-          <mat-card-title>Resumen del pedido</mat-card-title>
+          <mat-card-title>{{ 'CHECKOUT.ORDER_SUMMARY' | translate }}</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="summary-row">
-            <span>Artículos ({{ itemCount() }}):</span>
+            <span>{{ 'CHECKOUT.ITEMS' | translate }} ({{ itemCount() }}):</span>
             <span class="summary-value">${{ subtotal() | number: '1.2-2' }}</span>
           </div>
 
           <div class="summary-row">
-            <span>Envío:</span>
+            <span>{{ 'CHECKOUT.SHIPPING' | translate }}:</span>
             <span class="summary-value" [class.free]="shipping() === 0">
               @if (shipping() === 0) {
                 GRATIS
@@ -510,14 +554,14 @@
           </div>
 
           <div class="summary-row">
-            <span>Impuesto estimado:</span>
+            <span>{{ 'CHECKOUT.ESTIMATED_TAX' | translate }}:</span>
             <span class="summary-value">${{ tax() | number: '1.2-2' }}</span>
           </div>
 
           <mat-divider></mat-divider>
 
           <div class="summary-row total">
-            <span>Total del pedido:</span>
+            <span>{{ 'CHECKOUT.ORDER_TOTAL' | translate }}:</span>
             <span class="summary-value total-value">${{ total() | number: '1.2-2' }}</span>
           </div>
         </mat-card-content>
@@ -533,9 +577,9 @@
             >
               @if (isProcessing) {
                 <mat-spinner diameter="20" class="inline-spinner"></mat-spinner>
-                Procesando pedido...
+                {{ 'CHECKOUT.PROCESSING_ORDER' | translate }}
               } @else {
-                Realizar pedido
+                {{ 'CHECKOUT.PLACE_ORDER' | translate }}
               }
             </button>
           </mat-card-actions>
@@ -543,7 +587,7 @@
 
         <div class="secure-badge">
           <mat-icon>lock</mat-icon>
-          <span>Pago seguro y encriptado</span>
+          <span>{{ 'CHECKOUT.SECURE_PAYMENT' | translate }}</span>
         </div>
       </mat-card>
     </div>

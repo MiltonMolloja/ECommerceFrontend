@@ -19,12 +19,9 @@ import { FilterService } from '../../services/filter.service';
 import { CartService } from '../../../../core/services/cart.service';
 import { Product, SearchParams, SortOption, FilterOption } from '../../models';
 import { AdvancedSearchParams } from '../../models/search-params.model';
-import { ProductCardComponent } from '../product-card/product-card.component';
 import { FiltersSidebarComponent } from '../filters-sidebar/filters-sidebar.component';
 import { SortDropdownComponent } from '../sort-dropdown/sort-dropdown.component';
-import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 import { ActiveFiltersComponent } from '../active-filters/active-filters.component';
-import { SearchHeaderComponent } from '../search-header/search-header.component';
 
 @Component({
   selector: 'app-search-results',
@@ -81,7 +78,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     // Register callback for language change reload
     this.productSearchService.onLanguageChangeReload(() => {
       if (this.currentSearchParams) {
-
         this.performSearch(this.currentSearchParams);
       }
     });
@@ -108,7 +104,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    * SIEMPRE usa búsqueda avanzada para obtener filtros dinámicos (Resolución, Año, etc.)
    */
   public performSearch(params: SearchParams): void {
-
     this.loading.set(true);
     this.error.set(null);
 
@@ -119,7 +114,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
     if (queryOrCategoryChanged) {
       this.originalPriceRange = null;
-
     }
 
     this.currentSearchParams = params; // Store for language change reload
@@ -136,7 +130,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           console.log('🔍 Search Response:', response);
           console.log('📊 Total Products:', response.products.length);
           console.log('🎛️ Filters:', response.filters);
-          console.log('📁 Category Filter:', response.filters.find(f => f.id === 'category'));
+          console.log(
+            '📁 Category Filter:',
+            response.filters.find((f) => f.id === 'category')
+          );
           console.log('🎯 Raw Facets:', response.facets);
 
           this.products.set(response.products);
@@ -149,7 +146,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
                 min: priceFilter.range.min,
                 max: priceFilter.range.max
               };
-
             }
           }
 
@@ -170,8 +166,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           // Scroll to top en cada búsqueda
           window.scrollTo({ top: 0, behavior: 'smooth' });
         },
-        error: (err) => {
-
+        error: () => {
           this.error.set('Error al cargar los productos. Por favor intenta nuevamente.');
           this.loading.set(false);
         }
@@ -217,15 +212,15 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       // BrandIds
       if (params.filters['brand']) {
         advancedParams.brandIds = params.filters['brand']
-          .map(id => parseInt(id, 10))
-          .filter(id => !isNaN(id));
+          .map((id) => parseInt(id, 10))
+          .filter((id) => !isNaN(id));
       }
 
       // CategoryIds
       if (params.filters['category']) {
         advancedParams.categoryIds = params.filters['category']
-          .map(id => parseInt(id, 10))
-          .filter(id => !isNaN(id));
+          .map((id) => parseInt(id, 10))
+          .filter((id) => !isNaN(id));
       }
 
       // Rating
@@ -383,7 +378,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       const brandIdsValue = Array.isArray(params['brandIds'])
         ? params['brandIds']
         : [params['brandIds']];
-      
+
       // Agregar a filters como 'brand'
       if (!searchParams.filters) {
         searchParams.filters = {};
@@ -397,7 +392,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       const categoryIdsValue = Array.isArray(params['categoryIds'])
         ? params['categoryIds']
         : [params['categoryIds']];
-      
+
       // Agregar a filters como 'category'
       if (!searchParams.filters) {
         searchParams.filters = {};
@@ -421,11 +416,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
         : params['filter_rating'];
       if (ratingValue) {
         searchParams.rating = parseFloat(ratingValue as string);
-
       }
     } else if (params['minRating']) {
       searchParams.rating = parseFloat(params['minRating'] as string);
-
     }
 
     return searchParams;
@@ -503,7 +496,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-
           // Agregar productos nuevos al final de la lista existente
           const currentProducts = this.products();
           const newProducts = [...currentProducts, ...response.products];
@@ -513,8 +505,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
           this.totalPages.set(response.pagination.totalPages);
           this.loadingMore.set(false);
         },
-        error: (err) => {
-
+        error: () => {
           this.loadingMore.set(false);
         }
       });
@@ -557,7 +548,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
    */
   addToCart(product: Product): void {
     if (!product.availability.inStock) {
-      this.snackBar.open('Product is out of stock', 'Close', {
+      const message = this.translateService.instant('CART.OUT_OF_STOCK');
+      const action = this.translateService.instant('CART.CLOSE');
+      this.snackBar.open(message, action, {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top',
@@ -566,10 +559,9 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Agregar al carrito
+    // Agregar al carrito (sin nombre, se obtiene dinámicamente)
     this.cartService.addToCart({
       id: product.id,
-      name: product.title,
       price: product.price.current,
       currency: product.price.currency,
       imageUrl: product.images.main,
@@ -580,7 +572,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     // Mostrar confirmación
     const message = this.translateService.instant('CART.PRODUCT_ADDED') || 'Product added to cart';
     const action = this.translateService.instant('CART.VIEW_CART') || 'View Cart';
-    
+
     const snackBarRef = this.snackBar.open(message, action, {
       duration: 5000,
       horizontalPosition: 'end',

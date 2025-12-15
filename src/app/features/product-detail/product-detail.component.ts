@@ -22,13 +22,19 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatCardModule } from '@angular/material/card';
 
+// Translation
+import { TranslateModule } from '@ngx-translate/core';
+
 // Services
 import { CartService } from '../../core/services/cart.service';
 import { LanguageService } from '../../core/services/language.service';
 
 // Components
 import { ProductDetailImagesComponent } from './components/product-detail-images/product-detail-images.component';
-import { ProductDetailInfoComponent, ProductInfo } from './components/product-detail-info/product-detail-info.component';
+import {
+  ProductDetailInfoComponent,
+  ProductInfo
+} from './components/product-detail-info/product-detail-info.component';
 import { ProductSpecificationsComponent } from './components/product-specifications/product-specifications.component';
 import { ProductReviewsComponent } from '../../shared/components/product-reviews/product-reviews.component';
 
@@ -62,7 +68,7 @@ interface ProductDetailResponse {
   rating?: number;
   averageRating?: number;
   reviewCount?: number;
-  totalReviews?: number;  // Backend usa totalReviews
+  totalReviews?: number; // Backend usa totalReviews
   ratingCount?: number;
   imageUrls?: string[];
   imageUrl?: string;
@@ -74,7 +80,15 @@ interface ProductDetailResponse {
   categories?: ProductCategory[]; // Array de categorías
   primaryCategory?: ProductCategory; // Categoría principal
   inStock?: boolean;
-  stock?: number | { stock?: number; minStock?: number; maxStock?: number; isLowStock?: boolean; isOutOfStock?: boolean };
+  stock?:
+    | number
+    | {
+        stock?: number;
+        minStock?: number;
+        maxStock?: number;
+        isLowStock?: boolean;
+        isOutOfStock?: boolean;
+      };
   stockQuantity?: number;
   features?: string[];
   specifications?: Record<string, string>;
@@ -100,6 +114,7 @@ interface ProductDetailResponse {
     MatDividerModule,
     MatSnackBarModule,
     MatCardModule,
+    TranslateModule,
     ProductDetailImagesComponent,
     ProductDetailInfoComponent,
     ProductSpecificationsComponent,
@@ -150,15 +165,17 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
     const productId = product.productId || product.id;
     const name = product.name || product.title || 'Producto sin nombre';
-    
+
     // Extract brandId
-    const brandId = product.brandId || (typeof product.brand === 'object' ? product.brand?.id : undefined);
-    
+    const brandId =
+      product.brandId || (typeof product.brand === 'object' ? product.brand?.id : undefined);
+
     // Soportar brand como string o como objeto { name: string }
-    const brandName = typeof product.brand === 'string' 
-      ? product.brand 
-      : (product.brand?.name || product.brandName || 'Sin marca');
-    
+    const brandName =
+      typeof product.brand === 'string'
+        ? product.brand
+        : product.brand?.name || product.brandName || 'Sin marca';
+
     // Debug log para verificar la marca
     console.log('🏷️ Brand mapping:', {
       rawBrand: product.brand,
@@ -167,23 +184,28 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       brandName: product.brandName,
       finalBrandName: brandName
     });
-    
-    const categoryName = typeof product.category === 'string'
-      ? product.category
-      : (product.category?.name || product.categoryName || 'Sin categoría');
+
+    const categoryName =
+      typeof product.category === 'string'
+        ? product.category
+        : product.category?.name || product.categoryName || 'Sin categoría';
     const currentPrice = product.price || product.currentPrice || 0;
     const currency = product.currency || 'USD';
     const rating = product.rating || product.averageRating || 0;
     const reviewCount = product.totalReviews || product.reviewCount || product.ratingCount || 0;
-    
+
     // Extract stock information (support both number and object)
-    const stockInfo = typeof product.stock === 'object' 
-      ? product.stock 
-      : { stock: product.stock || product.stockQuantity || 0 };
-    
-    const inStock = product.inStock !== undefined 
-      ? product.inStock 
-      : (stockInfo.isOutOfStock !== undefined ? !stockInfo.isOutOfStock : (stockInfo.stock || 0) > 0);
+    const stockInfo =
+      typeof product.stock === 'object'
+        ? product.stock
+        : { stock: product.stock || product.stockQuantity || 0 };
+
+    const inStock =
+      product.inStock !== undefined
+        ? product.inStock
+        : stockInfo.isOutOfStock !== undefined
+          ? !stockInfo.isOutOfStock
+          : (stockInfo.stock || 0) > 0;
 
     // Build price object with proper optional handling
     const priceObject: {
@@ -258,7 +280,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     }
 
     if (product.categories && product.categories.length > 0) {
-      result.categories = product.categories.map(cat => ({
+      result.categories = product.categories.map((cat) => ({
         categoryId: cat.categoryId,
         name: cat.name,
         slug: cat.slug
@@ -285,9 +307,10 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
 
   breadcrumbs = computed(() => {
     const product = this.productResponse();
-    const categoryName = typeof product?.category === 'string'
-      ? product.category
-      : (product?.category?.name || product?.categoryName);
+    const categoryName =
+      typeof product?.category === 'string'
+        ? product.category
+        : product?.category?.name || product?.categoryName;
 
     return [
       { label: 'Inicio', url: '/' },
@@ -302,7 +325,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     effect(() => {
       const languageChanged = this.languageService.languageChanged();
       if (languageChanged > 0 && this.currentProductId) {
-
         this.loadProduct(this.currentProductId);
       }
     });
@@ -345,14 +367,13 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           console.log('📦 Product API Response:', response);
           console.log('🏷️ Categories:', response.categories);
           console.log('🎯 Primary Category:', response.primaryCategory);
-          
+
           this.productResponse.set(response);
 
           // Analytics tracking
           this.trackProductView(response);
         },
-        error: (err) => {
-
+        error: () => {
           this.error.set('No se pudo cargar el producto. Por favor, intenta de nuevo.');
 
           // Mostrar notificación de error
@@ -436,16 +457,16 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /**
    * Track product view (analytics)
    */
-  private trackProductView(product: ProductDetailResponse): void {
-
-    // Implementar integración con Google Analytics, etc.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private trackProductView(_product: ProductDetailResponse): void {
+    // TODO: Implementar integración con Google Analytics, etc.
   }
 
   /**
    * Track add to cart (analytics)
    */
-  private trackAddToCart(product: ProductDetailResponse, quantity: number): void {
-
-    // Implementar integración con Google Analytics, etc.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private trackAddToCart(_product: ProductDetailResponse, _quantity: number): void {
+    // TODO: Implementar integración con Google Analytics, etc.
   }
 }

@@ -1,14 +1,13 @@
 <div class="home-container">
-
   <!-- Estado de Error -->
   @if (error()) {
     <div class="error-state">
       <mat-icon class="error-icon">error_outline</mat-icon>
-      <h2>Oops! Algo salió mal</h2>
+      <h2>{{ 'HOME.ERROR_TITLE' | translate }}</h2>
       <p>{{ error() }}</p>
       <button mat-raised-button color="primary" (click)="retry()">
         <mat-icon>refresh</mat-icon>
-        Reintentar
+        {{ 'HOME.RETRY' | translate }}
       </button>
     </div>
   }
@@ -17,7 +16,7 @@
   @else if (isLoading()) {
     <div class="loading-state">
       <mat-spinner diameter="50"></mat-spinner>
-      <p>Cargando productos...</p>
+      <p>{{ 'HOME.LOADING' | translate }}</p>
     </div>
   }
 
@@ -34,12 +33,13 @@
     @if (deals().length > 0) {
       <section class="deals-section">
         <div class="section-header">
-          <h2>🔥 Ofertas del Día</h2>
-          <p class="subtitle">Actualizadas cada minuto</p>
+          <h2>🔥 {{ 'HOME.DEALS_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'HOME.DEALS_SUBTITLE' | translate }}</p>
         </div>
         <app-product-carousel
           [products]="deals()"
           [viewAllLink]="'/s?hasDiscount=true'"
+          [variant]="'deals'"
           (addToCart)="onAddToCart($event)"
         />
       </section>
@@ -49,11 +49,12 @@
     @if (bestSellers().length > 0) {
       <section class="bestsellers-section">
         <div class="section-header">
-          <h2>🏆 Los Más Vendidos</h2>
+          <h2>🏆 {{ 'HOME.BESTSELLERS_TITLE' | translate }}</h2>
         </div>
         <app-product-carousel
           [products]="bestSellers()"
           [viewAllLink]="'/s?sortBy=bestseller'"
+          [variant]="'bestseller'"
           (addToCart)="onAddToCart($event)"
         />
       </section>
@@ -63,11 +64,12 @@
     @if (featuredProducts().length > 0) {
       <section class="featured-section">
         <div class="section-header">
-          <h2>⭐ Productos Destacados</h2>
+          <h2>⭐ {{ 'HOME.FEATURED_TITLE' | translate }}</h2>
         </div>
         <app-product-carousel
           [products]="featuredProducts()"
           [viewAllLink]="'/s?isFeatured=true'"
+          [variant]="'featured'"
           (addToCart)="onAddToCart($event)"
         />
       </section>
@@ -77,11 +79,12 @@
     @if (newArrivals().length > 0) {
       <section class="new-arrivals-section">
         <div class="section-header">
-          <h2>🆕 Recién Llegados</h2>
+          <h2>🆕 {{ 'HOME.NEW_ARRIVALS_TITLE' | translate }}</h2>
         </div>
         <app-product-carousel
           [products]="newArrivals()"
           [viewAllLink]="'/s?sortBy=newest'"
+          [variant]="'new'"
           (addToCart)="onAddToCart($event)"
         />
       </section>
@@ -91,12 +94,13 @@
     @if (topRated().length > 0) {
       <section class="top-rated-section">
         <div class="section-header">
-          <h2>⭐ Mejor Valorados</h2>
-          <p class="subtitle">4+ estrellas</p>
+          <h2>⭐ {{ 'HOME.TOP_RATED_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'HOME.TOP_RATED_SUBTITLE' | translate }}</p>
         </div>
         <app-product-carousel
           [products]="topRated()"
           [viewAllLink]="'/s?minRating=4&sortBy=rating'"
+          [variant]="'top-rated'"
           (addToCart)="onAddToCart($event)"
         />
       </section>
@@ -106,8 +110,8 @@
     @if (featuredCategories().length > 0) {
       <section class="categories-section">
         <div class="section-header">
-          <h2>📂 Categorías Destacadas</h2>
-          <p class="subtitle">Explora nuestras categorías más populares</p>
+          <h2>📂 {{ 'HOME.CATEGORIES_TITLE' | translate }}</h2>
+          <p class="subtitle">{{ 'HOME.CATEGORIES_SUBTITLE' | translate }}</p>
         </div>
         <app-categories-grid [categories]="featuredCategories()" />
       </section>
@@ -122,13 +126,13 @@
             <li><strong>Strategy:</strong> {{ loadStrategy() }}</li>
             <li><strong>From Cache:</strong> {{ metadata()?.fromCache ? 'Sí' : 'No' }}</li>
             <li><strong>Execution Time:</strong> {{ metadata()?.queryExecutionTimeMs }}ms</li>
-            <li><strong>Generated At:</strong> {{ metadata()?.generatedAt | date:'short' }}</li>
+            <li><strong>Generated At:</strong> {{ metadata()?.generatedAt | date: 'short' }}</li>
             <li><strong>Cache Age:</strong> {{ cacheInfo().age }}s</li>
             <li><strong>Cache Expires In:</strong> {{ cacheInfo().expiresIn }}s</li>
           </ul>
           <button mat-button (click)="clearCacheAndReload()">
             <mat-icon>delete</mat-icon>
-            Clear Cache & Reload
+            {{ 'HOME.CLEAR_CACHE' | translate }}
           </button>
         </details>
       </div>

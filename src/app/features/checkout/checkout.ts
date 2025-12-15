@@ -12,8 +12,12 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
-import { CartService } from '../../core/services/cart.service';
+import { CartService, CartItem } from '../../core/services/cart.service';
+import { ProductService } from '../../core/services/product.service';
+import { LanguageService } from '../../core/services/language.service';
 import { CheckoutService } from './services/checkout.service';
 import { CheckoutStep } from './models/checkout.models';
 import { OrderService } from '../../core/services/order.service';
@@ -23,6 +27,10 @@ import { AuthService } from '../../core/services/auth.service';
 import { OrderCreateCommand, OrderPayment } from '../../core/models/order/order.model';
 import { CardForm } from '../../core/models/payment/payment.model';
 import { environment } from '../../../environments/environment';
+
+export interface CartItemWithName extends CartItem {
+  name: string;
+}
 
 @Component({
   selector: 'app-checkout',
@@ -39,13 +47,17 @@ import { environment } from '../../../environments/environment';
     MatCheckboxModule,
     MatSnackBarModule,
     MatDividerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatTooltipModule,
+    TranslateModule
   ],
   templateUrl: './checkout.html',
   styleUrls: ['./checkout.scss']
 })
 export class CheckoutComponent implements OnInit, OnDestroy {
   private cartService = inject(CartService);
+  private productService = inject(ProductService);
+  private languageService = inject(LanguageService);
   private checkoutService = inject(CheckoutService);
   private orderService = inject(OrderService);
   private paymentService = inject(PaymentService);
@@ -55,10 +67,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private snackBar = inject(MatSnackBar);
   private fb = inject(FormBuilder);
+  private translate = inject(TranslateService);
   private destroy$ = new Subject<void>();
 
-  // Signals from cart
-  items = computed(() => this.cartService.items());
+  // Signal para productos con nombres traducidos
+  private productNames = computed(() => {
+    // Trigger para recargar cuando cambia el idioma
+    this.languageService.languageChanged();
+    return new Map<string, string>();
+  });
+
+  // Signals from cart con nombres traducidos
+  private cartItems = computed(() => this.cartService.items());
+  items = computed(() => {
+    const items = this.cartItems();
+    // Por ahora retornamos los items sin nombre traducido
+    // El nombre se mostrará desde el ProductService cuando sea necesario
+    return items.map((item) => ({
+      ...item,
+      name: 'Loading...' // Placeholder
+    })) as CartItemWithName[];
+  });
   itemCount = computed(() => this.cartService.itemCount());
   subtotal = computed(() => this.cartService.totalAmount());
 
@@ -78,16 +107,22 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   paymentMethodInfo: { id: string; name: string } | null = null;
   createdOrderId: number | null = null;
 
+  // Development mode flag (for showing test data warning)
+  isDevMode = !environment.production;
+
   // Calculations
   shipping = computed(() => (this.subtotal() >= 25 ? 0 : 9.99));
   tax = computed(() => this.subtotal() * 0.08);
   total = computed(() => this.subtotal() + this.shipping() + this.tax());
 
-  steps: CheckoutStep[] = [
-    { id: 1, title: 'Dirección de envío', completed: false },
-    { id: 2, title: 'Método de pago', completed: false },
-    { id: 3, title: 'Revisar pedido', completed: false }
-  ];
+  // Steps se generan dinámicamente con traducciones
+  get steps(): CheckoutStep[] {
+    return [
+      { id: 1, title: this.translate.instant('CHECKOUT.STEP_SHIPPING'), completed: false },
+      { id: 2, title: this.translate.instant('CHECKOUT.STEP_PAYMENT'), completed: false },
+      { id: 3, title: this.translate.instant('CHECKOUT.STEP_REVIEW'), completed: false }
+    ];
+  }
 
   countries = [
     { value: 'AR', label: 'Argentina' },
@@ -152,14 +187,27 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     });
 
     // Initialize payment form with additional fields for MercadoPago
+    // In development mode, pre-fill with MercadoPago test card data
     this.paymentForm = this.fb.group({
-      cardNumber: ['', [Validators.required, Validators.minLength(13)]],
-      cardholderName: ['', Validators.required],
-      expirationMonth: ['', [Validators.required, Validators.pattern(/^\d{2}$/)]],
-      expirationYear: ['', [Validators.required, Validators.pattern(/^\d{2}$/)]],
-      cvv: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(4)]],
-      identificationType: ['', Validators.required],
-      identificationNumber: ['', Validators.required],
+      cardNumber: [
+        this.isDevMode ? '5031 7557 3453 0604' : '',
+        [Validators.required, Validators.minLength(13)]
+      ],
+      cardholderName: [this.isDevMode ? 'APRO' : '', Validators.required],
+      expirationMonth: [
+        this.isDevMode ? '11' : '',
+        [Validators.required, Validators.pattern(/^\d{2}$/)]
+      ],
+      expirationYear: [
+        this.isDevMode ? '30' : '',
+        [Validators.required, Validators.pattern(/^\d{2}$/)]
+      ],
+      cvv: [
+        this.isDevMode ? '123' : '',
+        [Validators.required, Validators.minLength(3), Validators.maxLength(4)]
+      ],
+      identificationType: [this.isDevMode ? 'DNI' : '', Validators.required],
+      identificationNumber: [this.isDevMode ? '12345678' : '', Validators.required],
       billingSameAsShipping: [true]
     });
 
@@ -224,10 +272,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     try {
       await this.mercadoPagoService.initialize();
       this.identificationTypes = await this.mercadoPagoService.getIdentificationTypes();
-
-    } catch (error) {
-
-      this.snackBar.open('Error al inicializar el servicio de pagos', '', {
+    } catch {
+      const message = this.translate.instant('CHECKOUT.ERROR_INITIALIZING_PAYMENT');
+      this.snackBar.open(message, '', {
         duration: 5000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -247,11 +294,10 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         const method = methods.results[0];
         if (method && typeof method.id === 'string' && typeof method.name === 'string') {
           this.paymentMethodInfo = { id: method.id, name: method.name };
-
         }
       }
-    } catch (error) {
-
+    } catch {
+      // Ignore payment method detection errors
     }
   }
 
@@ -274,7 +320,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       this.checkoutService.nextStep();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
-      this.snackBar.open('Por favor complete todos los campos requeridos', '', {
+      const message = this.translate.instant('CHECKOUT.FIELD_REQUIRED');
+      this.snackBar.open(message, '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -291,7 +338,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     // Validate payment form
     if (!this.paymentForm.valid) {
-      this.snackBar.open('Por favor complete todos los detalles de pago', '', {
+      const message = this.translate.instant('CHECKOUT.COMPLETE_PAYMENT_DETAILS');
+      this.snackBar.open(message, '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -302,7 +350,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     // Validate billing form if different address
     if (!billingSameAsShipping && !this.billingForm.valid) {
-      this.snackBar.open('Por favor complete la dirección de facturación', '', {
+      const message = this.translate.instant('CHECKOUT.COMPLETE_BILLING_ADDRESS');
+      this.snackBar.open(message, '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -325,13 +374,12 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * Place order - Main checkout flow
    */
   async placeOrder(): Promise<void> {
-
     const currentUser = this.authService.currentUser();
 
     // Verify authentication
     if (!currentUser) {
-
-      this.snackBar.open('Sesión expirada. Por favor inicie sesión nuevamente.', '', {
+      const message = this.translate.instant('CHECKOUT.SESSION_EXPIRED');
+      this.snackBar.open(message, '', {
         duration: 3000,
         horizontalPosition: 'end',
         verticalPosition: 'top'
@@ -346,7 +394,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     // Validate cart has items
     if (this.items().length === 0) {
-
       this.snackBar.open('No hay productos en el carrito', '', {
         duration: 3000,
         horizontalPosition: 'end',
@@ -368,19 +415,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       // Step 3: Process payment with token
 
-
       await this.processPayment(token);
 
       // Success - navigate to confirmation
 
       this.handleOrderSuccess();
     } catch (error: unknown) {
-
       this.handleOrderError(error);
     } finally {
       this.isProcessing = false;
       this.pendingOrderAfterLogin = false;
-
     }
   }
 
@@ -429,7 +473,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
           }
         },
         error: (error) => {
-
           reject(error);
         }
       });
@@ -454,10 +497,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
     try {
       const token = await this.mercadoPagoService.createCardToken(cardForm);
-
       return token.id;
-    } catch (error) {
-
+    } catch {
       throw new Error('Error al procesar la información de la tarjeta');
     }
   }
@@ -470,7 +511,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       console.log('💰 processPayment() called with token:', token);
 
       if (!this.createdOrderId) {
-
         reject(new Error('No se encontró el ID de la orden'));
         return;
       }
@@ -486,6 +526,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         token: token,
         paymentMethodId: this.paymentMethodInfo?.id || 'credit_card',
         installments: 1,
+        cardholderName: this.paymentForm.get('cardholderName')?.value || '',
+        identificationType: this.paymentForm.get('identificationType')?.value || '',
+        identificationNumber: this.paymentForm.get('identificationNumber')?.value || '',
         billingAddress: billingAddress.addressLine1 || '',
         billingCity: billingAddress.city || '',
         billingCountry: billingAddress.country || 'AR',
@@ -494,18 +537,13 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       this.paymentService.processPayment(paymentRequest).subscribe({
         next: (response) => {
-
           if (response.success) {
-
             resolve();
           } else {
-
             reject(new Error(response.message || 'Error al procesar el pago'));
           }
         },
         error: (error) => {
-
-
           reject(error);
         }
       });
@@ -541,12 +579,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    * Handle order errors
    */
   private handleOrderError(error: unknown): void {
+    const err = error as {
+      error?: { message?: string; error?: string; errorCode?: string };
+      message?: string;
+    };
 
-    const err = error as { error?: { message?: string; error?: string }; message?: string };
+    // Priorizar el mensaje de error específico del pago
+    const defaultErrorMessage = this.translate.instant('CHECKOUT.ERROR_PROCESSING_ORDER');
     const errorMessage =
-      err.error?.message ||
-      err.message ||
-      'Ocurrió un error al procesar su pedido. Por favor intente nuevamente.';
+      err.error?.error || // Mensaje de error específico del gateway (ej: "Rechazado - Llamar para autorizar")
+      err.error?.message || // Mensaje general del backend
+      err.message || // Mensaje del error HTTP
+      defaultErrorMessage;
 
     // If payment failed and we have an order ID, navigate to payment-error page
     if (this.createdOrderId && err.error?.error) {
@@ -570,7 +614,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
             currency: 'ARS'
           }).format(this.total()),
           paymentMethod: `${this.paymentMethodInfo?.name || 'Tarjeta'} terminada en ${lastFourDigits}`,
-          failureReason: errorMessage
+          failureReason: errorMessage,
+          errorCode: err.error?.errorCode // Agregar código de error para referencia
         }
       });
     } else {

@@ -20,16 +20,17 @@
         <div class="amazon-results-header">
           <h1 class="amazon-results-title">
             @if (searchQuery()) {
-              Resultados para <span class="amazon-query-highlight">"{{ searchQuery() }}"</span>
+              {{ 'PRODUCT_SEARCH.RESULTS_FOR' | translate }}
+              <span class="amazon-query-highlight">"{{ searchQuery() }}"</span>
             } @else {
-              Todos los productos
+              {{ 'PRODUCT_SEARCH.ALL_PRODUCTS' | translate }}
             }
           </h1>
         </div>
 
         <!-- Sort Dropdown -->
         <div class="amazon-sort-container">
-          <span class="amazon-sort-label">Ordenar por:</span>
+          <span class="amazon-sort-label">{{ 'PRODUCT_SEARCH.SORT_BY_LABEL' | translate }}</span>
           <app-sort-dropdown (sortChange)="onSortChange($event)"></app-sort-dropdown>
         </div>
       </div>
@@ -74,25 +75,29 @@
                 <!-- Badges -->
                 @if (product.isPrime) {
                   <span class="amazon-badge amazon-badge-bestseller">
-                    Best Seller
+                    {{ 'PRODUCT_SEARCH.BEST_SELLER' | translate }}
                   </span>
                 }
 
                 @if (product.price.discount && product.price.discount > 0) {
                   <span class="amazon-badge amazon-badge-discount">
-                    -{{ product.price.discount | number:'1.0-0' }}%
+                    -{{ product.price.discount | number: '1.0-0' }}%
                   </span>
                 }
 
                 @if (product.isSponsored) {
                   <span class="amazon-badge amazon-badge-choice">
-                    ✓ Sponsored
+                    ✓ {{ 'PRODUCT_SEARCH.SPONSORED' | translate }}
                   </span>
                 }
 
-                @if (!product.isSponsored && product.rating.average >= 4.5 && product.rating.count > 100) {
+                @if (
+                  !product.isSponsored &&
+                  product.rating.average >= 4.5 &&
+                  product.rating.count > 100
+                ) {
                   <span class="amazon-badge amazon-badge-choice">
-                    ✓ Amazon's Choice
+                    ✓ {{ 'PRODUCT_SEARCH.AMAZONS_CHOICE' | translate }}
                   </span>
                 }
               </div>
@@ -110,7 +115,7 @@
                 <div class="amazon-product-rating">
                   <div class="amazon-stars">
                     @for (star of [1, 2, 3, 4, 5]; track star) {
-                      <span 
+                      <span
                         class="amazon-star"
                         [class.amazon-star-filled]="star <= (product.rating.average || 0)"
                       >
@@ -127,11 +132,11 @@
                 <div class="amazon-product-price">
                   <div class="amazon-price-row">
                     <span class="amazon-current-price">
-                      ${{ product.price.current | number:'1.2-2' }}
+                      ${{ product.price.current | number: '1.2-2' }}
                     </span>
                     @if (product.price.original && product.price.original > product.price.current) {
                       <span class="amazon-original-price">
-                        ${{ product.price.original | number:'1.2-2' }}
+                        ${{ product.price.original | number: '1.2-2' }}
                       </span>
                     }
                   </div>
@@ -142,9 +147,9 @@
                   <div class="amazon-delivery">
                     <span class="amazon-delivery-text">
                       @if (product.isPrime) {
-                        FREE delivery Tomorrow
+                        {{ 'PRODUCT_SEARCH.FREE_DELIVERY_TOMORROW' | translate }}
                       } @else {
-                        Delivery in 2-3 days
+                        {{ 'PRODUCT_SEARCH.DELIVERY_2_3_DAYS' | translate }}
                       }
                     </span>
                   </div>
@@ -155,25 +160,28 @@
                   @if (product.availability.inStock) {
                     <span class="amazon-stock-text amazon-stock-in">
                       @if (product.availability.quantity && product.availability.quantity > 0) {
-                        In Stock ({{ product.availability.quantity }} available)
+                        {{
+                          'PRODUCT_SEARCH.IN_STOCK_QUANTITY'
+                            | translate: { quantity: product.availability.quantity }
+                        }}
                       } @else {
-                        In Stock
+                        {{ 'PRODUCT_SEARCH.IN_STOCK' | translate }}
                       }
                     </span>
                   } @else {
                     <span class="amazon-stock-text amazon-stock-out">
-                      Out of Stock
+                      {{ 'PRODUCT_SEARCH.OUT_OF_STOCK' | translate }}
                     </span>
                   }
                 </div>
 
                 <!-- Add to Cart Button -->
-                <button 
+                <button
                   class="amazon-add-to-cart-btn"
                   (click)="addToCart(product)"
                   [disabled]="!product.availability.inStock"
                 >
-                  Add to Cart
+                  {{ 'PRODUCT_SEARCH.ADD_TO_CART' | translate }}
                 </button>
               </div>
             </div>
@@ -184,17 +192,20 @@
         @if (loadingMore()) {
           <div class="amazon-loading-more">
             <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-            <p>Cargando más productos...</p>
+            <p>{{ 'PRODUCT_SEARCH.LOADING_MORE' | translate }}</p>
           </div>
         }
 
         <!-- Pagination Info -->
         <div class="amazon-pagination-info">
           <p>
-            Mostrando {{ products().length }} de {{ totalResults() | number }} resultados
+            {{
+              'PRODUCT_SEARCH.SHOWING_RESULTS'
+                | translate: { count: products().length, total: (totalResults() | number) }
+            }}
           </p>
           @if (currentPage() < totalPages()) {
-            <p class="amazon-scroll-hint">Desplázate hacia abajo para ver más productos</p>
+            <p class="amazon-scroll-hint">{{ 'PRODUCT_SEARCH.SCROLL_HINT' | translate }}</p>
           }
         </div>
       }
@@ -203,9 +214,9 @@
       @if (!loading() && !hasResults()) {
         <div class="amazon-empty-state">
           <div class="amazon-empty-icon">🔍</div>
-          <h2 class="amazon-empty-title">No se encontraron resultados</h2>
+          <h2 class="amazon-empty-title">{{ 'PRODUCT_SEARCH.NO_RESULTS_TITLE' | translate }}</h2>
           <p class="amazon-empty-text">
-            Intenta con otros términos de búsqueda o ajusta los filtros.
+            {{ 'PRODUCT_SEARCH.NO_RESULTS_MESSAGE' | translate }}
           </p>
         </div>
       }
@@ -214,10 +225,10 @@
       @if (error()) {
         <div class="amazon-error-state">
           <div class="amazon-error-icon">⚠️</div>
-          <h2 class="amazon-error-title">Error al cargar los productos</h2>
+          <h2 class="amazon-error-title">{{ 'PRODUCT_SEARCH.ERROR_TITLE' | translate }}</h2>
           <p class="amazon-error-text">{{ error() }}</p>
           <button class="amazon-retry-btn" (click)="retry()">
-            Reintentar
+            {{ 'PRODUCT_SEARCH.RETRY' | translate }}
           </button>
         </div>
       }

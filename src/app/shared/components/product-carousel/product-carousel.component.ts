@@ -1,6 +1,6 @@
 /**
  * ProductCarouselComponent - Carrusel horizontal de productos
- * 
+ *
  * Recibe ProductDto[] del backend y muestra un carrusel scrolleable
  * Features:
  * - Navegación con botones prev/next
@@ -11,35 +11,40 @@
  * - Navegación a detalle de producto
  */
 
-import { Component, input, ViewChild, ElementRef, output } from '@angular/core';
+import { Component, input, ViewChild, ElementRef, output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
+import { TranslateModule } from '@ngx-translate/core';
 import { ProductDto } from '@core/models';
 
 @Component({
   selector: 'app-product-carousel',
   standalone: true,
   imports: [
-    CommonModule, 
-    RouterModule, 
-    MatButtonModule, 
-    MatIconModule, 
-    MatCardModule
+    CommonModule,
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    TranslateModule
   ],
   templateUrl: './product-carousel.component.html',
   styleUrls: ['./product-carousel.component.scss']
 })
 export class ProductCarouselComponent {
+  private router = inject(Router);
+
   // Inputs
   products = input<ProductDto[]>([]);
   viewAllLink = input<string>('');
-  
+  variant = input<'default' | 'deals' | 'bestseller' | 'featured' | 'new' | 'top-rated'>('default');
+
   // Outputs
   addToCart = output<ProductDto>();
-  
+
   // ViewChild para scroll
   @ViewChild('carouselTrack') carouselTrack!: ElementRef<HTMLDivElement>;
 
@@ -129,5 +134,31 @@ export class ProductCarouselComponent {
     event.preventDefault();
     event.stopPropagation();
     this.addToCart.emit(product);
+  }
+
+  /**
+   * Navega al link "Ver todos" parseando la URL con query params
+   */
+  navigateToViewAll(): void {
+    const url = this.viewAllLink();
+    if (!url) return;
+
+    if (url.includes('?')) {
+      const [path, queryString] = url.split('?');
+      const queryParams: Record<string, string> = {};
+
+      if (queryString) {
+        queryString.split('&').forEach((param) => {
+          const [key, value] = param.split('=');
+          if (key) {
+            queryParams[key] = value || 'true';
+          }
+        });
+      }
+
+      this.router.navigate([path], { queryParams });
+    } else {
+      this.router.navigate([url]);
+    }
   }
 }

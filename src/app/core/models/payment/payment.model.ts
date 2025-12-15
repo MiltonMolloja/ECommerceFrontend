@@ -53,6 +53,9 @@ export interface ProcessPaymentRequest {
   paymentMethodId: string; // ej: "master", "visa", "amex"
   token: string; // Token de MercadoPago
   installments: number; // Número de cuotas
+  cardholderName: string; // Nombre del titular (para simulación: APRO, CALL, FUND, etc.)
+  identificationType: string; // Tipo de documento (DNI, CUIL, etc.)
+  identificationNumber: string; // Número de documento
   billingAddress: string;
   billingCity: string;
   billingCountry: string;

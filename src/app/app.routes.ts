@@ -65,11 +65,20 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       {
+        path: 'deals',
+        redirectTo: 's?hasDiscount=true',
+        pathMatch: 'full'
+      },
+      {
         path: 'product/:id',
         loadChildren: () =>
           import('./features/product-detail/product-detail.routes').then(
             (m) => m.PRODUCT_DETAIL_ROUTES
           )
+      },
+      {
+        path: 'help',
+        loadComponent: () => import('./features/help/help').then((m) => m.HelpComponent)
       }
     ]
   },

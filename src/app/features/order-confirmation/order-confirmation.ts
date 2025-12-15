@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
+import { TranslateModule } from '@ngx-translate/core';
 
 interface OrderItem {
   productId: string;
@@ -29,7 +30,14 @@ interface ShippingAddress {
 @Component({
   selector: 'app-order-confirmation',
   standalone: true,
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatCardModule, MatDividerModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatDividerModule,
+    TranslateModule
+  ],
   templateUrl: './order-confirmation.html',
   styleUrls: ['./order-confirmation.scss']
 })

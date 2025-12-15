@@ -1,13 +1,10 @@
 @if (categories().length > 0) {
   <div class="categories-grid">
     @for (category of categories(); track category.categoryId) {
-      <mat-card 
-        class="category-card" 
-        [routerLink]="getCategoryLink(category)"
-      >
+      <mat-card class="category-card" (click)="navigateToCategory(category)">
         <div class="category-image-container">
-          <img 
-            [src]="getCategoryImage(category)" 
+          <img
+            [src]="getCategoryImage(category)"
             [alt]="category.name"
             class="category-image"
             loading="lazy"
@@ -18,14 +15,14 @@
             </div>
           }
         </div>
-        
+
         <mat-card-content class="category-content">
           <h3 class="category-name">{{ category.name }}</h3>
-          
+
           @if (category.description) {
             <p class="category-description">{{ category.description }}</p>
           }
-          
+
           @if (category.productCount !== undefined && category.productCount > 0) {
             <div class="product-count">
               <mat-icon>inventory_2</mat-icon>
@@ -35,13 +32,13 @@
         </mat-card-content>
 
         <mat-card-actions class="category-actions">
-          <button 
-            mat-button 
+          <button
+            mat-button
             color="primary"
-            [routerLink]="getCategoryLink(category)"
+            (click)="navigateToCategory(category); $event.stopPropagation()"
           >
-            Ver productos
             <mat-icon>arrow_forward</mat-icon>
+            {{ 'PRODUCT.VIEW_PRODUCTS' | translate }}
           </button>
         </mat-card-actions>
       </mat-card>
@@ -50,6 +47,6 @@
 } @else {
   <div class="empty-state">
     <mat-icon>category</mat-icon>
-    <p>No hay categorías destacadas disponibles</p>
+    <p>{{ 'PRODUCT.NO_CATEGORIES' | translate }}</p>
   </div>
 }

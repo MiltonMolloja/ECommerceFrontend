@@ -1,145 +1,111 @@
-// Amazon-style Search Results Styles
-
+// Amazon-style Search Results - Optimized
 .amazon-search-container {
-  background: #ffffff;
+  background: var(--card-bg, #fff);
   min-height: 100vh;
 }
-
 .amazon-layout {
   display: flex;
   gap: 20px;
   max-width: 1400px;
   margin: 0 auto;
   padding: 16px 20px;
-
   @media (max-width: 1024px) {
     flex-direction: column;
     gap: 16px;
   }
 }
-
-// Sidebar
 .amazon-sidebar {
   width: 240px;
   flex-shrink: 0;
   padding-right: 20px;
-  border-right: 1px solid #e0e0e0;
-
+  border-right: 1px solid var(--border-color, #e0e0e0);
   @media (max-width: 1024px) {
     width: 100%;
     border-right: none;
     padding-right: 0;
   }
 }
-
-// Main Content
 .amazon-main {
   flex: 1;
   min-width: 0;
 }
-
-// Header Row (Title + Sort)
 .amazon-header-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-  padding-bottom: 0;
-
   @media (max-width: 768px) {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
 }
-
-// Results Header
 .amazon-results-header {
   flex: 1;
 }
-
 .amazon-results-title {
   font-size: 24px;
   font-weight: 400;
-  color: #0f1111;
+  color: var(--text-primary, #0f1111);
   margin: 0;
   line-height: 1.3;
-
   @media (max-width: 768px) {
     font-size: 20px;
   }
 }
-
 .amazon-query-highlight {
   color: #c45500;
   font-weight: 400;
 }
-
-// Active Filters Wrapper
 .amazon-active-filters-wrapper {
   margin-bottom: 16px;
 }
-
-// Sort Container
 .amazon-sort-container {
   display: flex;
   align-items: center;
   gap: 8px;
-
   @media (max-width: 768px) {
     width: 100%;
   }
 }
-
 .amazon-sort-label {
   font-size: 14px;
   font-weight: 400;
-  color: #0f1111;
+  color: var(--text-primary, #0f1111);
   white-space: nowrap;
 }
-
-// Products Grid
 .amazon-products-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
   }
-
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
     gap: 12px;
   }
 }
-
-// Product Card
 .amazon-product-card {
-  background: #ffffff;
-  border: 1px solid #ddd;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #ddd);
   border-radius: 8px;
   overflow: hidden;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   display: flex;
   flex-direction: column;
   animation: fadeInUp 0.4s ease-out;
-
   &:hover {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transform: translateY(-1px);
   }
-
-  // Stagger animation for each card
-  @for $i from 1 through 24 {
+  @for $i from 1 through 12 {
     &:nth-child(#{$i}) {
       animation-delay: #{$i * 0.05}s;
     }
   }
 }
-
-// Fade in animation
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -150,47 +116,37 @@
     transform: translateY(0);
   }
 }
-
-// Accessibility: Respect prefers-reduced-motion
 @media (prefers-reduced-motion: reduce) {
   .amazon-product-card {
     animation: none;
   }
-
   .amazon-product-image {
     transition: none;
   }
 }
-
-// Product Image Container
 .amazon-product-image-container {
   position: relative;
   height: 280px;
-  background: #ffffff;
+  background: var(--card-bg, #fff);
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 20px;
-
   @media (max-width: 640px) {
     height: 240px;
     padding: 15px;
   }
 }
-
 .amazon-product-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  transition: transform 0.2s ease;
-
+  transition: transform 0.2s;
   .amazon-product-card:hover & {
     transform: scale(1.03);
   }
 }
-
-// Badges
 .amazon-badge {
   position: absolute;
   padding: 6px 12px;
@@ -198,11 +154,8 @@
   font-weight: 700;
   border-radius: 2px;
   color: white;
-  text-transform: none;
-  letter-spacing: 0;
   z-index: 2;
 }
-
 .amazon-badge-bestseller {
   top: 8px;
   left: 8px;
@@ -210,7 +163,6 @@
   padding: 4px 8px;
   font-size: 11px;
 }
-
 .amazon-badge-discount {
   top: 8px;
   right: 8px;
@@ -219,7 +171,6 @@
   font-size: 12px;
   font-weight: 700;
 }
-
 .amazon-badge-choice {
   top: 8px;
   left: 8px;
@@ -230,8 +181,6 @@
   align-items: center;
   gap: 4px;
 }
-
-// Product Info
 .amazon-product-info {
   padding: 16px;
   display: flex;
@@ -239,111 +188,86 @@
   gap: 8px;
   flex: 1;
 }
-
-// Product Title
 .amazon-product-title {
   font-size: 16px;
   font-weight: 400;
   line-height: 1.4;
-  color: #0f1111;
+  color: var(--text-primary, #0f1111);
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
   min-height: 44px;
-
   a {
-    color: #0f1111;
+    color: var(--text-primary, #0f1111);
     text-decoration: none;
-
     &:hover {
       color: #c7511f;
     }
   }
 }
-
-// Rating
 .amazon-product-rating {
   display: flex;
   align-items: center;
   gap: 8px;
   margin: 4px 0;
 }
-
 .amazon-stars {
   display: flex;
   gap: 2px;
 }
-
 .amazon-star {
   font-size: 26px;
-  color: #e0e0e0;
+  color: var(--border-color, #e0e0e0);
   line-height: 1;
-
   &.amazon-star-filled {
     color: #ff9900;
   }
 }
-
 .amazon-reviews-count {
   font-size: 14px;
-  color: #007185;
+  color: var(--link-color, #007185);
   font-weight: 400;
 }
-
-// Price
 .amazon-product-price {
   margin: 8px 0 4px;
 }
-
 .amazon-price-row {
   display: flex;
   align-items: baseline;
   gap: 8px;
 }
-
 .amazon-current-price {
   font-size: 28px;
   font-weight: 400;
-  color: #0f1111;
+  color: var(--text-primary, #0f1111);
 }
-
 .amazon-original-price {
   font-size: 14px;
-  color: #565959;
+  color: var(--text-secondary, #565959);
   text-decoration: line-through;
 }
-
-// Delivery
 .amazon-delivery {
   font-size: 14px;
   color: #007600;
   font-weight: 700;
   margin: 4px 0;
 }
-
 .amazon-delivery-text {
   display: block;
 }
-
-// Stock
 .amazon-stock {
   font-size: 14px;
   font-weight: 400;
   margin: 4px 0 12px;
 }
-
 .amazon-stock-in {
   color: #007600;
 }
-
 .amazon-stock-out {
   color: #c7511f;
 }
-
-// Add to Cart Button
 .amazon-add-to-cart-btn {
   width: 100%;
   padding: 10px 16px;
@@ -354,18 +278,15 @@
   font-size: 15px;
   font-weight: 400;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.15s;
   margin-top: auto;
-
   &:hover:not(:disabled) {
     background: #fa8900;
     border-color: #fa8900;
   }
-
   &:active:not(:disabled) {
     transform: scale(0.98);
   }
-
   &:disabled {
     background: #f0f0f0;
     color: #999;
@@ -373,117 +294,82 @@
     cursor: not-allowed;
   }
 }
-
-// Loading Skeleton
 .amazon-loading-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-
   @media (max-width: 1200px) {
     grid-template-columns: repeat(2, 1fr);
   }
-
   @media (max-width: 640px) {
     grid-template-columns: 1fr;
   }
 }
-
 .amazon-skeleton-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 8px;
   height: 500px;
   animation: pulse 1.5s ease-in-out infinite;
-
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }
-
-// Loading More
 .amazon-loading-more {
   text-align: center;
   padding: 20px;
   margin-top: 20px;
-
   p {
     margin-top: 12px;
     color: var(--text-secondary);
     font-size: 14px;
   }
 }
-
-// Pagination Info
 .amazon-pagination-info {
   text-align: center;
   padding: 20px;
   color: var(--text-secondary);
   font-size: 14px;
-
   p {
     margin: 4px 0;
   }
-
   .amazon-scroll-hint {
     color: #ff9900;
     font-weight: 500;
   }
 }
-
-// Empty State
-.amazon-empty-state {
-  text-align: center;
-  padding: 80px 20px;
-}
-
-.amazon-empty-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.amazon-empty-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 12px 0;
-}
-
-.amazon-empty-text {
-  font-size: 16px;
-  color: var(--text-secondary);
-  margin: 0;
-}
-
-// Error State
+.amazon-empty-state,
 .amazon-error-state {
   text-align: center;
   padding: 80px 20px;
 }
-
+.amazon-empty-icon,
 .amazon-error-icon {
   font-size: 64px;
   margin-bottom: 20px;
 }
-
+.amazon-empty-title,
 .amazon-error-title {
   font-size: 24px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 12px 0;
 }
-
+.amazon-empty-text,
 .amazon-error-text {
   font-size: 16px;
   color: var(--text-secondary);
-  margin: 0 0 24px 0;
+  margin: 0;
 }
-
+.amazon-error-text {
+  margin-bottom: 24px;
+}
 .amazon-retry-btn {
   padding: 12px 32px;
   background: #ff9900;
@@ -493,96 +379,70 @@
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s ease;
-
+  transition: all 0.2s;
   &:hover {
     background: #fa8900;
   }
-
   &:active {
     transform: scale(0.98);
   }
 }
-
-// Responsive Adjustments
 @media (max-width: 640px) {
   .amazon-results-title {
     font-size: 20px;
   }
-
   .amazon-product-title {
     font-size: 13px;
     min-height: 36px;
   }
-
   .amazon-current-price {
     font-size: 20px;
   }
-
   .amazon-add-to-cart-btn {
     padding: 8px 12px;
     font-size: 13px;
   }
-
   .amazon-badge {
     font-size: 10px;
     padding: 3px 8px;
   }
 }
-
-// Dark Mode Support
-:host-context(.dark) {
+// Dark Mode
+:host-context(.dark-theme) {
+  --link-color: #60a5fa;
   .amazon-search-container {
-    background: #131921;
+    background: var(--current-bg, #131921);
   }
-
   .amazon-product-card {
-    background: #232f3e;
-    border-color: #3a4553;
+    background: var(--card-bg, #232f3e);
+    border-color: var(--border-color, #3a4553);
   }
-
   .amazon-product-image-container {
-    background: #232f3e;
+    background: var(--card-bg, #232f3e);
   }
-
   .amazon-product-title a {
-    color: #ffffff;
-
+    color: var(--text-primary, #fff);
     &:hover {
       color: #ff9900;
     }
   }
-
   .amazon-current-price {
-    color: #ffffff;
+    color: var(--text-primary, #fff);
   }
-
   .amazon-original-price {
-    color: #999;
+    color: var(--text-secondary, #999);
   }
-
   .amazon-delivery,
   .amazon-stock-in {
     color: #00d084;
   }
-
   .amazon-stock-out {
     color: #ff6b6b;
   }
-
   .amazon-query-highlight {
     color: #ff9900;
   }
-
-  .amazon-results-title {
-    color: #ffffff;
-  }
-
-  .amazon-sort-label {
-    color: #ffffff;
-  }
-
   .amazon-sidebar {
-    border-right-color: #3a4553;
+    border-right-color: var(--border-color, #3a4553);
   }
 }

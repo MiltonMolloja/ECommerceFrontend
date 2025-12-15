@@ -18,25 +18,47 @@
           <!-- Cuenta y listas -->
           <button mat-button class="account-button hide-xs" [matMenuTriggerFor]="accountMenu">
             <div class="account-info">
-              <span class="account-greeting">Hola, {{ userFirstName() }}</span>
-              <span class="account-label">Cuenta y Listas</span>
+              @if (userFirstName()) {
+                <span class="account-greeting">{{
+                  'HEADER.GREETING_USER' | translate: { name: userFirstName() }
+                }}</span>
+              } @else {
+                <span class="account-greeting">{{ 'HEADER.GREETING' | translate }}</span>
+              }
+              <span class="account-label">{{ 'HEADER.ACCOUNT_LISTS' | translate }}</span>
             </div>
           </button>
           <mat-menu #accountMenu="matMenu">
-            <button mat-menu-item routerLink="/login">
-              <mat-icon>login</mat-icon>
-              <span>Iniciar Sesión</span>
-            </button>
-            <button mat-menu-item routerLink="/orders">
-              <mat-icon>receipt_long</mat-icon>
-              <span>Mis Órdenes</span>
-            </button>
+            @if (authService.isAuthenticated()) {
+              <!-- Usuario logueado -->
+              <button mat-menu-item (click)="goToProfile()">
+                <mat-icon>person</mat-icon>
+                <span>{{ 'HEADER.MY_PROFILE' | translate }}</span>
+              </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item (click)="authService.logout()">
+                <mat-icon>logout</mat-icon>
+                <span>{{ 'HEADER.LOGOUT' | translate }}</span>
+              </button>
+            } @else {
+              <!-- Usuario no logueado -->
+              <button mat-menu-item routerLink="/login">
+                <mat-icon>login</mat-icon>
+                <span>{{ 'HEADER.LOGIN' | translate }}</span>
+              </button>
+            }
           </mat-menu>
 
           <!-- Solo icono de usuario en móvil -->
-          <button mat-icon-button class="hide-gt-xs" routerLink="/login">
-            <mat-icon>account_circle</mat-icon>
-          </button>
+          @if (authService.isAuthenticated()) {
+            <button mat-icon-button class="hide-gt-xs" (click)="goToProfile()">
+              <mat-icon>account_circle</mat-icon>
+            </button>
+          } @else {
+            <button mat-icon-button class="hide-gt-xs" routerLink="/login">
+              <mat-icon>account_circle</mat-icon>
+            </button>
+          }
 
           <!-- Language Switcher -->
           <app-language-switcher></app-language-switcher>
@@ -109,12 +131,22 @@
           <!-- Carrito (Estilo Amazon - Verde con contador naranja) -->
           <a routerLink="/cart" class="cart-button-amazon">
             <div class="cart-icon-wrapper">
-              <span class="cart-count-badge">{{ cartItemCount() }}</span>
-              <svg class="cart-svg-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M7 18C5.9 18 5.01 18.9 5.01 20C5.01 21.1 5.9 22 7 22C8.1 22 9 21.1 9 20C9 18.9 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.48C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1ZM17 18C15.9 18 15.01 18.9 15.01 20C15.01 21.1 15.9 22 17 22C18.1 22 19 21.1 19 20C19 18.9 18.1 18 17 18Z" fill="currentColor"/>
+              @if (cartItemCount() > 0) {
+                <span class="cart-count-badge">{{ cartItemCount() }}</span>
+              }
+              <svg
+                class="cart-svg-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7 18C5.9 18 5.01 18.9 5.01 20C5.01 21.1 5.9 22 7 22C8.1 22 9 21.1 9 20C9 18.9 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.48C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1ZM17 18C15.9 18 15.01 18.9 15.01 20C15.01 21.1 15.9 22 17 22C18.1 22 19 21.1 19 20C19 18.9 18.1 18 17 18Z"
+                  fill="currentColor"
+                />
               </svg>
             </div>
-            <span class="cart-text-label">Carrito</span>
+            <span class="cart-text-label">{{ 'HEADER.CART' | translate }}</span>
           </a>
         </div>
       </div>
@@ -125,11 +157,43 @@
       <div class="nav-content">
         <button mat-button class="nav-button" routerLink="/">
           <mat-icon>home</mat-icon>
-          <span>Inicio</span>
+          <span>{{ 'HEADER.HOME' | translate }}</span>
         </button>
-        @for (category of categories; track category.route) {
-          <button mat-button class="nav-button" [routerLink]="category.route">
-            {{ category.label }}
+
+        <!-- Menú desplegable de Categorías -->
+        <button mat-button class="nav-button" [matMenuTriggerFor]="categoriesMenu">
+          <mat-icon class="nav-icon">category</mat-icon>
+          <span>{{ 'HEADER.CATEGORIES' | translate }}</span>
+          <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
+        </button>
+        <mat-menu #categoriesMenu="matMenu" class="categories-dropdown">
+          @if (categories().length === 0) {
+            <button mat-menu-item disabled>
+              <mat-icon>hourglass_empty</mat-icon>
+              <span>{{ 'HEADER.LOADING_CATEGORIES' | translate }}</span>
+            </button>
+          }
+          @for (category of categories(); track category.categoryId) {
+            <button mat-menu-item (click)="navigateToCategory(category.categoryId)">
+              <span>{{ category.name }}</span>
+              @if (category.productCount && category.productCount > 0) {
+                <span class="category-count">({{ category.productCount }})</span>
+              }
+            </button>
+          }
+          @if (categories().length > 0) {
+            <mat-divider></mat-divider>
+            <button mat-menu-item routerLink="/s">
+              <mat-icon>apps</mat-icon>
+              <span>{{ 'HEADER.VIEW_ALL_CATEGORIES' | translate }}</span>
+            </button>
+          }
+        </mat-menu>
+
+        @for (item of navigationItems; track item.labelKey) {
+          <button mat-button class="nav-button" (click)="navigateTo(item.route, item.queryParams)">
+            <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+            <span>{{ item.labelKey | translate }}</span>
           </button>
         }
       </div>
@@ -145,32 +209,32 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-section">
-        <h3>Conócenos</h3>
-        <a href="#">Sobre Nosotros</a>
-        <a href="#">Carreras</a>
-        <a href="#">Relaciones con Inversionistas</a>
+        <h3>{{ 'FOOTER.ABOUT_US_TITLE' | translate }}</h3>
+        <a href="#">{{ 'FOOTER.ABOUT_US' | translate }}</a>
+        <a href="#">{{ 'FOOTER.CAREERS' | translate }}</a>
+        <a href="#">{{ 'FOOTER.INVESTOR_RELATIONS' | translate }}</a>
       </div>
       <div class="footer-section">
-        <h3>Gana Dinero con Nosotros</h3>
-        <a href="#">Vende en ECommerce</a>
-        <a href="#">Programa de Afiliados</a>
-        <a href="#">Anuncia tus Productos</a>
+        <h3>{{ 'FOOTER.EARN_MONEY_TITLE' | translate }}</h3>
+        <a href="#">{{ 'FOOTER.SELL_ON_ECOMMERCE' | translate }}</a>
+        <a href="#">{{ 'FOOTER.AFFILIATE_PROGRAM' | translate }}</a>
+        <a href="#">{{ 'FOOTER.ADVERTISE_PRODUCTS' | translate }}</a>
       </div>
       <div class="footer-section">
-        <h3>Podemos Ayudarte</h3>
-        <a href="#">Tu Cuenta</a>
-        <a href="#">Tus Pedidos</a>
-        <a href="#">Devoluciones y Reemplazos</a>
+        <h3>{{ 'FOOTER.HELP_TITLE' | translate }}</h3>
+        <a href="#">{{ 'FOOTER.YOUR_ACCOUNT' | translate }}</a>
+        <a href="#">{{ 'FOOTER.YOUR_ORDERS' | translate }}</a>
+        <a href="#">{{ 'FOOTER.RETURNS_REPLACEMENTS' | translate }}</a>
       </div>
       <div class="footer-section">
-        <h3>Métodos de Pago</h3>
-        <a href="#">Tarjetas de Crédito</a>
-        <a href="#">Tarjetas de Débito</a>
-        <a href="#">Transferencia Bancaria</a>
+        <h3>{{ 'FOOTER.PAYMENT_METHODS_TITLE' | translate }}</h3>
+        <a href="#">{{ 'FOOTER.CREDIT_CARDS' | translate }}</a>
+        <a href="#">{{ 'FOOTER.DEBIT_CARDS' | translate }}</a>
+        <a href="#">{{ 'FOOTER.BANK_TRANSFER' | translate }}</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <p>&copy; 2025 ECommerce - Todos los derechos reservados</p>
+      <p>{{ 'FOOTER.COPYRIGHT' | translate }}</p>
     </div>
   </footer>
 </div>

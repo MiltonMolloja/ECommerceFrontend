@@ -1,6 +1,6 @@
 /**
  * HeroBannerComponent - Carrusel de banners
- * 
+ *
  * Recibe banners del backend (BannerDto[])
  * Features:
  * - Auto-slide cada 5 segundos
@@ -10,9 +10,9 @@
  * - Links navegables
  */
 
-import { Component, OnInit, OnDestroy, signal, input, computed } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, input, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { BannerDto } from '@core/models';
@@ -25,6 +25,7 @@ import { BannerDto } from '@core/models';
   styleUrl: './hero-banner.scss'
 })
 export class HeroBanner implements OnInit, OnDestroy {
+  private router = inject(Router);
   // Input: Banners del backend
   banners = input<BannerDto[]>([]);
 
@@ -124,5 +125,45 @@ export class HeroBanner implements OnInit, OnDestroy {
       return banner.imageUrlMobile;
     }
     return banner.imageUrl;
+  }
+
+  /**
+   * Navega a la URL del banner
+   */
+  navigateToBanner(banner: BannerDto, event: Event): void {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (!banner.linkUrl) return;
+
+    // Parsear la URL para separar path y query params
+    const url = banner.linkUrl;
+
+    if (url.includes('?')) {
+      const parts = url.split('?');
+      const path = parts[0];
+      const queryString = parts[1];
+
+      if (queryString) {
+        const queryParams: Record<string, string> = {};
+
+        // Parsear query params
+        queryString.split('&').forEach((param) => {
+          const [key, value] = param.split('=');
+          if (key && value) {
+            queryParams[key] = value;
+          }
+        });
+
+        // Navegar con query params
+        this.router.navigate([path], { queryParams });
+      } else {
+        // URL tiene '?' pero sin query params
+        this.router.navigate([path]);
+      }
+    } else {
+      // Navegar sin query params
+      this.router.navigate([url]);
+    }
   }
 }

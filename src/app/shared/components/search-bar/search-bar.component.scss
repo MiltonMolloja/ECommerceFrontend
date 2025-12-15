@@ -6,6 +6,7 @@
 
 .search-bar {
   display: flex;
+  align-items: center;
   gap: 8px;
   width: 100%;
 
@@ -13,6 +14,11 @@
     flex: 1;
 
     ::ng-deep {
+      // Ocultar el espacio inferior del form-field para alinear verticalmente
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+
       .mat-mdc-form-field-flex {
         background-color: var(--mdc-filled-text-field-container-color, #fff);
       }
@@ -23,7 +29,15 @@
 
       .mat-mdc-form-field-infix {
         min-height: 44px;
-        padding: 8px 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      input.mat-mdc-input-element {
+        height: 44px;
+        line-height: 44px;
+        padding-left: 12px;
       }
 
       .mat-mdc-notched-outline {
@@ -74,6 +88,9 @@
   .clear-button {
     width: 24px;
     height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     mat-icon {
       font-size: 18px;
@@ -237,6 +254,14 @@
 
     .suggestions-header {
       border-bottom-color: #333;
+
+      .suggestions-title {
+        color: #f3f4f6;
+      }
+
+      .clear-history-button {
+        color: var(--amazon-orange);
+      }
     }
 
     .suggestions-list .suggestion-item {
@@ -244,8 +269,27 @@
         background-color: rgba(255, 255, 255, 0.08);
       }
 
+      .suggestion-icon {
+        color: #9ca3af;
+      }
+
       .suggestion-image {
         border-color: #444;
+        background-color: #2d2d2d;
+      }
+
+      .suggestion-text {
+        .suggestion-name {
+          color: #f3f4f6;
+        }
+
+        .suggestion-price {
+          color: var(--amazon-orange);
+        }
+      }
+
+      .suggestion-arrow {
+        color: #6b7280;
       }
     }
   }

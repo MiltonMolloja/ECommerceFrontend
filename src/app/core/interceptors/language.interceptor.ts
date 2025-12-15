@@ -18,6 +18,11 @@ export const languageInterceptor: HttpInterceptorFn = (req, next) => {
   const language =
     typeof window !== 'undefined' ? localStorage.getItem('app-language') || 'es' : 'es';
 
+  // Debug log for API requests
+  if (req.url.includes('/home') || req.url.includes('/catalog')) {
+    console.log(`[LanguageInterceptor] 🌐 ${req.method} ${req.url} - Accept-Language: ${language}`);
+  }
+
   // Clone request and add Accept-Language header
   const clonedRequest = req.clone({
     setHeaders: {

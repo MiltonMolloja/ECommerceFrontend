@@ -1,0 +1,143 @@
+<div class="help-container">
+  <div class="help-header">
+    <h1>{{ 'HELP.TITLE' | translate }}</h1>
+    <p>{{ 'HELP.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="help-content">
+    <div class="help-section">
+      <mat-icon>shopping_cart</mat-icon>
+      <h2>{{ 'HELP.ORDERS_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a routerLink="/cart">{{ 'HELP.VIEW_CART' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.TRACK_ORDER' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.CANCEL_ORDER' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.RETURNS_REFUNDS' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <mat-icon>payment</mat-icon>
+      <h2>{{ 'HELP.PAYMENTS_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a href="#">{{ 'HELP.PAYMENT_METHODS' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.PAYMENT_ISSUES' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.BILLING' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.COUPONS_DISCOUNTS' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <mat-icon>local_shipping</mat-icon>
+      <h2>{{ 'HELP.SHIPPING_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a href="#">{{ 'HELP.DELIVERY_TIMES' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.SHIPPING_COSTS' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.FREE_SHIPPING' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.CHANGE_ADDRESS' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <mat-icon>account_circle</mat-icon>
+      <h2>{{ 'HELP.ACCOUNT_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a href="https://localhost:4400/profile" target="_blank">{{
+            'HELP.MANAGE_ACCOUNT' | translate
+          }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.CHANGE_PASSWORD' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.NOTIFICATION_PREFERENCES' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.DELETE_ACCOUNT' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <mat-icon>security</mat-icon>
+      <h2>{{ 'HELP.SECURITY_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a href="#">{{ 'HELP.PRIVACY_POLICY' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.TERMS_CONDITIONS' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.PAYMENT_SECURITY' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.REPORT_ISSUE' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <mat-icon>help_outline</mat-icon>
+      <h2>{{ 'HELP.FAQ_TITLE' | translate }}</h2>
+      <ul>
+        <li>
+          <a href="#">{{ 'HELP.HOW_TO_BUY' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.HOW_TO_TRACK' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.MODIFY_ORDER' | translate }}</a>
+        </li>
+        <li>
+          <a href="#">{{ 'HELP.HOW_TO_RETURN' | translate }}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="contact-section">
+    <h2>{{ 'HELP.NEED_MORE_HELP' | translate }}</h2>
+    <p>{{ 'HELP.SUPPORT_AVAILABLE' | translate }}</p>
+    <div class="contact-methods">
+      <button mat-raised-button color="primary">
+        <mat-icon>email</mat-icon>
+        {{ 'HELP.SEND_EMAIL' | translate }}
+      </button>
+      <button mat-raised-button>
+        <mat-icon>chat</mat-icon>
+        {{ 'HELP.LIVE_CHAT' | translate }}
+      </button>
+      <button mat-raised-button>
+        <mat-icon>phone</mat-icon>
+        {{ 'HELP.CALL_SUPPORT' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
