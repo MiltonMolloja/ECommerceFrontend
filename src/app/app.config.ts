@@ -1,4 +1,9 @@
-import { ApplicationConfig, provideZoneChangeDetection, APP_INITIALIZER } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideZoneChangeDetection,
+  APP_INITIALIZER,
+  ErrorHandler
+} from '@angular/core';
 import {
   provideRouter,
   withComponentInputBinding,
@@ -11,6 +16,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ThemeService } from './core/services/theme.service';
+import { GlobalErrorHandler } from './shared/components/error-boundary/error-boundary';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -27,6 +33,9 @@ function initializeTheme(themeService: ThemeService) {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Global Error Handler
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+
     // Change detection optimizada
     provideZoneChangeDetection({ eventCoalescing: true }),
 

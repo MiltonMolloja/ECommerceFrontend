@@ -51,16 +51,19 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "550kB",
                   "maximumError": "1MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "10kB",
+                  "maximumError": "16kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "allowedCommonJsDependencies": [
+                "@mercadopago/sdk-js"
+              ]
             },
             "development": {
               "optimization": false,

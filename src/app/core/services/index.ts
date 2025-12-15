@@ -10,3 +10,5 @@ export * from './ip';
 export * from './theme.service';
 export * from './language.service';
 export * from './cart.service';
+export * from './logger.service';
+export * from './loading.service';

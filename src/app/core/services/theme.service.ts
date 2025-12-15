@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, inject } from '@angular/core';
+import { Injectable, signal, effect, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 
 export type ThemeMode = 'light' | 'dark' | 'auto';
@@ -8,6 +9,7 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
 })
 export class ThemeService {
   private translateService = inject(TranslateService);
+  private platformId = inject(PLATFORM_ID);
   private readonly THEME_STORAGE_KEY = 'app-theme-preference';
 
   // Signal para el modo de tema seleccionado por el usuario
@@ -16,10 +18,14 @@ export class ThemeService {
   // Signal para el tema efectivo (resuelve 'auto' a 'light' o 'dark')
   readonly effectiveTheme = signal<'light' | 'dark'>('light');
 
-  private mediaQuery: MediaQueryList;
+  private mediaQuery: MediaQueryList | null = null;
   private isExternalUpdate = false; // Flag para evitar guardar cuando viene de storage event
 
   constructor() {
+    // Solo ejecutar en el browser
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
 
     // Configurar listener para cambios en preferencias del sistema
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -28,7 +34,6 @@ export class ThemeService {
     // Listener para sincronización cross-tab/cross-project
     // Detecta cambios en localStorage desde otras pestañas o proyectos
     window.addEventListener('storage', (event: StorageEvent) => {
-
       if (event.key === this.THEME_STORAGE_KEY && event.newValue) {
         const newTheme = event.newValue as ThemeMode;
 
@@ -37,7 +42,6 @@ export class ThemeService {
           this.isExternalUpdate = true;
           this.themeMode.set(newTheme);
           this.isExternalUpdate = false;
-
         }
       }
     });
@@ -49,7 +53,6 @@ export class ThemeService {
       // Solo guardar si no es una actualización externa
       if (!this.isExternalUpdate) {
         this.saveThemePreference(mode);
-
       }
       this.updateEffectiveTheme();
     });
@@ -69,9 +72,17 @@ export class ThemeService {
    * Obtiene la preferencia de tema guardada en localStorage
    */
   private getStoredTheme(): ThemeMode {
-    const stored = localStorage.getItem(this.THEME_STORAGE_KEY);
-    if (stored === 'light' || stored === 'dark' || stored === 'auto') {
-      return stored;
+    if (!isPlatformBrowser(this.platformId)) {
+      return 'auto';
+    }
+
+    try {
+      const stored = localStorage.getItem(this.THEME_STORAGE_KEY);
+      if (stored === 'light' || stored === 'dark' || stored === 'auto') {
+        return stored;
+      }
+    } catch {
+      // Ignore storage errors (incognito mode, quota exceeded, etc.)
     }
     return 'auto'; // Default
   }
@@ -80,19 +91,31 @@ export class ThemeService {
    * Guarda la preferencia de tema en localStorage
    */
   private saveThemePreference(mode: ThemeMode): void {
-    localStorage.setItem(this.THEME_STORAGE_KEY, mode);
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(this.THEME_STORAGE_KEY, mode);
+    } catch {
+      // Ignore storage errors
+    }
   }
 
   /**
    * Actualiza el tema efectivo basado en el modo seleccionado
    */
   private updateEffectiveTheme(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const mode = this.themeMode();
     let effective: 'light' | 'dark';
 
     if (mode === 'auto') {
       // Usar preferencias del sistema
-      effective = this.mediaQuery.matches ? 'dark' : 'light';
+      effective = this.mediaQuery?.matches ? 'dark' : 'light';
     } else {
       effective = mode;
     }
@@ -105,6 +128,10 @@ export class ThemeService {
    * Aplica la clase de tema al documento
    */
   private applyThemeToDocument(theme: 'light' | 'dark'): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     const htmlElement = document.documentElement;
 
     // Remover clases de tema existentes

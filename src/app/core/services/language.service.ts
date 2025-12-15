@@ -1,4 +1,5 @@
-import { Injectable, signal, effect, computed, inject } from '@angular/core';
+import { Injectable, signal, effect, computed, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
 
 export type Language = 'es' | 'en';
@@ -14,6 +15,7 @@ interface LanguageOption {
 })
 export class LanguageService {
   private readonly translateService = inject(TranslateService);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly STORAGE_KEY = 'app-language';
   private readonly DEFAULT_LANGUAGE: Language = 'es';
 
@@ -45,12 +47,18 @@ export class LanguageService {
     // Sync language changes to localStorage and ngx-translate
     effect(() => {
       const language = this.currentLanguage();
-      localStorage.setItem(this.STORAGE_KEY, language);
+      if (isPlatformBrowser(this.platformId)) {
+        try {
+          localStorage.setItem(this.STORAGE_KEY, language);
+        } catch {
+          // Ignore storage errors
+        }
+      }
       this.translateService.use(language);
     });
 
     // Listen for storage changes from other tabs
-    if (typeof window !== 'undefined') {
+    if (isPlatformBrowser(this.platformId)) {
       window.addEventListener('storage', this.handleStorageChange.bind(this));
     }
   }
@@ -59,20 +67,28 @@ export class LanguageService {
    * Get initial language from localStorage or browser default
    */
   private getInitialLanguage(): Language {
-    if (typeof window === 'undefined') {
+    if (!isPlatformBrowser(this.platformId)) {
       return this.DEFAULT_LANGUAGE;
     }
 
     // Try to get from localStorage
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    if (stored && this.isValidLanguage(stored)) {
-      return stored as Language;
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored && this.isValidLanguage(stored)) {
+        return stored as Language;
+      }
+    } catch {
+      // Ignore storage errors
     }
 
     // Try to get from browser language
-    const browserLang = navigator.language?.split('-')[0];
-    if (browserLang && this.isValidLanguage(browserLang)) {
-      return browserLang as Language;
+    try {
+      const browserLang = navigator.language?.split('-')[0];
+      if (browserLang && this.isValidLanguage(browserLang)) {
+        return browserLang as Language;
+      }
+    } catch {
+      // Ignore navigator errors
     }
 
     return this.DEFAULT_LANGUAGE;
@@ -104,7 +120,6 @@ export class LanguageService {
    */
   setLanguage(language: Language): void {
     if (!this.isValidLanguage(language)) {
-
       return;
     }
 

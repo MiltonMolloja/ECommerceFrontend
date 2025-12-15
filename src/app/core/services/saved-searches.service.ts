@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 export interface SavedSearch {
   id: string;
@@ -26,6 +27,7 @@ const MAX_SAVED_SEARCHES = 20;
   providedIn: 'root'
 })
 export class SavedSearchesService {
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly savedSearches = signal<SavedSearch[]>(this.loadSavedSearches());
 
   getSavedSearches(): SavedSearch[] {
@@ -43,7 +45,9 @@ export class SavedSearchesService {
     const current = this.savedSearches();
 
     // Verificar si ya existe una búsqueda con el mismo nombre
-    const existingIndex = current.findIndex(s => s.name.toLowerCase() === search.name.toLowerCase());
+    const existingIndex = current.findIndex(
+      (s) => s.name.toLowerCase() === search.name.toLowerCase()
+    );
 
     if (existingIndex !== -1 && current[existingIndex]) {
       // Actualizar la búsqueda existente
@@ -64,14 +68,14 @@ export class SavedSearchesService {
   }
 
   deleteSearch(id: string): void {
-    const updated = this.savedSearches().filter(s => s.id !== id);
+    const updated = this.savedSearches().filter((s) => s.id !== id);
     this.savedSearches.set(updated);
     this.persist(updated);
   }
 
   updateSearch(id: string, updates: Partial<SavedSearch>): void {
     const current = this.savedSearches();
-    const index = current.findIndex(s => s.id === id);
+    const index = current.findIndex((s) => s.id === id);
 
     if (index !== -1) {
       const updated = [...current];
@@ -84,7 +88,7 @@ export class SavedSearchesService {
 
   markAsUsed(id: string): void {
     const current = this.savedSearches();
-    const index = current.findIndex(s => s.id === id);
+    const index = current.findIndex((s) => s.id === id);
 
     if (index !== -1 && current[index]) {
       const updated = [...current];
@@ -100,15 +104,25 @@ export class SavedSearchesService {
   }
 
   getSearchById(id: string): SavedSearch | undefined {
-    return this.savedSearches().find(s => s.id === id);
+    return this.savedSearches().find((s) => s.id === id);
   }
 
   clearAll(): void {
     this.savedSearches.set([]);
-    localStorage.removeItem(STORAGE_KEY);
+    if (isPlatformBrowser(this.platformId)) {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {
+        // Ignore storage errors
+      }
+    }
   }
 
   private loadSavedSearches(): SavedSearch[] {
+    if (!isPlatformBrowser(this.platformId)) {
+      return [];
+    }
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (!stored) return [];
@@ -116,22 +130,25 @@ export class SavedSearchesService {
       const parsed = JSON.parse(stored);
 
       // Convertir strings de fecha a objetos Date
-      return parsed.map((search: any) => ({
+      return parsed.map((search: SavedSearch) => ({
         ...search,
         createdAt: new Date(search.createdAt),
         lastUsed: search.lastUsed ? new Date(search.lastUsed) : undefined
       }));
-    } catch (error) {
-
+    } catch {
       return [];
     }
   }
 
   private persist(searches: SavedSearch[]): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(searches));
-    } catch (error) {
-
+    } catch {
+      // Ignore storage errors (quota exceeded, incognito mode, etc.)
     }
   }
 
@@ -148,14 +165,12 @@ export class SavedSearchesService {
   }
 
   // Obtener búsquedas más usadas
-  getMostUsed(limit: number = 5): SavedSearch[] {
-    return [...this.savedSearches()]
-      .sort((a, b) => b.useCount - a.useCount)
-      .slice(0, limit);
+  getMostUsed(limit = 5): SavedSearch[] {
+    return [...this.savedSearches()].sort((a, b) => b.useCount - a.useCount).slice(0, limit);
   }
 
   // Obtener búsquedas más recientes
-  getMostRecent(limit: number = 5): SavedSearch[] {
+  getMostRecent(limit = 5): SavedSearch[] {
     return [...this.savedSearches()]
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice(0, limit);
