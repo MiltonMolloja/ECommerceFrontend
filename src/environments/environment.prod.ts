@@ -9,12 +9,18 @@ export const environment = {
   tokenKey: 'ecommerce_access_token',
   refreshTokenKey: 'ecommerce_refresh_token',
   tokenExpirationKey: 'ecommerce_token_expiration',
-  mercadoPagoPublicKey: 'APP-your-production-public-key-here', // Replace with actual MercadoPago production public key
+  mercadoPagoPublicKey: 'APP-your-production-public-key-here',
+
+  // Sentry configuration for production
+  sentry: {
+    dsn: 'https://your-sentry-dsn@sentry.io/project-id', // Replace with actual Sentry DSN
+    enabled: true
+  },
 
   // Feature flags
   features: {
-    useAdvancedSearch: false, // Desactivado en producción inicialmente
-    enableReviews: false,
+    useAdvancedSearch: true,
+    enableReviews: true,
     enableInfiniteScroll: true
   }
 };

@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { loadMercadoPago } from '@mercadopago/sdk-js';
 import { environment } from '../../../environments/environment';
 import { CardForm, PaymentToken } from '../models/payment/payment.model';
 
@@ -76,19 +75,20 @@ export class MercadoPagoService {
 
   /**
    * Inicializar SDK de MercadoPago
+   * Uses dynamic import to lazy load the SDK only when needed (~50KB savings)
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
     try {
+      // Lazy load MercadoPago SDK only when needed
+      const { loadMercadoPago } = await import('@mercadopago/sdk-js');
       await loadMercadoPago();
       this.mp = new window.MercadoPago(environment.mercadoPagoPublicKey, {
         locale: 'es-AR'
       });
       this.initialized = true;
-
-    } catch (error: unknown) {
-
+    } catch {
       throw new Error('No se pudo inicializar el servicio de pagos');
     }
   }
@@ -121,10 +121,8 @@ export class MercadoPagoService {
 
     try {
       const token = await mp.createCardToken(cardData);
-
       return token;
-    } catch (error: unknown) {
-
+    } catch {
       throw new Error(
         'Error al procesar la información de la tarjeta. Verifique los datos ingresados.'
       );
@@ -144,12 +142,7 @@ export class MercadoPagoService {
       throw new Error('MercadoPago SDK not initialized');
     }
 
-    try {
-      return await this.mp.getIdentificationTypes();
-    } catch (error) {
-
-      throw error;
-    }
+    return await this.mp.getIdentificationTypes();
   }
 
   /**
@@ -166,13 +159,7 @@ export class MercadoPagoService {
       throw new Error('MercadoPago SDK not initialized');
     }
 
-    try {
-      const methods = await this.mp.getPaymentMethods({ bin });
-      return methods;
-    } catch (error) {
-
-      throw error;
-    }
+    return await this.mp.getPaymentMethods({ bin });
   }
 
   /**
@@ -190,15 +177,10 @@ export class MercadoPagoService {
       throw new Error('MercadoPago SDK not initialized');
     }
 
-    try {
-      return await this.mp.getInstallments({
-        bin,
-        amount: amount.toString()
-      });
-    } catch (error) {
-
-      throw error;
-    }
+    return await this.mp.getInstallments({
+      bin,
+      amount: amount.toString()
+    });
   }
 
   /**

@@ -9,11 +9,17 @@ export const environment = {
   tokenKey: 'ecommerce_access_token',
   refreshTokenKey: 'ecommerce_refresh_token',
   tokenExpirationKey: 'ecommerce_token_expiration',
-  mercadoPagoPublicKey: 'APP_USR-8ca245f1-7586-4db6-ba30-93c030fb147a', // Replace with actual MercadoPago test public key
+  mercadoPagoPublicKey: 'APP_USR-8ca245f1-7586-4db6-ba30-93c030fb147a',
+
+  // Sentry configuration (disabled in development)
+  sentry: {
+    dsn: '', // Empty in dev - no tracking
+    enabled: false
+  },
 
   // Feature flags
   features: {
-    useAdvancedSearch: true, // Activar búsqueda avanzada con facetas
+    useAdvancedSearch: true,
     enableReviews: true,
     enableInfiniteScroll: true
   }

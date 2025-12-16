@@ -16,25 +16,35 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ThemeService } from './core/services/theme.service';
-import { GlobalErrorHandler } from './shared/components/error-boundary/error-boundary';
+import { SentryService, SentryErrorHandler } from './core/services/sentry.service';
+import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { languageInterceptor } from './core/interceptors/language.interceptor';
 
-// Inicializar ThemeService al arranque de la aplicación
+// Initialize ThemeService at app startup
 function initializeTheme(themeService: ThemeService) {
   return () => {
-    // El servicio se inyecta y el constructor se ejecuta automáticamente
     console.log('ThemeService initialized:', themeService.themeMode());
+  };
+}
+
+// Initialize Sentry at app startup
+function initializeSentry(sentryService: SentryService) {
+  return () => {
+    sentryService.init();
   };
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Global Error Handler
-    { provide: ErrorHandler, useClass: GlobalErrorHandler },
+    // Global Error Handler - use Sentry in production, default in development
+    {
+      provide: ErrorHandler,
+      useClass: environment.sentry?.enabled ? SentryErrorHandler : ErrorHandler
+    },
 
     // Change detection optimizada
     provideZoneChangeDetection({ eventCoalescing: true }),
@@ -42,8 +52,8 @@ export const appConfig: ApplicationConfig = {
     // Router con optimizaciones
     provideRouter(
       routes,
-      withComponentInputBinding(), // Bind route params como inputs
-      withPreloading(PreloadAllModules), // Precarga todas las rutas lazy
+      withComponentInputBinding(),
+      withPreloading(PreloadAllModules),
       withInMemoryScrolling({
         scrollPositionRestoration: 'enabled',
         anchorScrolling: 'enabled'
@@ -52,7 +62,7 @@ export const appConfig: ApplicationConfig = {
 
     // HttpClient con interceptores y fetch API
     provideHttpClient(
-      withFetch(), // Usa Fetch API en lugar de XMLHttpRequest
+      withFetch(),
       withInterceptors([authInterceptor, languageInterceptor, errorInterceptor])
     ),
 
@@ -75,9 +85,14 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeTheme,
       deps: [ThemeService],
       multi: true
-    }
+    },
 
-    // Note: LanguageService no longer needs APP_INITIALIZER
-    // It will be initialized automatically when first injected
+    // Initialize Sentry at app startup
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initializeSentry,
+      deps: [SentryService],
+      multi: true
+    }
   ]
 };
