@@ -1,12 +1,35 @@
 import { Injectable, ErrorHandler, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import * as Sentry from '@sentry/angular';
 import { environment } from '../../../environments/environment';
+
+// Type definitions for Sentry (to avoid importing the full library)
+type SeverityLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';
+
+interface Breadcrumb {
+  type?: string;
+  level?: SeverityLevel;
+  event_id?: string;
+  category?: string;
+  message?: string;
+  data?: Record<string, unknown>;
+  timestamp?: number;
+}
+
+interface SentryModule {
+  init: (options: Record<string, unknown>) => void;
+  captureException: (error: Error, context?: Record<string, unknown>) => void;
+  captureMessage: (message: string, context?: Record<string, unknown>) => void;
+  setUser: (user: Record<string, unknown> | null) => void;
+  addBreadcrumb: (breadcrumb: Breadcrumb) => void;
+  setContext: (name: string, context: Record<string, unknown>) => void;
+  setTag: (key: string, value: string) => void;
+}
 
 /**
  * Sentry Error Tracking Service
  *
  * Initializes and configures Sentry for production error monitoring.
+ * Uses lazy loading to reduce initial bundle size (~50KB savings).
  * In development, errors are logged to console instead.
  */
 @Injectable({
@@ -14,19 +37,24 @@ import { environment } from '../../../environments/environment';
 })
 export class SentryService {
   private initialized = false;
+  private sentry: SentryModule | null = null;
 
   /**
    * Initialize Sentry with the configured DSN
-   * Should be called once at application startup
+   * Uses dynamic import to lazy load Sentry only in production
    */
-  init(): void {
+  async init(): Promise<void> {
     if (this.initialized) {
       return;
     }
 
     if (environment.sentry?.enabled && environment.sentry?.dsn) {
       try {
-        Sentry.init({
+        // Lazy load Sentry only when needed
+        const SentryModule = await import('@sentry/angular');
+        this.sentry = SentryModule;
+
+        SentryModule.init({
           dsn: environment.sentry.dsn,
           environment: environment.production ? 'production' : 'development',
 
@@ -83,8 +111,8 @@ export class SentryService {
    * Capture an exception and send to Sentry
    */
   captureException(error: Error, context?: Record<string, unknown>): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      Sentry.captureException(error, context ? { extra: context } : undefined);
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      this.sentry.captureException(error, context ? { extra: context } : undefined);
     } else {
       console.error('[Error]', error, context);
     }
@@ -95,17 +123,17 @@ export class SentryService {
    */
   captureMessage(
     message: string,
-    level: Sentry.SeverityLevel = 'info',
+    level: SeverityLevel = 'info',
     context?: Record<string, unknown>
   ): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      const captureContext: { level: Sentry.SeverityLevel; extra?: Record<string, unknown> } = {
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      const captureContext: { level: SeverityLevel; extra?: Record<string, unknown> } = {
         level
       };
       if (context) {
         captureContext.extra = context;
       }
-      Sentry.captureMessage(message, captureContext);
+      this.sentry.captureMessage(message, captureContext);
     } else {
       console.log(`[${level.toUpperCase()}]`, message, context);
     }
@@ -115,17 +143,17 @@ export class SentryService {
    * Set user information for error tracking
    */
   setUser(user: { id: string; email?: string; username?: string } | null): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      Sentry.setUser(user);
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      this.sentry.setUser(user);
     }
   }
 
   /**
    * Add breadcrumb for debugging
    */
-  addBreadcrumb(breadcrumb: Sentry.Breadcrumb): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      Sentry.addBreadcrumb(breadcrumb);
+  addBreadcrumb(breadcrumb: Breadcrumb): void {
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      this.sentry.addBreadcrumb(breadcrumb);
     }
   }
 
@@ -133,8 +161,8 @@ export class SentryService {
    * Set extra context for all future events
    */
   setContext(name: string, context: Record<string, unknown>): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      Sentry.setContext(name, context);
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      this.sentry.setContext(name, context);
     }
   }
 
@@ -142,8 +170,8 @@ export class SentryService {
    * Set a tag for all future events
    */
   setTag(key: string, value: string): void {
-    if (environment.sentry?.enabled && this.initialized) {
-      Sentry.setTag(key, value);
+    if (environment.sentry?.enabled && this.initialized && this.sentry) {
+      this.sentry.setTag(key, value);
     }
   }
 }

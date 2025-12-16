@@ -1,18 +1,76 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
-    <title>ECommerceFrontend</title>
+    <title>ECommerce - Tu tienda online de confianza</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Descubrí los mejores productos con los mejores precios. Envíos a todo el país, pagos seguros con MercadoPago y atención personalizada."
+    />
+    <meta name="keywords" content="ecommerce, tienda online, compras, productos, ofertas, envíos" />
+    <meta name="author" content="ECommerce" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://www.ecommerce.com/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.ecommerce.com/" />
+    <meta property="og:title" content="ECommerce - Tu tienda online de confianza" />
+    <meta
+      property="og:description"
+      content="Descubrí los mejores productos con los mejores precios. Envíos a todo el país y pagos seguros."
+    />
+    <meta property="og:image" content="https://www.ecommerce.com/assets/og-image.jpg" />
+    <meta property="og:locale" content="es_AR" />
+    <meta property="og:site_name" content="ECommerce" />
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://www.ecommerce.com/" />
+    <meta name="twitter:title" content="ECommerce - Tu tienda online de confianza" />
+    <meta
+      name="twitter:description"
+      content="Descubrí los mejores productos con los mejores precios. Envíos a todo el país y pagos seguros."
+    />
+    <meta name="twitter:image" content="https://www.ecommerce.com/assets/og-image.jpg" />
+
+    <!-- Theme Color for Mobile Browsers -->
+    <meta name="theme-color" content="#3f51b5" />
+    <meta name="msapplication-TileColor" content="#3f51b5" />
+
+    <!-- Favicon & PWA -->
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.ecommerce.com" />
+
+    <!-- Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+
+    <!-- DNS Prefetch for External Resources -->
+    <link rel="dns-prefetch" href="https://www.mercadopago.com" />
+    <link rel="dns-prefetch" href="https://sentry.io" />
   </head>
   <body>
+    <!-- No-JS Fallback -->
+    <noscript>
+      <p>
+        Esta aplicación requiere JavaScript para funcionar correctamente. Por favor, habilitá
+        JavaScript en tu navegador.
+      </p>
+    </noscript>
     <app-root></app-root>
   </body>
 </html>

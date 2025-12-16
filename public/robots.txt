@@ -1,0 +1,22 @@
+# robots.txt for ECommerce Frontend
+# https://www.robotstxt.org/
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /checkout/
+Disallow: /cart/
+Disallow: /profile/
+Disallow: /orders/
+
+# Allow search engines to index product pages
+Allow: /products/
+Allow: /categories/
+Allow: /search/
+
+# Sitemap location
+Sitemap: https://www.ecommerce.com/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

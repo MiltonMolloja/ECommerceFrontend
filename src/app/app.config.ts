@@ -31,11 +31,9 @@ function initializeTheme(themeService: ThemeService) {
   };
 }
 
-// Initialize Sentry at app startup
+// Initialize Sentry at app startup (async for lazy loading)
 function initializeSentry(sentryService: SentryService) {
-  return () => {
-    sentryService.init();
-  };
+  return () => sentryService.init();
 }
 
 export const appConfig: ApplicationConfig = {
