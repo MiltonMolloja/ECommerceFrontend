@@ -31,7 +31,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copiar archivos compilados desde stage de build
 # Angular 20 genera en dist/[project-name]/browser
-COPY --from=build /app/dist/ecommerce-frontend/browser /usr/share/nginx/html
+COPY --from=build /app/dist/ECommerceFrontend/browser /usr/share/nginx/html
 
 # Copiar script de inicio que reemplaza variables de entorno
 COPY docker-entrypoint.sh /docker-entrypoint.sh
