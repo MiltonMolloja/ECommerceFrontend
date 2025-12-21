@@ -1,0 +1,46 @@
+# Dependencies
+node_modules/
+.npm/
+
+# Build output
+dist/
+.angular/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# Testing
+coverage/
+e2e/
+*.spec.ts
+playwright-report/
+test-results/
+
+# Documentation
+*.md
+!README.md
+
+# SSL certificates (local dev only)
+ssl/
+
+# Misc
+.editorconfig
+.hintrc
+*.log
+.DS_Store
+Thumbs.db
+
+# Local environment files
+.env
+.env.local
+*.local.*
+
+# Husky
+.husky/
