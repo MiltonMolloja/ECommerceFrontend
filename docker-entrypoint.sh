@@ -17,6 +17,12 @@ cat > /usr/share/nginx/html/assets/env.js << EOF
 })(this);
 EOF
 
+# Inyectar el script en index.html si no existe
+if ! grep -q "assets/env.js" /usr/share/nginx/html/index.html; then
+  sed -i 's|<head>|<head>\n  <script src="assets/env.js"></script>|' /usr/share/nginx/html/index.html
+  echo "✅ env.js script injected into index.html"
+fi
+
 echo "Environment configuration injected:"
 echo "  API_GATEWAY_URL: ${API_GATEWAY_URL:-http://localhost:45000}"
 echo "  IDENTITY_URL: ${IDENTITY_URL:-http://localhost:45001}"
