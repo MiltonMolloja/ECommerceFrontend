@@ -2,13 +2,12 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { environment } from '../../../environments/environment';
+import { ApiConfigService } from './api-config.service';
 import {
   ProductReview,
   ProductRatingSummary,
   ProductReviewsResponse,
-  ReviewFilterParams,
-  ReviewSortOption
+  ReviewFilterParams
 } from '../models';
 
 /**
@@ -19,7 +18,8 @@ import {
 })
 export class ProductReviewService {
   private http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiGatewayUrl}/products`;
+  private apiConfig = inject(ApiConfigService);
+  private readonly baseUrl = this.apiConfig.getApiUrl('/products');
 
   /**
    * Obtiene las reviews de un producto con paginación y filtros
@@ -48,82 +48,70 @@ export class ProductReviewService {
       }
     }
 
-    return this.http.get<ProductReviewsResponse>(
-      `${this.baseUrl}/${productId}/reviews`,
-      { params }
-    );
+    return this.http.get<ProductReviewsResponse>(`${this.baseUrl}/${productId}/reviews`, {
+      params
+    });
   }
 
   /**
    * Obtiene el resumen de ratings de un producto
    */
   getProductRatingSummary(productId: number): Observable<ProductRatingSummary> {
-    return this.http.get<any>(
-      `${this.baseUrl}/${productId}/reviews/summary`
-    ).pipe(
-      map((response: any) => {
-        // El backend devuelve la estructura en 'distribution'
-        // Necesitamos aplanarla al nivel raíz para el modelo del frontend
-        const distribution = response.distribution || {};
-        
-        return {
-          productId: response.productId,
-          averageRating: response.averageRating || 0,
-          totalReviews: response.totalReviews || 0,
-          rating5Star: distribution.rating5Star || 0,
-          rating4Star: distribution.rating4Star || 0,
-          rating3Star: distribution.rating3Star || 0,
-          rating2Star: distribution.rating2Star || 0,
-          rating1Star: distribution.rating1Star || 0,
-          ratingDistribution: {
-            fiveStar: distribution.rating5Star || 0,
-            fourStar: distribution.rating4Star || 0,
-            threeStar: distribution.rating3Star || 0,
-            twoStar: distribution.rating2Star || 0,
-            oneStar: distribution.rating1Star || 0
-          }
-        } as ProductRatingSummary;
-      })
-    );
+    return this.http
+      .get<Record<string, unknown>>(`${this.baseUrl}/${productId}/reviews/summary`)
+      .pipe(
+        map((response: Record<string, unknown>) => {
+          // El backend devuelve la estructura en 'distribution'
+          // Necesitamos aplanarla al nivel raíz para el modelo del frontend
+          const distribution = (response.distribution as Record<string, number>) || {};
+
+          return {
+            productId: response.productId,
+            averageRating: response.averageRating || 0,
+            totalReviews: response.totalReviews || 0,
+            rating5Star: distribution.rating5Star || 0,
+            rating4Star: distribution.rating4Star || 0,
+            rating3Star: distribution.rating3Star || 0,
+            rating2Star: distribution.rating2Star || 0,
+            rating1Star: distribution.rating1Star || 0,
+            ratingDistribution: {
+              fiveStar: distribution.rating5Star || 0,
+              fourStar: distribution.rating4Star || 0,
+              threeStar: distribution.rating3Star || 0,
+              twoStar: distribution.rating2Star || 0,
+              oneStar: distribution.rating1Star || 0
+            }
+          } as ProductRatingSummary;
+        })
+      );
   }
 
   /**
    * Obtiene una review específica por ID
    */
   getReviewById(productId: number, reviewId: number): Observable<ProductReview> {
-    return this.http.get<ProductReview>(
-      `${this.baseUrl}/${productId}/reviews/${reviewId}`
-    );
+    return this.http.get<ProductReview>(`${this.baseUrl}/${productId}/reviews/${reviewId}`);
   }
 
   /**
    * Marca una review como útil
    */
   markReviewAsHelpful(productId: number, reviewId: number): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/${productId}/reviews/${reviewId}/helpful`,
-      {}
-    );
+    return this.http.post<void>(`${this.baseUrl}/${productId}/reviews/${reviewId}/helpful`, {});
   }
 
   /**
    * Marca una review como no útil
    */
   markReviewAsNotHelpful(productId: number, reviewId: number): Observable<void> {
-    return this.http.post<void>(
-      `${this.baseUrl}/${productId}/reviews/${reviewId}/not-helpful`,
-      {}
-    );
+    return this.http.post<void>(`${this.baseUrl}/${productId}/reviews/${reviewId}/not-helpful`, {});
   }
 
   /**
    * Crea una nueva review para un producto
    */
   createReview(productId: number, review: Partial<ProductReview>): Observable<ProductReview> {
-    return this.http.post<ProductReview>(
-      `${this.baseUrl}/${productId}/reviews`,
-      review
-    );
+    return this.http.post<ProductReview>(`${this.baseUrl}/${productId}/reviews`, review);
   }
 
   /**
@@ -134,18 +122,13 @@ export class ProductReviewService {
     reviewId: number,
     review: Partial<ProductReview>
   ): Observable<ProductReview> {
-    return this.http.put<ProductReview>(
-      `${this.baseUrl}/${productId}/reviews/${reviewId}`,
-      review
-    );
+    return this.http.put<ProductReview>(`${this.baseUrl}/${productId}/reviews/${reviewId}`, review);
   }
 
   /**
    * Elimina una review
    */
   deleteReview(productId: number, reviewId: number): Observable<void> {
-    return this.http.delete<void>(
-      `${this.baseUrl}/${productId}/reviews/${reviewId}`
-    );
+    return this.http.delete<void>(`${this.baseUrl}/${productId}/reviews/${reviewId}`);
   }
 }

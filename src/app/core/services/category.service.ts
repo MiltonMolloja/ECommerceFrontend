@@ -1,12 +1,12 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, tap, catchError, of } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { 
-  Category, 
-  CategoryTree, 
-  CategoryBreadcrumb, 
-  CategorySearchRequest 
+import { ApiConfigService } from './api-config.service';
+import {
+  Category,
+  CategoryTree,
+  CategoryBreadcrumb,
+  CategorySearchRequest
 } from '../models/catalog/category.model';
 import { DataCollection } from '../models/common/data-collection.model';
 
@@ -19,7 +19,8 @@ import { DataCollection } from '../models/common/data-collection.model';
 })
 export class CategoryService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiGatewayUrl}/catalog/v1/categories`;
+  private apiConfig = inject(ApiConfigService);
+  private readonly baseUrl = this.apiConfig.getApiUrl('/catalog/v1/categories');
 
   // Signals para cache de datos frecuentemente usados
   private categoryTreeCache = signal<CategoryTree[] | null>(null);
@@ -34,7 +35,7 @@ export class CategoryService {
    */
   getAll(request: CategorySearchRequest = {}): Observable<DataCollection<Category>> {
     let params = new HttpParams();
-    
+
     if (request.page) {
       params = params.set('page', request.page.toString());
     }
@@ -70,8 +71,8 @@ export class CategoryService {
     }
 
     return this.http.get<CategoryTree[]>(`${this.baseUrl}/tree`).pipe(
-      tap(tree => this.categoryTreeCache.set(tree)),
-      catchError(error => {
+      tap((tree) => this.categoryTreeCache.set(tree)),
+      catchError((error) => {
         console.error('Error fetching category tree:', error);
         return of([]);
       })
@@ -89,8 +90,8 @@ export class CategoryService {
     }
 
     return this.http.get<Category[]>(`${this.baseUrl}/root`).pipe(
-      tap(categories => this.rootCategoriesCache.set(categories)),
-      catchError(error => {
+      tap((categories) => this.rootCategoriesCache.set(categories)),
+      catchError((error) => {
         console.error('Error fetching root categories:', error);
         return of([]);
       })
@@ -157,26 +158,26 @@ export class CategoryService {
    */
   getCategoryPath(tree: CategoryTree[], targetSlug: string): number[] {
     const path: number[] = [];
-    
+
     const findPath = (categories: CategoryTree[], target: string): boolean => {
       for (const category of categories) {
         path.push(category.categoryId);
-        
+
         if (category.slug === target) {
           return true;
         }
-        
+
         if (category.subCategories.length > 0) {
           if (findPath(category.subCategories, target)) {
             return true;
           }
         }
-        
+
         path.pop();
       }
       return false;
     };
-    
+
     findPath(tree, targetSlug);
     return path;
   }

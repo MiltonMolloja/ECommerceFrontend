@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiConfigService } from './api-config.service';
 import { ProcessPaymentRequest, ProcessPaymentResponse } from '../models/payment/payment.model';
 
 /**
@@ -12,7 +12,8 @@ import { ProcessPaymentRequest, ProcessPaymentResponse } from '../models/payment
 })
 export class PaymentService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiGatewayUrl}/payments`;
+  private apiConfig = inject(ApiConfigService);
+  private readonly baseUrl = this.apiConfig.getApiUrl('/payments');
 
   /**
    * Procesar pago con token de MercadoPago

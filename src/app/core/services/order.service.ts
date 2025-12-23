@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiConfigService } from './api-config.service';
 import { Order, OrderCreateCommand, DataCollection } from '../models';
 
 /**
@@ -12,7 +12,8 @@ import { Order, OrderCreateCommand, DataCollection } from '../models';
 })
 export class OrderService {
   private http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiGatewayUrl}/orders`;
+  private apiConfig = inject(ApiConfigService);
+  private readonly baseUrl = this.apiConfig.getApiUrl('/orders');
 
   /**
    * Obtiene todas las órdenes con paginación

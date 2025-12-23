@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { ApiConfigService } from './api-config.service';
 import {
   UserLoginCommand,
   UserCreateCommand,
@@ -20,8 +21,9 @@ import {
 export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
+  private apiConfig = inject(ApiConfigService);
 
-  private readonly baseUrl = environment.identityUrl;
+  private readonly baseUrl = this.apiConfig.identityUrl;
   private readonly tokenKey = environment.tokenKey;
   private readonly refreshTokenKey = environment.refreshTokenKey;
   private readonly tokenExpirationKey = environment.tokenExpirationKey;

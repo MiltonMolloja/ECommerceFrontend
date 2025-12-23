@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { ApiConfigService } from './api-config.service';
 import { Client, DataCollection } from '../models';
 
 /**
@@ -12,7 +12,8 @@ import { Client, DataCollection } from '../models';
 })
 export class CustomerService {
   private http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiGatewayUrl}/clients`;
+  private apiConfig = inject(ApiConfigService);
+  private readonly baseUrl = this.apiConfig.getApiUrl('/clients');
 
   /**
    * Obtiene todos los clientes con paginación
