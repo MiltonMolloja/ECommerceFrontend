@@ -17,9 +17,9 @@ cat > /usr/share/nginx/html/assets/env.js << EOF
 })(this);
 EOF
 
-# Inyectar el script en index.html si no existe
-if ! grep -q "assets/env.js" /usr/share/nginx/html/index.html; then
-  sed -i 's|<head>|<head>\n  <script src="assets/env.js"></script>|' /usr/share/nginx/html/index.html
+# Inyectar el script en index.html si no existe (con ruta absoluta)
+if ! grep -q "/assets/env.js" /usr/share/nginx/html/index.html; then
+  sed -i 's|<head>|<head>\n  <script src="/assets/env.js"></script>|' /usr/share/nginx/html/index.html
   echo "✅ env.js script injected into index.html"
 fi
 
