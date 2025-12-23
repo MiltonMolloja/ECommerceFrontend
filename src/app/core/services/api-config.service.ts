@@ -9,14 +9,7 @@ import { Injectable } from '@angular/core';
 
 declare global {
   interface Window {
-    __env?: {
-      apiGatewayUrl?: string;
-      identityUrl?: string;
-      loginServiceUrl?: string;
-      mercadoPagoPublicKey?: string;
-      sentryDsn?: string;
-      production?: boolean;
-    };
+    __env?: Record<string, string>;
   }
 }
 
@@ -29,12 +22,12 @@ export class ApiConfigService {
     if (typeof window !== 'undefined' && window.__env) {
       console.log('[ApiConfig] ✅ Using runtime environment from window.__env', window.__env);
       return {
-        apiGatewayUrl: window.__env.apiGatewayUrl || 'http://localhost:45000',
-        identityUrl: window.__env.identityUrl || 'http://localhost:10000',
-        loginServiceUrl: window.__env.loginServiceUrl || 'http://localhost:4400',
-        mercadoPagoPublicKey: window.__env.mercadoPagoPublicKey || '',
-        sentryDsn: window.__env.sentryDsn || '',
-        production: window.__env.production || false
+        apiGatewayUrl: window.__env['apiGatewayUrl'] || 'http://localhost:45000',
+        identityUrl: window.__env['identityUrl'] || 'http://localhost:10000',
+        loginServiceUrl: window.__env['loginServiceUrl'] || 'http://localhost:4400',
+        mercadoPagoPublicKey: window.__env['mercadoPagoPublicKey'] || '',
+        sentryDsn: window.__env['sentryDsn'] || '',
+        production: window.__env['production'] === 'true'
       };
     }
 

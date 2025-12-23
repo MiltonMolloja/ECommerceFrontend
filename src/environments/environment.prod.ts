@@ -1,19 +1,14 @@
 /**
  * Configuración de environment para producción
  * En runtime, las URLs se pueden sobrescribir desde window.__env (inyectado por Docker)
+ * La declaración de window.__env está en api-config.service.ts
  */
-
-// Declaración de tipo para window.__env
-declare global {
-  interface Window {
-    __env?: Record<string, string>;
-  }
-}
 
 // Helper para obtener valores desde window.__env con fallback
 const getEnvValue = (key: string, fallback: string): string => {
-  if (typeof window !== 'undefined' && window.__env) {
-    return window.__env[key] || fallback;
+  const w = window as Window & { __env?: Record<string, string> };
+  if (typeof window !== 'undefined' && w.__env) {
+    return w.__env[key] || fallback;
   }
   return fallback;
 };

@@ -607,51 +607,51 @@ export class ProductSearchService {
 
     // CategoryIds
     if (params.categoryIds && params.categoryIds.length > 0) {
-      body.categoryIds = params.categoryIds;
+      body['categoryIds'] = params.categoryIds;
     }
 
     // BrandIds
     if (params.brandIds && params.brandIds.length > 0) {
-      body.brandIds = params.brandIds;
+      body['brandIds'] = params.brandIds;
     }
 
     // Precio
     if (params.priceRange) {
-      body.minPrice = params.priceRange.min;
-      body.maxPrice = params.priceRange.max;
+      body['minPrice'] = params.priceRange.min;
+      body['maxPrice'] = params.priceRange.max;
     }
 
     // Rating
     if (params.minAverageRating !== undefined) {
-      body.minAverageRating = params.minAverageRating;
+      body['minAverageRating'] = params.minAverageRating;
     }
 
     if (params.minReviewCount !== undefined) {
-      body.minReviewCount = params.minReviewCount;
+      body['minReviewCount'] = params.minReviewCount;
     }
 
     // Atributos dinámicos
     if (params.attributes && Object.keys(params.attributes).length > 0) {
-      body.attributes = params.attributes;
+      body['attributes'] = params.attributes;
     }
 
     if (params.attributeRanges && Object.keys(params.attributeRanges).length > 0) {
-      body.attributeRanges = params.attributeRanges;
+      body['attributeRanges'] = params.attributeRanges;
     }
 
     // Ordenamiento
     if (params.sortBy) {
       const sortConfig = this.mapSortOption(params.sortBy);
-      body.sortBy = parseInt(sortConfig.sortBy);
-      body.sortOrder = parseInt(sortConfig.sortOrder);
+      body['sortBy'] = parseInt(sortConfig.sortBy);
+      body['sortOrder'] = parseInt(sortConfig.sortOrder);
     }
 
     // Flags de facetas (solicitar facetas específicas)
-    body.includeBrandFacets = params.includeBrandFacets !== false; // Default true
-    body.includeCategoryFacets = params.includeCategoryFacets !== false;
-    body.includePriceFacets = params.includePriceFacets !== false;
-    body.includeRatingFacets = params.includeRatingFacets !== false;
-    body.includeAttributeFacets = params.includeAttributeFacets !== false;
+    body['includeBrandFacets'] = params.includeBrandFacets !== false; // Default true
+    body['includeCategoryFacets'] = params.includeCategoryFacets !== false;
+    body['includePriceFacets'] = params.includePriceFacets !== false;
+    body['includeRatingFacets'] = params.includeRatingFacets !== false;
+    body['includeAttributeFacets'] = params.includeAttributeFacets !== false;
 
     return body;
   }
