@@ -23,11 +23,13 @@ import {
   HomePageParams,
   HomeSectionParams
 } from '@core/models';
+import { ApiConfigService } from '@core/services/api-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class HomeService {
   private http = inject(HttpClient);
-  private readonly API_URL = '/api/home';
+  private apiConfig = inject(ApiConfigService);
+  private readonly API_URL = this.apiConfig.getApiUrl('/home');
 
   /**
    * 🏠 ENDPOINT AGREGADOR

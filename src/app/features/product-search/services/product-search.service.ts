@@ -7,6 +7,7 @@ import { AdvancedProductListResponse } from '../models/product.model';
 import { SearchFacets, SearchMetadata } from '../models/facets.model';
 import { LanguageService } from '../../../core/services/language.service';
 import { FacetMapperService } from './facet-mapper.service';
+import { ApiConfigService } from '../../../core/services/api-config.service';
 
 interface BackendProductItem {
   productId?: string;
@@ -106,7 +107,8 @@ export class ProductSearchService {
   private http = inject(HttpClient);
   private languageService = inject(LanguageService);
   private facetMapper = inject(FacetMapperService);
-  private readonly API_URL = '/api/products';
+  private apiConfig = inject(ApiConfigService);
+  private readonly API_URL = this.apiConfig.getApiUrl('/products');
 
   // Estado reactivo
   private searchParamsSubject = new BehaviorSubject<SearchParams>({
@@ -124,7 +126,6 @@ export class ProductSearchService {
     effect(() => {
       const languageChanged = this.languageService.languageChanged();
       if (languageChanged > 0 && this.reloadCallback) {
-
         this.reloadCallback();
       }
     });
@@ -155,7 +156,6 @@ export class ProductSearchService {
       })
       .pipe(
         map((response) => {
-
           return this.transformResponse(response);
         }),
         catchError((error) => this.handleError(error))
@@ -181,9 +181,6 @@ export class ProductSearchService {
       })
       .pipe(
         map((response) => {
-
-
-
           return this.transformAdvancedResponse(response, params);
         }),
         catchError((error) => this.handleError(error))
@@ -273,7 +270,6 @@ export class ProductSearchService {
     // MinRating
     if (params.rating) {
       httpParams = httpParams.set('MinRating', params.rating.toString());
-
     }
 
     console.log('🌐 Final HTTP params:', httpParams.toString());
@@ -301,8 +297,6 @@ export class ProductSearchService {
    * Transformar respuesta de la API del backend al modelo del frontend
    */
   private transformResponse(response: BackendSearchResponse): ProductListResponse {
-
-
     // Mapear los productos del backend al formato del frontend
     const products = (response.items || []).map((item) => this.mapProduct(item));
 
@@ -358,7 +352,6 @@ export class ProductSearchService {
       Array.isArray(metadata.availableBrands) &&
       metadata.availableBrands.length > 0
     ) {
-
       console.log(
         '📦 Primera marca completa:',
         JSON.stringify(metadata.availableBrands[0], null, 2)
@@ -370,7 +363,6 @@ export class ProductSearchService {
         type: FilterType.CHECKBOX,
         isExpanded: true,
         options: metadata.availableBrands.map((item) => {
-
           // La estructura del backend es: { brand: "Lenovo", count: 8 }
           // donde "brand" es un string con el nombre de la marca
           const brandName = typeof item.brand === 'string' ? item.brand : 'Sin nombre';
@@ -493,13 +485,15 @@ export class ProductSearchService {
       title: item.name || item.title || 'Sin título',
       description: item.description || '',
       // Soportar brand como string o como objeto { name: string }
-      brand: typeof item.brand === 'string' 
-        ? item.brand 
-        : (item.brand?.name || item.brandName || 'Sin marca'),
+      brand:
+        typeof item.brand === 'string'
+          ? item.brand
+          : item.brand?.name || item.brandName || 'Sin marca',
       // Soportar category como string o como objeto { name: string }
-      category: typeof item.category === 'string'
-        ? item.category
-        : (item.category?.name || item.categoryName || 'Sin categoría'),
+      category:
+        typeof item.category === 'string'
+          ? item.category
+          : item.category?.name || item.categoryName || 'Sin categoría',
       price: {
         current: item.price || item.currentPrice || 0,
         currency: item.currency || 'USD',
@@ -518,8 +512,17 @@ export class ProductSearchService {
         ...(item.largeImage && { large: item.largeImage })
       },
       availability: {
-        inStock: item.inStock !== undefined ? item.inStock : (typeof item.stock === "object" ? !(item.stock.isOutOfStock ?? false) : (item.stock ?? 0) > 0),
-        ...((typeof item.stock === "object" && item.stock.stock !== undefined) ? { quantity: item.stock.stock } : (typeof item.stock === "number" ? { quantity: item.stock } : {})),
+        inStock:
+          item.inStock !== undefined
+            ? item.inStock
+            : typeof item.stock === 'object'
+              ? !(item.stock.isOutOfStock ?? false)
+              : (item.stock ?? 0) > 0,
+        ...(typeof item.stock === 'object' && item.stock.stock !== undefined
+          ? { quantity: item.stock.stock }
+          : typeof item.stock === 'number'
+            ? { quantity: item.stock }
+            : {}),
         ...(item.stockQuantity !== undefined &&
           item.stock === undefined && { quantity: item.stockQuantity }),
         ...(item.deliveryDate && { deliveryDate: new Date(item.deliveryDate) })
@@ -527,13 +530,19 @@ export class ProductSearchService {
       features: item.features || [],
       specifications: item.specifications || {},
       ...(item.brandId && { brandId: item.brandId.toString() }),
-      ...(typeof item.brand === 'object' && item.brand?.id && !item.brandId && { brandId: item.brand.id.toString() }),
-      ...(typeof item.brand === 'object' && item.brand?.brandId &&
+      ...(typeof item.brand === 'object' &&
+        item.brand?.id &&
+        !item.brandId && { brandId: item.brand.id.toString() }),
+      ...(typeof item.brand === 'object' &&
+        item.brand?.brandId &&
         !item.brandId &&
         !item.brand.id && { brandId: item.brand.brandId.toString() }),
       ...(item.categoryId && { categoryId: item.categoryId.toString() }),
-      ...(typeof item.category === 'object' && item.category?.id && !item.categoryId && { categoryId: item.category.id.toString() }),
-      ...(typeof item.category === 'object' && item.category?.categoryId &&
+      ...(typeof item.category === 'object' &&
+        item.category?.id &&
+        !item.categoryId && { categoryId: item.category.id.toString() }),
+      ...(typeof item.category === 'object' &&
+        item.category?.categoryId &&
         !item.categoryId &&
         !item.category.id && { categoryId: item.category.categoryId.toString() }),
       ...(item.isPrime && { isPrime: true }),
@@ -589,8 +598,8 @@ export class ProductSearchService {
   /**
    * Construir request body para búsqueda avanzada
    */
-  private buildAdvancedSearchBody(params: AdvancedSearchParams): any {
-    const body: any = {
+  private buildAdvancedSearchBody(params: AdvancedSearchParams): Record<string, unknown> {
+    const body: Record<string, unknown> = {
       query: params.query || '',
       page: params.page,
       pageSize: params.pageSize
@@ -654,8 +663,6 @@ export class ProductSearchService {
     response: BackendAdvancedSearchResponse,
     params: AdvancedSearchParams
   ): AdvancedProductListResponse {
-
-
     // Mapear productos
     const products = (response.items || []).map((item) => this.mapProduct(item));
 
@@ -687,7 +694,9 @@ export class ProductSearchService {
             }
           }),
           ...(response.metadata.didYouMean && { didYouMean: response.metadata.didYouMean }),
-          ...(response.metadata.relatedSearches && { relatedSearches: response.metadata.relatedSearches })
+          ...(response.metadata.relatedSearches && {
+            relatedSearches: response.metadata.relatedSearches
+          })
         }
       : undefined;
 
@@ -696,7 +705,8 @@ export class ProductSearchService {
       pagination: {
         currentPage: response.page || 1,
         pageSize: response.pageSize || 24,
-        totalPages: response.pageCount || Math.ceil((response.total || 0) / (response.pageSize || 24)),
+        totalPages:
+          response.pageCount || Math.ceil((response.total || 0) / (response.pageSize || 24)),
         totalItems: response.total || 0,
         hasNext: response.hasMore || false,
         hasPrevious: (response.page || 1) > 1

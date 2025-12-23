@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
+import { ApiConfigService } from './api-config.service';
 
 export interface ProductBasicInfo {
   id: string;
@@ -31,7 +32,8 @@ interface BackendProductResponse {
 })
 export class ProductService {
   private http = inject(HttpClient);
-  private readonly API_URL = '/api/products';
+  private apiConfig = inject(ApiConfigService);
+  private readonly API_URL = this.apiConfig.getApiUrl('/products');
 
   /**
    * Obtener información básica de un producto por ID
