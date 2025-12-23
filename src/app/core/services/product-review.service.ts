@@ -63,23 +63,23 @@ export class ProductReviewService {
         map((response: Record<string, unknown>) => {
           // El backend devuelve la estructura en 'distribution'
           // Necesitamos aplanarla al nivel raíz para el modelo del frontend
-          const distribution = (response.distribution as Record<string, number>) || {};
+          const distribution = (response['distribution'] as Record<string, number>) || {};
 
           return {
-            productId: response.productId,
-            averageRating: response.averageRating || 0,
-            totalReviews: response.totalReviews || 0,
-            rating5Star: distribution.rating5Star || 0,
-            rating4Star: distribution.rating4Star || 0,
-            rating3Star: distribution.rating3Star || 0,
-            rating2Star: distribution.rating2Star || 0,
-            rating1Star: distribution.rating1Star || 0,
+            productId: response['productId'] as number,
+            averageRating: (response['averageRating'] as number) || 0,
+            totalReviews: (response['totalReviews'] as number) || 0,
+            rating5Star: distribution['rating5Star'] || 0,
+            rating4Star: distribution['rating4Star'] || 0,
+            rating3Star: distribution['rating3Star'] || 0,
+            rating2Star: distribution['rating2Star'] || 0,
+            rating1Star: distribution['rating1Star'] || 0,
             ratingDistribution: {
-              fiveStar: distribution.rating5Star || 0,
-              fourStar: distribution.rating4Star || 0,
-              threeStar: distribution.rating3Star || 0,
-              twoStar: distribution.rating2Star || 0,
-              oneStar: distribution.rating1Star || 0
+              fiveStar: distribution['rating5Star'] || 0,
+              fourStar: distribution['rating4Star'] || 0,
+              threeStar: distribution['rating3Star'] || 0,
+              twoStar: distribution['rating2Star'] || 0,
+              oneStar: distribution['rating1Star'] || 0
             }
           } as ProductRatingSummary;
         })
