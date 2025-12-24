@@ -28,6 +28,7 @@ import { TranslateModule } from '@ngx-translate/core';
 // Services
 import { CartService } from '../../core/services/cart.service';
 import { LanguageService } from '../../core/services/language.service';
+import { ApiConfigService } from '../../core/services/api-config.service';
 
 // Components
 import { ProductDetailImagesComponent } from './components/product-detail-images/product-detail-images.component';
@@ -132,6 +133,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private languageService = inject(LanguageService);
   private cartService = inject(CartService);
   private snackBar = inject(MatSnackBar);
+  private apiConfig = inject(ApiConfigService);
   private destroy$ = new Subject<void>();
 
   // Estado reactivo
@@ -355,7 +357,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     console.log('🌐 Current language:', this.languageService.currentLanguage());
 
     this.http
-      .get<ProductDetailResponse>(`/api/products/${id}`)
+      .get<ProductDetailResponse>(`${this.apiConfig.getApiUrl('/products')}/${id}`)
       .pipe(
         takeUntil(this.destroy$),
         finalize(() => {
