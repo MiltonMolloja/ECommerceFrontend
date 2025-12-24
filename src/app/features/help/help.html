@@ -67,9 +67,7 @@
       <h2>{{ 'HELP.ACCOUNT_TITLE' | translate }}</h2>
       <ul>
         <li>
-          <a href="https://localhost:4400/profile" target="_blank">{{
-            'HELP.MANAGE_ACCOUNT' | translate
-          }}</a>
+          <a [href]="profileUrl" target="_blank">{{ 'HELP.MANAGE_ACCOUNT' | translate }}</a>
         </li>
         <li>
           <a href="#">{{ 'HELP.CHANGE_PASSWORD' | translate }}</a>

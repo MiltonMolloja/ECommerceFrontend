@@ -118,7 +118,7 @@ export class AuthService {
     const returnUrl = encodeURIComponent(currentUrl);
 
     // Redirigir al logout del proyecto de autenticación con returnUrl
-    window.location.href = `https://localhost:4400/auth/logout?returnUrl=${returnUrl}`;
+    window.location.href = `${this.apiConfig.loginServiceUrl}/auth/logout?returnUrl=${returnUrl}`;
   }
 
   /**

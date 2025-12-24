@@ -13,6 +13,7 @@ import { CartService } from '../../core/services/cart.service';
 import { CategoriesService } from '../../core/services/categories';
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
+import { ApiConfigService } from '../../core/services/api-config.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -39,6 +40,7 @@ export class MainLayoutComponent implements OnInit {
   readonly cartService = inject(CartService);
   readonly categoriesService = inject(CategoriesService);
   private router = inject(Router);
+  private apiConfig = inject(ApiConfigService);
 
   // Computed signal para el contador del carrito
   readonly cartItemCount = computed(() => this.cartService.itemCount());
@@ -104,7 +106,7 @@ export class MainLayoutComponent implements OnInit {
    * Navega al perfil de usuario (aplicación externa en puerto 4400)
    */
   goToProfile(): void {
-    window.location.href = 'https://localhost:4400/profile';
+    window.location.href = `${this.apiConfig.loginServiceUrl}/profile`;
   }
 
   /**
