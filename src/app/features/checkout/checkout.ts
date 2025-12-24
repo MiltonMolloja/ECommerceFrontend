@@ -108,7 +108,18 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   createdOrderId: number | null = null;
 
   // Development mode flag (for showing test data warning)
-  isDevMode = !environment.production;
+  // Can be overridden via window.__env.devMode
+  isDevMode = this.checkDevMode();
+
+  private checkDevMode(): boolean {
+    const w = window as Window & { __env?: Record<string, string> };
+    // Check if explicitly set in window.__env
+    if (w.__env?.devMode !== undefined) {
+      return w.__env.devMode === 'true';
+    }
+    // Fall back to environment.production
+    return !environment.production;
+  }
 
   // Calculations
   shipping = computed(() => (this.subtotal() >= 25 ? 0 : 9.99));
