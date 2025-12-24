@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { CategoryDto } from '../models';
 import { tap } from 'rxjs';
 import { LanguageService } from './language.service';
+import { ApiConfigService } from './api-config.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ import { LanguageService } from './language.service';
 export class CategoriesService {
   private http = inject(HttpClient);
   private languageService = inject(LanguageService);
-  private apiUrl = '/api/catalog';
+  private apiConfig = inject(ApiConfigService);
 
   // Signal para almacenar las categorías
   categories = signal<CategoryDto[]>([]);
@@ -57,7 +58,7 @@ export class CategoriesService {
   private fetchCategories(): void {
     this.isLoading.set(true);
     this.http
-      .get<{ categories: CategoryDto[] }>('/api/home')
+      .get<{ categories: CategoryDto[] }>(this.apiConfig.getApiUrl('/home'))
       .pipe(
         tap((response) => {
           this.categories.set(response.categories || []);
