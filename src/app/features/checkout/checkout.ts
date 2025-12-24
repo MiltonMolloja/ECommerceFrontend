@@ -114,8 +114,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   private checkDevMode(): boolean {
     const w = window as Window & { __env?: Record<string, string> };
     // Check if explicitly set in window.__env
-    if (w.__env?.devMode !== undefined) {
-      return w.__env.devMode === 'true';
+    if (w.__env?.['devMode'] !== undefined) {
+      return w.__env['devMode'] === 'true';
     }
     // Fall back to environment.production
     return !environment.production;
