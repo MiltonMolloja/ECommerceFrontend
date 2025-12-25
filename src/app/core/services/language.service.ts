@@ -81,15 +81,16 @@ export class LanguageService {
       // Ignore storage errors
     }
 
+    // COMENTADO: No usar idioma del navegador, siempre usar español por defecto
     // Try to get from browser language
-    try {
-      const browserLang = navigator.language?.split('-')[0];
-      if (browserLang && this.isValidLanguage(browserLang)) {
-        return browserLang as Language;
-      }
-    } catch {
-      // Ignore navigator errors
-    }
+    // try {
+    // const browserLang = navigator.language?.split('-')[0];
+    // if (browserLang && this.isValidLanguage(browserLang)) {
+    // return browserLang as Language;
+    // }
+    // } catch {
+    //   // Ignore navigator errors
+    // }
 
     return this.DEFAULT_LANGUAGE;
   }
