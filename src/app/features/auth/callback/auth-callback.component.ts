@@ -47,12 +47,13 @@ export class AuthCallbackComponent implements OnInit {
   ngOnInit(): void {
     // Obtener query params de la URL
     this.route.queryParams.subscribe((params) => {
-      const accessToken = params['accessToken'];
-      const refreshToken = params['refreshToken'];
-      const expiresAt = params['expiresAt'];
+      // Support both camelCase and snake_case parameter names
+      const accessToken = params['accessToken'] || params['access_token'];
+      const refreshToken = params['refreshToken'] || params['refresh_token'];
+      const expiresAt = params['expiresAt'] || params['expires_at'];
       const nextUrl = params['next'] || '/'; // Página a la que el usuario quería ir
 
-      if (accessToken && refreshToken) {
+      if (accessToken) {
         // Crear objeto IdentityAccess
         const identityAccess: IdentityAccess = {
           succeeded: true,
