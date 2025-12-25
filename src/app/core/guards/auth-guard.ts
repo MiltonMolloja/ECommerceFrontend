@@ -14,7 +14,7 @@ export const authGuard: CanActivateFn = (route, state) => {
   const baseUrl = window.location.origin;
 
   // Construir URL de callback que incluye la página a la que el usuario quería acceder
-  const callbackUrl = `${baseUrl}/auth/callback?next=${encodeURIComponent(state.url)}`;
+  const callbackUrl = `${baseUrl}/login-callback?next=${encodeURIComponent(state.url)}`;
 
   // Construir URL completa para el microservicio de login
   const loginUrl = `${environment.loginServiceUrl}/auth/login?returnUrl=${encodeURIComponent(callbackUrl)}`;

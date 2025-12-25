@@ -398,7 +398,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
 
       const baseUrl = window.location.origin;
       const returnUrl = '/checkout';
-      const callbackUrl = `${baseUrl}/auth/callback?next=${encodeURIComponent(returnUrl)}`;
+      const callbackUrl = `${baseUrl}/login-callback?next=${encodeURIComponent(returnUrl)}`;
       window.location.href = `${environment.loginServiceUrl}/auth/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
       return;
     }

@@ -12,7 +12,7 @@ export const externalLoginGuard: CanActivateFn = (route) => {
   const returnUrl = route.queryParams['returnUrl'] || '/';
 
   // Construir URL de callback que incluye la página de destino
-  const callbackUrl = `${baseUrl}/auth/callback?next=${encodeURIComponent(returnUrl)}`;
+  const callbackUrl = `${baseUrl}/login-callback?next=${encodeURIComponent(returnUrl)}`;
 
   // Redirigir al microservicio de login en el puerto 4400
   // El servicio agregará los tokens como query params al returnUrl cuando redirige de vuelta
