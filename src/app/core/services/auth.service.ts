@@ -107,18 +107,19 @@ export class AuthService {
 
   /**
    * Logout
-   * Redirige al proyecto de autenticación para cerrar sesión y luego vuelve
+   * Redirige al proyecto de autenticación para cerrar sesión y luego vuelve a la home
    */
   logout(): void {
     // Limpiar tokens locales primero
     this.clearLocalSession();
 
-    // Obtener la URL actual para volver después del logout
-    const currentUrl = window.location.href;
-    const returnUrl = encodeURIComponent(currentUrl);
+    // Siempre volver a la home después del logout
+    const homeUrl = `${window.location.origin}/`;
+    const returnUrl = encodeURIComponent(homeUrl);
 
     // Redirigir al logout del proyecto de autenticación con returnUrl
-    window.location.href = `${this.apiConfig.loginServiceUrl}/auth/logout?returnUrl=${returnUrl}`;
+    // Nota: En desarrollo (ng serve) la ruta es /logout, en producción es /auth/logout
+    window.location.href = `${this.apiConfig.loginServiceUrl}/logout?returnUrl=${returnUrl}`;
   }
 
   /**
@@ -130,6 +131,13 @@ export class AuthService {
     localStorage.removeItem(this.tokenExpirationKey);
     this.accessTokenSignal.set(null);
     this.currentUserSignal.set(null);
+  }
+
+  /**
+   * Limpiar sesión (método público para uso desde LogoutComponent)
+   */
+  clearSession(): void {
+    this.clearLocalSession();
   }
 
   /**

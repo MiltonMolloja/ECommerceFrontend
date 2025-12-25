@@ -15,6 +15,11 @@ export const routes: Routes = [
       )
   },
   {
+    path: 'logout',
+    loadComponent: () =>
+      import('./features/auth/logout/logout.component').then((m) => m.LogoutComponent)
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layouts/main-layout/main-layout.component').then((m) => m.MainLayoutComponent),
