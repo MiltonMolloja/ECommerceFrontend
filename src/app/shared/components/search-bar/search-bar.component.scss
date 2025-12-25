@@ -69,22 +69,26 @@
     align-items: center;
     justify-content: center;
 
+    @media (min-width: 960px) {
+      min-width: 120px;
+      padding: 0 20px;
+    }
+
     mat-icon {
       font-size: 28px;
       width: 28px;
       height: 28px;
-      margin-right: 0;
+      margin: 0 !important;
+      padding: 0 !important;
       display: flex;
       align-items: center;
       justify-content: center;
       line-height: 1;
-      margin: 0 !important;
-      padding: 0 !important;
       vertical-align: middle;
     }
 
     .search-button-text {
-      margin-left: 4px;
+      margin-left: 8px;
     }
 
     &:hover {
