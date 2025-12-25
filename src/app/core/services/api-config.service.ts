@@ -24,7 +24,7 @@ export class ApiConfigService {
       return {
         apiGatewayUrl: window.__env['apiGatewayUrl'] || 'http://localhost:45000',
         identityUrl: window.__env['identityUrl'] || 'http://localhost:10000',
-        loginServiceUrl: window.__env['loginServiceUrl'] || 'http://localhost:4400',
+        loginServiceUrl: window.__env['loginServiceUrl'] || 'https://localhost:4400',
         mercadoPagoPublicKey: window.__env['mercadoPagoPublicKey'] || '',
         sentryDsn: window.__env['sentryDsn'] || '',
         production: window.__env['production'] === 'true'
@@ -36,7 +36,7 @@ export class ApiConfigService {
     return {
       apiGatewayUrl: 'http://localhost:45000',
       identityUrl: 'http://localhost:10000',
-      loginServiceUrl: 'http://localhost:4400',
+      loginServiceUrl: 'https://localhost:4400',
       mercadoPagoPublicKey: '',
       sentryDsn: '',
       production: false
