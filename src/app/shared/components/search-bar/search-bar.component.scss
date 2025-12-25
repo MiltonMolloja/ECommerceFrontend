@@ -65,8 +65,14 @@
     min-width: 44px;
     height: 44px;
     padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
       margin-right: 0;
     }
 
