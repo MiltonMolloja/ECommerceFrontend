@@ -121,7 +121,9 @@
     "FEATURED": "Featured Products",
     "NEW_ARRIVALS": "New Arrivals",
     "TOP_RATED": "Top Rated",
-    "HELP": "Help"
+    "HELP": "Help",
+    "SETTINGS": "Settings",
+    "LANGUAGE": "Language"
   },
   "THEME": {
     "LIGHT": "Light",

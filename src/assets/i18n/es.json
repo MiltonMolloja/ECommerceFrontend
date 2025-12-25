@@ -121,7 +121,9 @@
     "FEATURED": "Productos Destacados",
     "NEW_ARRIVALS": "Recién Llegados",
     "TOP_RATED": "Mejor Valorados",
-    "HELP": "Ayuda"
+    "HELP": "Ayuda",
+    "SETTINGS": "Configuración",
+    "LANGUAGE": "Idioma"
   },
   "THEME": {
     "LIGHT": "Claro",

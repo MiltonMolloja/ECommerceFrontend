@@ -49,13 +49,13 @@
 
 // Responsive utilities
 .hide-xs {
-  @media (max-width: 599px) {
+  @media (max-width: 959px) {
     display: none !important;
   }
 }
 
 .hide-gt-xs {
-  @media (min-width: 600px) {
+  @media (min-width: 960px) {
     display: none !important;
   }
 }

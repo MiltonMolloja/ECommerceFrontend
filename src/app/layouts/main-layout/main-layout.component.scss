@@ -1,7 +1,129 @@
+// ============================================
+// SIDENAV CONTAINER
+// ============================================
+
+.sidenav-container {
+  height: 100vh;
+}
+
 .layout-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+// ============================================
+// MOBILE DRAWER
+// ============================================
+
+.mobile-drawer {
+  width: 280px;
+  max-width: 85vw;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background-color: var(--header-bg-primary);
+  color: white;
+
+  .drawer-user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .drawer-user-icon {
+    font-size: 2.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .drawer-user-name {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .drawer-close-btn {
+    color: white;
+  }
+}
+
+.drawer-content {
+  padding: 0.5rem 0;
+  overflow-y: auto;
+  height: calc(100vh - 72px);
+
+  mat-nav-list {
+    padding: 0;
+
+    a[mat-list-item] {
+      height: 48px;
+
+      mat-icon {
+        color: var(--text-secondary);
+      }
+    }
+  }
+
+  mat-accordion {
+    .mat-expansion-panel {
+      box-shadow: none;
+      border-radius: 0;
+
+      .mat-expansion-panel-header {
+        padding: 0 16px;
+        height: 48px;
+
+        .panel-icon {
+          margin-right: 16px;
+          color: var(--text-secondary);
+        }
+      }
+
+      .mat-expansion-panel-body {
+        padding: 0;
+      }
+    }
+  }
+
+  .category-count {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+  }
+
+  .check-icon {
+    color: var(--amazon-orange, #ff9900);
+  }
+}
+
+.drawer-section-title {
+  padding: 1rem 1rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
+}
+
+// Bandera de idioma en el drawer
+.language-flag {
+  font-size: 1.25rem;
+  line-height: 1;
+  margin-right: 16px;
+}
+
+// Botón hamburguesa
+.menu-button {
+  color: white !important;
+  margin-right: 0.25rem;
+  display: none; // Oculto por defecto en desktop
+
+  @media (max-width: 959px) {
+    display: inline-flex !important; // Mostrar en móvil
+  }
 }
 
 // ============================================
@@ -436,7 +558,7 @@
     }
   }
 
-  @media (max-width: 599px) {
+  @media (max-width: 959px) {
     .footer-content {
       grid-template-columns: 1fr;
       padding: 1.5rem 1rem;
@@ -449,18 +571,85 @@
 // RESPONSIVE UTILITIES
 // ============================================
 
-@media (max-width: 599px) {
-  .top-toolbar .header-content {
-    gap: 0.5rem;
-    padding: 0.5rem;
+// Clases para ocultar/mostrar elementos
+.hide-xs {
+  @media (max-width: 959px) {
+    display: none !important;
+  }
+}
+
+.hide-gt-xs {
+  @media (min-width: 960px) {
+    display: none !important;
+  }
+}
+
+@media (max-width: 959px) {
+  // Header compacto en móvil - UNA SOLA FILA
+  .top-toolbar {
+    min-height: 50px !important;
+
+    .header-content {
+      gap: 0.5rem;
+      padding: 0.25rem 0.5rem;
+    }
   }
 
-  .search-bar {
-    max-width: none;
-  }
-
+  // Logo más compacto
   .logo {
     padding: 0.25rem;
+
+    .logo-icon {
+      font-size: 1.5rem;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+
+  // Barra de búsqueda ocupa el espacio disponible
+  .search-bar-wrapper {
+    flex: 1;
+    min-width: 0;
+  }
+
+  // Acciones del header más compactas
+  .header-actions {
+    gap: 0.25rem;
+
+    // Ocultar elementos no esenciales en móvil
+    .account-button,
+    .theme-button,
+    app-language-switcher {
+      display: none !important;
+    }
+  }
+
+  // Carrito más compacto en móvil
+  .cart-button-amazon {
+    padding: 4px 8px;
+    min-width: 45px;
+
+    .cart-svg-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .cart-text-label {
+      font-size: 10px;
+    }
+
+    .cart-count-badge {
+      font-size: 14px;
+      top: -6px;
+      right: -2px;
+    }
+  }
+
+  // Ocultar iconos de usuario y tema individuales en header-actions (ya están en el drawer)
+  .header-actions {
+    .hide-gt-xs[mat-icon-button] {
+      display: none !important;
+    }
   }
 }
 
