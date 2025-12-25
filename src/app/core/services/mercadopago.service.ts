@@ -75,22 +75,50 @@ export class MercadoPagoService {
 
   /**
    * Inicializar SDK de MercadoPago
-   * Uses dynamic import to lazy load the SDK only when needed (~50KB savings)
+   * Loads the SDK from MercadoPago CDN
    */
   async initialize(): Promise<void> {
     if (this.initialized) return;
 
     try {
-      // Lazy load MercadoPago SDK only when needed
-      const { loadMercadoPago } = await import('@mercadopago/sdk-js');
-      await loadMercadoPago();
-      this.mp = new window.MercadoPago(environment.mercadoPagoPublicKey, {
+      // Load MercadoPago SDK from CDN if not already loaded
+      if (typeof window.MercadoPago === 'undefined') {
+        await this.loadScript('https://sdk.mercadopago.com/js/v2');
+      }
+
+      const publicKey = environment.mercadoPagoPublicKey;
+      if (!publicKey) {
+        throw new Error('MercadoPago public key not configured');
+      }
+
+      this.mp = new window.MercadoPago(publicKey, {
         locale: 'es-AR'
       });
       this.initialized = true;
-    } catch {
+    } catch (error) {
+      console.error('MercadoPago initialization error:', error);
       throw new Error('No se pudo inicializar el servicio de pagos');
     }
+  }
+
+  /**
+   * Load external script dynamically
+   */
+  private loadScript(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // Check if script already exists
+      if (document.querySelector(`script[src="${src}"]`)) {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+      document.head.appendChild(script);
+    });
   }
 
   /**
