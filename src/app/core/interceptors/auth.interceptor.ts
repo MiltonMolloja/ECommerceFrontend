@@ -2,7 +2,8 @@ import {
   HttpInterceptorFn,
   HttpErrorResponse,
   HttpRequest,
-  HttpHandlerFn
+  HttpHandlerFn,
+  HttpEvent
 } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -75,7 +76,7 @@ function handle401Error(
   authService: AuthService,
   apiConfig: ApiConfigService,
   logger: LoggerService
-): Observable<unknown> {
+): Observable<HttpEvent<unknown>> {
   logger.warn('⚠️ Token expirado (401), intentando renovar...', {
     url: request.url,
     method: request.method
