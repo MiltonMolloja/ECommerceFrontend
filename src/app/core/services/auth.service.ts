@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiConfigService } from './api-config.service';
 import {
@@ -85,12 +85,13 @@ export class AuthService {
   }
 
   /**
-   * Refresh token
+   * Refresh token - Renovar access token usando refresh token
+   * Retorna Observable que puede fallar gracefully (no lanza excepción)
    */
   refreshToken(): Observable<IdentityAccess> {
-    const refreshToken = localStorage.getItem(this.refreshTokenKey);
+    const refreshToken = this.getRefreshToken();
     if (!refreshToken) {
-      throw new Error('No refresh token available');
+      return throwError(() => new Error('No refresh token available'));
     }
 
     const command: RefreshTokenCommand = { refreshToken };
@@ -103,6 +104,26 @@ export class AuthService {
           }
         })
       );
+  }
+
+  /**
+   * Verifica si hay un refresh token disponible
+   */
+  hasRefreshToken(): boolean {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return !!localStorage.getItem(this.refreshTokenKey);
+    }
+    return false;
+  }
+
+  /**
+   * Obtener el refresh token actual
+   */
+  getRefreshToken(): string | null {
+    if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+      return localStorage.getItem(this.refreshTokenKey);
+    }
+    return null;
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy, signal, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { FilterOption, FilterType, FilterValue } from '../../models';
 
 interface FilterChangeEvent {
@@ -40,8 +41,10 @@ interface FilterChangeEvent {
 })
 export class FilterGroupComponent implements OnInit {
   @Input({ required: true }) filter!: FilterOption;
-  
+
   @Output() filterChange = new EventEmitter<FilterChangeEvent>();
+
+  private breakpointObserver = inject(BreakpointObserver);
 
   FilterType = FilterType;
   private priceChangeTimeout?: ReturnType<typeof setTimeout>;
@@ -50,6 +53,7 @@ export class FilterGroupComponent implements OnInit {
   searchQuery = signal('');
   isExpanded = signal(false);
   showAllOptions = signal(false);
+  isMobileOrTablet = signal(false);
 
   ngOnInit(): void {
     console.log('🎛️ Filter Group:', {
@@ -59,6 +63,27 @@ export class FilterGroupComponent implements OnInit {
       optionsCount: this.filter.options?.length || 0,
       options: this.filter.options
     });
+
+    // Detectar si es móvil o tablet para colapsar filtros
+    this.breakpointObserver
+      .observe([Breakpoints.Handset, Breakpoints.TabletPortrait, Breakpoints.TabletLandscape])
+      .subscribe((result) => {
+        this.isMobileOrTablet.set(result.matches);
+      });
+  }
+
+  /**
+   * Determina si el panel debe estar expandido
+   * En móvil/tablet: colapsado por defecto
+   * En desktop: expandido según filter.isExpanded
+   */
+  get shouldBeExpanded(): boolean {
+    // Si es móvil/tablet, colapsar por defecto
+    if (this.isMobileOrTablet()) {
+      return false;
+    }
+    // En desktop, usar la configuración del filtro
+    return this.filter.isExpanded !== false;
   }
 
   onCheckboxChange(optionId: string, checked: boolean): void {
@@ -203,9 +228,7 @@ export class FilterGroupComponent implements OnInit {
     // Aplicar filtro de búsqueda si existe
     if (this.searchQuery() && this.filter.searchable) {
       const query = this.searchQuery().toLowerCase();
-      options = options.filter(opt =>
-        opt.label.toLowerCase().includes(query)
-      );
+      options = options.filter((opt) => opt.label.toLowerCase().includes(query));
     }
 
     // Aplicar límite de opciones visibles si no se muestra todo
@@ -224,11 +247,12 @@ export class FilterGroupComponent implements OnInit {
       return false;
     }
 
-    const totalOptions = this.searchQuery() && this.filter.searchable
-      ? this.filter.options.filter(opt =>
-          opt.label.toLowerCase().includes(this.searchQuery().toLowerCase())
-        ).length
-      : this.filter.options.length;
+    const totalOptions =
+      this.searchQuery() && this.filter.searchable
+        ? this.filter.options.filter((opt) =>
+            opt.label.toLowerCase().includes(this.searchQuery().toLowerCase())
+          ).length
+        : this.filter.options.length;
 
     return totalOptions > this.filter.maxVisibleOptions;
   }
@@ -307,6 +331,6 @@ export class FilterGroupComponent implements OnInit {
    * Obtiene el conteo total de opciones seleccionadas
    */
   get selectedCount(): number {
-    return this.filter.options.filter(o => o.isSelected).length;
+    return this.filter.options.filter((o) => o.isSelected).length;
   }
 }

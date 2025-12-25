@@ -1,4 +1,4 @@
-<mat-expansion-panel [expanded]="filter.isExpanded !== false" class="filter-panel">
+<mat-expansion-panel [expanded]="shouldBeExpanded" class="filter-panel">
   <mat-expansion-panel-header>
     <mat-panel-title class="filter-title">
       <span>{{ filter.name }}</span>
@@ -24,12 +24,7 @@
             placeholder="Buscar..."
           />
           @if (searchQuery()) {
-            <button
-              matSuffix
-              mat-icon-button
-              (click)="clearSearch()"
-              aria-label="Limpiar búsqueda"
-            >
+            <button matSuffix mat-icon-button (click)="clearSearch()" aria-label="Limpiar búsqueda">
               <mat-icon>close</mat-icon>
             </button>
           }
@@ -55,12 +50,7 @@
 
       <!-- Botón "Ver más/menos" -->
       @if (hasMoreOptions() && !searchQuery()) {
-        <button
-          mat-button
-          color="primary"
-          class="show-more-btn"
-          (click)="toggleShowAll()"
-        >
+        <button mat-button color="primary" class="show-more-btn" (click)="toggleShowAll()">
           @if (showAllOptions()) {
             <ng-container>
               <mat-icon>expand_less</mat-icon>
@@ -109,12 +99,7 @@
 
       <!-- Botón "Ver más/menos" para categorías -->
       @if (hasMoreOptions() && !searchQuery()) {
-        <button
-          mat-button
-          color="primary"
-          class="show-more-btn"
-          (click)="toggleShowAll()"
-        >
+        <button mat-button color="primary" class="show-more-btn" (click)="toggleShowAll()">
           @if (showAllOptions()) {
             <ng-container>
               <mat-icon>expand_less</mat-icon>
@@ -153,7 +138,6 @@
             (input)="onPriceInputChange()"
           />
         </div>
-
 
         <!-- Slider -->
         <mat-slider

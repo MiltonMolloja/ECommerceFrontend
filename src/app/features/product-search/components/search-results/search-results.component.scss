@@ -3,6 +3,71 @@
   background: var(--card-bg, #fff);
   min-height: 100vh;
 }
+
+// Mobile Filters Toggle Button
+.mobile-filters-toggle-container {
+  padding: 12px 16px;
+  background: var(--card-bg, #fff);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.mobile-filters-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--surface-ground, #f5f5f5);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary, #0f1111);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .toggle-icon {
+    margin-left: auto;
+  }
+
+  .filter-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: #ff9900;
+    color: #0f1111;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  &:hover {
+    background: var(--hover-bg, #eee);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.active {
+    background: #fff3e0;
+    border-color: #ff9900;
+    color: #c45500;
+  }
+}
 .amazon-layout {
   display: flex;
   gap: 20px;
@@ -19,10 +84,15 @@
   flex-shrink: 0;
   padding-right: 20px;
   border-right: 1px solid var(--border-color, #e0e0e0);
+  transition: all 0.3s ease;
   @media (max-width: 1024px) {
     width: 100%;
     border-right: none;
     padding-right: 0;
+  }
+
+  &.hidden {
+    display: none;
   }
 }
 .amazon-main {
@@ -444,5 +514,25 @@
   }
   .amazon-sidebar {
     border-right-color: var(--border-color, #3a4553);
+  }
+  // Mobile filters toggle dark mode
+  .mobile-filters-toggle-container {
+    background: var(--card-bg, #232f3e);
+    border-bottom-color: var(--border-color, #3a4553);
+  }
+  .mobile-filters-toggle-btn {
+    background: var(--surface-ground, #1a2332);
+    border-color: var(--border-color, #3a4553);
+    color: var(--text-primary, #fff);
+
+    &:hover {
+      background: var(--hover-bg, #2a3a4a);
+    }
+
+    &.active {
+      background: rgba(255, 153, 0, 0.15);
+      border-color: #ff9900;
+      color: #ff9900;
+    }
   }
 }

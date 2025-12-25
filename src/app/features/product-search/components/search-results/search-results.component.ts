@@ -11,9 +11,13 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ScrollingModule } from '@angular/cdk/scrolling';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatBadgeModule } from '@angular/material/badge';
 import { ProductSearchService } from '../../services/product-search.service';
 import { FilterService } from '../../services/filter.service';
 import { CartService } from '../../../../core/services/cart.service';
@@ -32,6 +36,9 @@ import { ActiveFiltersComponent } from '../active-filters/active-filters.compone
     ScrollingModule,
     MatProgressBarModule,
     MatSnackBarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatBadgeModule,
     TranslateModule,
     FiltersSidebarComponent,
     SortDropdownComponent,
@@ -46,6 +53,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   private cartService = inject(CartService);
   private translateService = inject(TranslateService);
   private snackBar = inject(MatSnackBar);
+  private breakpointObserver = inject(BreakpointObserver);
   public route = inject(ActivatedRoute); // Public para usar en el template
   private router = inject(Router);
   private destroy$ = new Subject<void>();
@@ -58,6 +66,10 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
   totalResults = signal<number>(0);
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
+
+  // Mobile filters toggle
+  isMobileOrTablet = signal<boolean>(false);
+  filtersVisible = signal<boolean>(false);
 
   // Computed signals
   hasResults = computed(() => this.products().length > 0);
@@ -74,6 +86,7 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeFromQueryParams();
+    this.initializeBreakpointObserver();
 
     // Register callback for language change reload
     this.productSearchService.onLanguageChangeReload(() => {
@@ -81,6 +94,39 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
         this.performSearch(this.currentSearchParams);
       }
     });
+  }
+
+  /**
+   * Inicializar observer de breakpoints para detectar móvil/tablet
+   */
+  private initializeBreakpointObserver(): void {
+    this.breakpointObserver
+      .observe([Breakpoints.Handset, Breakpoints.TabletPortrait, Breakpoints.TabletLandscape])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        this.isMobileOrTablet.set(result.matches);
+        // Si cambia a desktop, mostrar filtros automáticamente
+        if (!result.matches) {
+          this.filtersVisible.set(true);
+        }
+      });
+  }
+
+  /**
+   * Toggle visibilidad de filtros en móvil
+   */
+  toggleFilters(): void {
+    this.filtersVisible.update((v) => !v);
+  }
+
+  /**
+   * Obtiene el conteo de filtros activos para mostrar en el badge
+   */
+  get activeFilterCount(): number {
+    return this.filters().reduce((count, filter) => {
+      const activeOptions = filter.options.filter((o) => o.isSelected).length;
+      return count + activeOptions;
+    }, 0);
   }
 
   ngOnDestroy(): void {

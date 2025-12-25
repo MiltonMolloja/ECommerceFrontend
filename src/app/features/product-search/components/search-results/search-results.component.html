@@ -1,9 +1,29 @@
 <!-- Amazon-style Search Results Page -->
 <div class="amazon-search-container">
+  <!-- Mobile Filters Toggle Button -->
+  @if (isMobileOrTablet()) {
+    <div class="mobile-filters-toggle-container">
+      <button
+        class="mobile-filters-toggle-btn"
+        (click)="toggleFilters()"
+        [class.active]="filtersVisible()"
+      >
+        <mat-icon>tune</mat-icon>
+        <span>{{ 'COMMON.FILTERS' | translate }}</span>
+        @if (activeFilterCount > 0) {
+          <span class="filter-count-badge">{{ activeFilterCount }}</span>
+        }
+        <mat-icon class="toggle-icon">{{
+          filtersVisible() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </button>
+    </div>
+  }
+
   <!-- Main Layout -->
   <div class="amazon-layout">
     <!-- Left Sidebar - Filters -->
-    <aside class="amazon-sidebar">
+    <aside class="amazon-sidebar" [class.hidden]="isMobileOrTablet() && !filtersVisible()">
       <!-- Filters -->
       <app-filters-sidebar
         [filters]="filters()"

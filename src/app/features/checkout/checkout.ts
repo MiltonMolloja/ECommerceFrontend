@@ -329,7 +329,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     if (this.shippingForm.valid) {
       this.checkoutService.setShippingAddress(this.shippingForm.value);
       this.checkoutService.nextStep();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.scrollToTop();
     } else {
       const message = this.translate.instant('CHECKOUT.FIELD_REQUIRED');
       this.snackBar.open(message, '', {
@@ -378,7 +378,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     };
     this.checkoutService.setPaymentInfo(paymentInfo);
     this.checkoutService.nextStep();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.scrollToTop();
   }
 
   /**
@@ -644,6 +644,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    */
   goToStep(step: number): void {
     this.checkoutService.goToStep(step);
+    this.scrollToTop();
+  }
+
+  /**
+   * Scroll to top of page - handles both window scroll and mat-sidenav-content scroll
+   */
+  private scrollToTop(): void {
+    // Try scrolling the mat-sidenav-content first (Angular Material layout)
+    const sidenavContent = document.querySelector('mat-sidenav-content');
+    if (sidenavContent) {
+      sidenavContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    // Also scroll window for safety
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
