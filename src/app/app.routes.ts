@@ -8,9 +8,9 @@ export const routes: Routes = [
     children: []
   },
   {
-    path: 'auth/callback',
+    path: 'login-callback',
     loadComponent: () =>
-      import('./features/login-callback/auth-callback.component').then(
+      import('./features/auth/callback/auth-callback.component').then(
         (m) => m.AuthCallbackComponent
       )
   },
