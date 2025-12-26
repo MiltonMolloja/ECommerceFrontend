@@ -196,7 +196,7 @@ mat-radio-button {
     color: #0f1111;
     background: #fff;
     outline: none;
-    
+
     &:focus {
       border-color: #ff9900;
       box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2);
@@ -285,6 +285,50 @@ mat-radio-button {
       overflow: hidden;
       text-overflow: ellipsis;
       max-width: 48%;
+    }
+  }
+}
+
+// Dark Mode
+:host-context(.dark-theme) {
+  .filter-panel {
+    border-bottom-color: #3a4553;
+  }
+
+  .filter-title {
+    color: #fff;
+
+    .unit-label {
+      color: #999;
+    }
+  }
+
+  .option-label {
+    color: #fff;
+  }
+
+  .option-count {
+    color: #999;
+  }
+
+  .price-range-filter {
+    .price-input-simple {
+      background: #1a2332;
+      border-color: #3a4553;
+      color: #fff;
+
+      &:focus {
+        border-color: #ff9900;
+        box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.2);
+      }
+
+      &::placeholder {
+        color: #666;
+      }
+    }
+
+    .price-separator {
+      color: #999;
     }
   }
 }
