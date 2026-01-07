@@ -27,7 +27,6 @@ export class CategoriesService {
 
       // Only reload if initial load has completed (avoid double-loading on startup)
       if (this.initialLoadComplete && langChangeCount > 0) {
-        console.log('[CategoriesService] 🌐 Language changed, reloading categories...');
         this.forceReloadCategories();
       }
     });
@@ -64,9 +63,6 @@ export class CategoriesService {
           this.categories.set(response.categories || []);
           this.isLoading.set(false);
           this.initialLoadComplete = true;
-          console.log('[CategoriesService] ✅ Categories loaded', {
-            count: response.categories?.length || 0
-          });
         })
       )
       .subscribe({

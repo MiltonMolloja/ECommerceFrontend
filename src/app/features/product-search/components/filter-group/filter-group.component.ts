@@ -56,14 +56,6 @@ export class FilterGroupComponent implements OnInit {
   isMobileOrTablet = signal(false);
 
   ngOnInit(): void {
-    console.log('🎛️ Filter Group:', {
-      id: this.filter.id,
-      name: this.filter.name,
-      type: this.filter.type,
-      optionsCount: this.filter.options?.length || 0,
-      options: this.filter.options
-    });
-
     // Detectar si es móvil o tablet para colapsar filtros
     this.breakpointObserver
       .observe([Breakpoints.Handset, Breakpoints.TabletPortrait, Breakpoints.TabletLandscape])

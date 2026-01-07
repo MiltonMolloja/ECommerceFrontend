@@ -523,8 +523,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
    */
   private processPayment(token: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      console.log('💰 processPayment() called with token:', token);
-
       if (!this.createdOrderId) {
         reject(new Error('No se encontró el ID de la orden'));
         return;

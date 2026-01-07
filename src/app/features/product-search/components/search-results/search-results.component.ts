@@ -166,22 +166,12 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
 
     // Convertir SearchParams a AdvancedSearchParams
     const advancedParams = this.convertToAdvancedParams(params);
-    console.log('🚀 Advanced Search Params:', advancedParams);
 
     this.productSearchService
       .searchAdvanced(advancedParams)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('🔍 Search Response:', response);
-          console.log('📊 Total Products:', response.products.length);
-          console.log('🎛️ Filters:', response.filters);
-          console.log(
-            '📁 Category Filter:',
-            response.filters.find((f) => f.id === 'category')
-          );
-          console.log('🎯 Raw Facets:', response.facets);
-
           this.products.set(response.products);
 
           // Guardar el rango de precio original en la primera carga o después de un reset
@@ -201,7 +191,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
             params.filters || {},
             params.priceRange
           );
-          console.log('✅ Filters with selection:', filtersWithSelection);
           this.filters.set(filtersWithSelection);
 
           this.totalResults.set(response.totalResults);
@@ -430,7 +419,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
         searchParams.filters = {};
       }
       searchParams.filters['brand'] = brandIdsValue as string[];
-      console.log('🏷️ Brand filter from URL:', searchParams.filters['brand']);
     }
 
     // Parsear categoryIds si existe (puede venir como categoryIds o filter_category)
@@ -444,7 +432,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
         searchParams.filters = {};
       }
       searchParams.filters['category'] = categoryIdsValue as string[];
-      console.log('📁 Category filter from URL:', searchParams.filters['category']);
     }
 
     // Parsear rango de precio si existe
@@ -505,12 +492,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
       !this.loadingMore() &&
       this.currentPage() < this.totalPages()
     ) {
-      console.log('🔄 Cargando más productos...', {
-        scrollPosition,
-        documentHeight,
-        currentPage: this.currentPage(),
-        totalPages: this.totalPages()
-      });
       this.loadMoreProducts();
     }
   }
@@ -630,8 +611,6 @@ export class SearchResultsComponent implements OnInit, OnDestroy {
     snackBarRef.onAction().subscribe(() => {
       this.router.navigate(['/cart']);
     });
-
-    console.log('🛒 Product added to cart:', product.title);
   }
 
   /**

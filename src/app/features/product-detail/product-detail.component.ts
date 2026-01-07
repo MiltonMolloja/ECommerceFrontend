@@ -178,15 +178,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         ? product.brand
         : product.brand?.name || product.brandName || 'Sin marca';
 
-    // Debug log para verificar la marca
-    console.log('🏷️ Brand mapping:', {
-      rawBrand: product.brand,
-      brandType: typeof product.brand,
-      brandId: brandId,
-      brandName: product.brandName,
-      finalBrandName: brandName
-    });
-
     const categoryName =
       typeof product.category === 'string'
         ? product.category
@@ -276,9 +267,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         name: product.primaryCategory.name,
         slug: product.primaryCategory.slug
       };
-      console.log('✅ Mapped primaryCategory:', result.primaryCategory);
-    } else {
-      console.warn('⚠️ No primaryCategory in product response');
     }
 
     if (product.categories && product.categories.length > 0) {
@@ -287,12 +275,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
         name: cat.name,
         slug: cat.slug
       }));
-      console.log('✅ Mapped categories:', result.categories);
-    } else {
-      console.warn('⚠️ No categories in product response');
     }
 
-    console.log('📋 Final ProductInfo:', result);
     return result;
   });
 
@@ -354,8 +338,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.error.set(null);
 
-    console.log('🌐 Current language:', this.languageService.currentLanguage());
-
     this.http
       .get<ProductDetailResponse>(`${this.apiConfig.getApiUrl('/products')}/${id}`)
       .pipe(
@@ -366,10 +348,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (response) => {
-          console.log('📦 Product API Response:', response);
-          console.log('🏷️ Categories:', response.categories);
-          console.log('🎯 Primary Category:', response.primaryCategory);
-
           this.productResponse.set(response);
 
           // Analytics tracking
@@ -415,8 +393,6 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   onAddToCart(quantity: number): void {
     const product = this.productResponse();
     if (!product) return;
-
-    console.log(`🛒 Added ${quantity} item(s) to cart`);
 
     // Mostrar notificación
     this.snackBar

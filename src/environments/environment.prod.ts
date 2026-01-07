@@ -24,9 +24,9 @@ export const environment = {
   get loginServiceUrl(): string {
     return getEnvValue('loginServiceUrl', 'https://login.ecommerce.com');
   },
-  tokenKey: 'ecommerce_access_token',
-  refreshTokenKey: 'ecommerce_refresh_token',
-  tokenExpirationKey: 'ecommerce_token_expiration',
+  tokenKey: 'access_token',
+  refreshTokenKey: 'refresh_token',
+  tokenExpirationKey: 'token_expiration',
   get mercadoPagoPublicKey(): string {
     return getEnvValue('mercadoPagoPublicKey', '');
   },

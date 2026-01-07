@@ -14,7 +14,7 @@
 
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, of, tap, throwError } from 'rxjs';
+import { Observable, catchError, of, throwError } from 'rxjs';
 import {
   HomePageResponse,
   BannerDto,
@@ -43,37 +43,13 @@ export class HomeService {
    * @returns Observable con todos los datos de Home
    */
   getHomePageData(params?: HomePageParams): Observable<HomePageResponse> {
-    const currentLanguage =
-      typeof window !== 'undefined' ? localStorage.getItem('app-language') || 'es' : 'es';
-
-    console.log(
-      `[HomeService] 🌐 Fetching home page data from API for language: ${currentLanguage}`
-    );
-
     let httpParams = new HttpParams();
     if (params?.productsPerSection) {
       httpParams = httpParams.set('productsPerSection', params.productsPerSection.toString());
     }
 
     return this.http.get<HomePageResponse>(this.API_URL, { params: httpParams }).pipe(
-      tap((response) => {
-        console.log(`[HomeService] ✅ Home page data loaded for language: ${currentLanguage}`, {
-          fromCache: response.metadata?.fromCache,
-          executionTime: `${response.metadata?.queryExecutionTimeMs}ms`,
-          language: response.metadata?.language,
-          sections: {
-            banners: response.banners?.length || 0,
-            featured: response.featuredProducts?.length || 0,
-            deals: response.deals?.length || 0,
-            bestsellers: response.bestSellers?.length || 0,
-            newArrivals: response.newArrivals?.length || 0,
-            topRated: response.topRated?.length || 0,
-            categories: response.featuredCategories?.length || 0
-          }
-        });
-      }),
       catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching home page data:', error);
         return throwError(() => error);
       })
     );
@@ -97,9 +73,7 @@ export class HomeService {
     }
 
     return this.http.get<BannerDto[]>(`${this.API_URL}/banners`, { params: httpParams }).pipe(
-      tap((banners) => console.log(`[HomeService] 🖼️ Loaded ${banners.length} banners`)),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching banners:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -118,11 +92,7 @@ export class HomeService {
     }
 
     return this.http.get<ProductDto[]>(`${this.API_URL}/featured`, { params: httpParams }).pipe(
-      tap((products) =>
-        console.log(`[HomeService] ⭐ Loaded ${products.length} featured products`)
-      ),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching featured products:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -142,9 +112,7 @@ export class HomeService {
     }
 
     return this.http.get<ProductDto[]>(`${this.API_URL}/deals`, { params: httpParams }).pipe(
-      tap((products) => console.log(`[HomeService] 🔥 Loaded ${products.length} deals`)),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching deals:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -163,9 +131,7 @@ export class HomeService {
     }
 
     return this.http.get<ProductDto[]>(`${this.API_URL}/bestsellers`, { params: httpParams }).pipe(
-      tap((products) => console.log(`[HomeService] 🏆 Loaded ${products.length} bestsellers`)),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching bestsellers:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -184,9 +150,7 @@ export class HomeService {
     }
 
     return this.http.get<ProductDto[]>(`${this.API_URL}/new-arrivals`, { params: httpParams }).pipe(
-      tap((products) => console.log(`[HomeService] 🆕 Loaded ${products.length} new arrivals`)),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching new arrivals:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -208,11 +172,7 @@ export class HomeService {
     }
 
     return this.http.get<ProductDto[]>(`${this.API_URL}/top-rated`, { params: httpParams }).pipe(
-      tap((products) =>
-        console.log(`[HomeService] ⭐ Loaded ${products.length} top rated products`)
-      ),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching top rated products:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -231,11 +191,7 @@ export class HomeService {
     }
 
     return this.http.get<CategoryDto[]>(`${this.API_URL}/categories`, { params: httpParams }).pipe(
-      tap((categories) =>
-        console.log(`[HomeService] 📂 Loaded ${categories.length} featured categories`)
-      ),
-      catchError((error) => {
-        console.error('[HomeService] ❌ Error fetching featured categories:', error);
+      catchError(() => {
         return of([]);
       })
     );
@@ -251,7 +207,7 @@ export class HomeService {
    * por compatibilidad con código existente.
    */
   clearCache(): void {
-    console.log('[HomeService] 🗑️ clearCache() called (no-op - backend handles caching)');
+    // No-op - backend handles caching
   }
 
   /**

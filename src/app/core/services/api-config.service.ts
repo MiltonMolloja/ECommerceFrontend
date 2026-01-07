@@ -20,7 +20,6 @@ export class ApiConfigService {
   private loadConfig() {
     // Intentar cargar desde window.__env (inyectado por Docker)
     if (typeof window !== 'undefined' && window.__env) {
-      console.log('[ApiConfig] ✅ Using runtime environment from window.__env', window.__env);
       return {
         apiGatewayUrl: window.__env['apiGatewayUrl'] || 'http://localhost:45000',
         identityUrl: window.__env['identityUrl'] || 'http://localhost:10000',
@@ -32,7 +31,6 @@ export class ApiConfigService {
     }
 
     // Fallback para desarrollo local
-    console.log('[ApiConfig] ⚠️ Using fallback configuration for local development');
     return {
       apiGatewayUrl: 'http://localhost:45000',
       identityUrl: 'http://localhost:10000',

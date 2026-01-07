@@ -144,9 +144,6 @@ export class ProductSearchService {
   searchProducts(params: SearchParams): Observable<ProductListResponse> {
     const httpParams = this.buildHttpParams(params);
 
-    console.log('🔍 Buscando productos con params:', httpParams.toString());
-    console.log('🌐 Idioma actual:', this.languageService.currentLanguage());
-
     return this.http
       .get<BackendSearchResponse>(`${this.API_URL}/search`, {
         params: httpParams,
@@ -167,10 +164,6 @@ export class ProductSearchService {
    */
   searchAdvanced(params: AdvancedSearchParams): Observable<AdvancedProductListResponse> {
     const body = this.buildAdvancedSearchBody(params);
-
-    console.log('🌐 Idioma actual:', this.languageService.currentLanguage());
-    console.log('📤 Request Body:', body);
-    console.log('🔗 Request URL:', `${this.API_URL}/search/advanced`);
 
     return this.http
       .post<BackendAdvancedSearchResponse>(`${this.API_URL}/search/advanced`, body, {
@@ -272,7 +265,6 @@ export class ProductSearchService {
       httpParams = httpParams.set('MinRating', params.rating.toString());
     }
 
-    console.log('🌐 Final HTTP params:', httpParams.toString());
     return httpParams;
   }
 
@@ -352,11 +344,6 @@ export class ProductSearchService {
       Array.isArray(metadata.availableBrands) &&
       metadata.availableBrands.length > 0
     ) {
-      console.log(
-        '📦 Primera marca completa:',
-        JSON.stringify(metadata.availableBrands[0], null, 2)
-      );
-
       filters.push({
         id: 'brand',
         name: 'Marca',
@@ -669,12 +656,7 @@ export class ProductSearchService {
     // Convertir facetas del backend a filtros del frontend
     let filters: FilterOption[] = [];
     if (response.facets) {
-      console.log('🔍 DEBUG: Facetas del backend:', response.facets);
-      console.log('🔍 DEBUG: Atributos:', response.facets.attributes);
-      // Obtener filtros actuales si existen (para preservar estado)
-      const currentFilters: FilterOption[] = [];
-      filters = this.facetMapper.mapFacetsToFilters(response.facets, currentFilters);
-      console.log('🔍 DEBUG: Filtros generados:', filters);
+      filters = this.facetMapper.mapFacetsToFilters(response.facets);
     } else {
       // Fallback a generación de filtros tradicional
       filters = this.generateFilters(products);

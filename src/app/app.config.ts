@@ -27,7 +27,7 @@ import { languageInterceptor } from './core/interceptors/language.interceptor';
 // Initialize ThemeService at app startup
 function initializeTheme(themeService: ThemeService) {
   return () => {
-    console.log('ThemeService initialized:', themeService.themeMode());
+    themeService.themeMode();
   };
 }
 

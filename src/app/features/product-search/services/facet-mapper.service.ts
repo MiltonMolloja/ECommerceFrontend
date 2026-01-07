@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { FilterOption, FilterType, FilterValue } from '../models/filter.model';
+import { FilterOption, FilterType } from '../models/filter.model';
 import {
   SearchFacets,
   FacetItem,
@@ -15,12 +15,11 @@ import {
   providedIn: 'root'
 })
 export class FacetMapperService {
-
   /**
    * Convierte las facetas del backend a filtros del frontend
    * ORDEN: Precio > Marcas > Disponibilidad > Ofertas > Calificación > Categorías > Atributos
    */
-  mapFacetsToFilters(facets: SearchFacets, currentFilters: FilterOption[]): FilterOption[] {
+  mapFacetsToFilters(facets: SearchFacets): FilterOption[] {
     const filters: FilterOption[] = [];
 
     // 1. Mapear facetas de precio (PRIMERO)
@@ -40,7 +39,7 @@ export class FacetMapperService {
     // 4. Mapear facetas de rating (puede sobrescribir el filtro estático con datos reales)
     if (facets.ratings && facets.ratings.ranges && facets.ratings.ranges.length > 0) {
       // Remover filtro de rating estático y agregar el del backend
-      const ratingIndex = filters.findIndex(f => f.id === 'rating');
+      const ratingIndex = filters.findIndex((f) => f.id === 'rating');
       if (ratingIndex !== -1) {
         filters[ratingIndex] = this.createRatingFilter(facets.ratings);
       }
@@ -69,7 +68,7 @@ export class FacetMapperService {
       id: 'brand',
       name: 'Marca',
       type: FilterType.CHECKBOX,
-      options: brands.map(b => ({
+      options: brands.map((b) => ({
         id: b.id.toString(),
         label: b.name,
         count: b.count,
@@ -88,7 +87,7 @@ export class FacetMapperService {
       id: 'category',
       name: 'Categoría',
       type: FilterType.CATEGORY,
-      options: categories.map(c => ({
+      options: categories.map((c) => ({
         id: c.id.toString(),
         label: c.name,
         count: c.count,
@@ -123,7 +122,7 @@ export class FacetMapperService {
       id: 'rating',
       name: 'Calificación',
       type: FilterType.CHECKBOX,
-      options: ratings.ranges.map(r => ({
+      options: ratings.ranges.map((r) => ({
         id: r.minRating.toString(),
         label: r.label,
         count: r.count,
@@ -173,33 +172,37 @@ export class FacetMapperService {
     // Lista de atributos a excluir (blacklist)
     // Solo excluir atributos con problemas de encoding, NO los correctos
     const excludedAttributes = [
-      'CondiciÃ³n',   // Mal encoding de "Condición" (UTF-8 mal interpretado)
-      'CondicíÃ³n',   // Otra variante mal codificada
-      'CondiciÃ"n',   // Otra variante mal codificada
+      'CondiciÃ³n', // Mal encoding de "Condición" (UTF-8 mal interpretado)
+      'CondicíÃ³n', // Otra variante mal codificada
+      'CondiciÃ"n' // Otra variante mal codificada
     ];
-    
+
     // Verificar si el atributo debe ser excluido
-    if (excludedAttributes.includes(attr.attributeName) || excludedAttributes.includes(attributeName)) {
-      console.log(`⏭️ Skipping excluded attribute (encoding issue): ${attr.attributeName}`);
+    if (
+      excludedAttributes.includes(attr.attributeName) ||
+      excludedAttributes.includes(attributeName)
+    ) {
       return null;
     }
 
     // Filtros de selección (Select/MultiSelect)
-    if (attr.attributeType === 'Select' || attr.attributeType === 'MultiSelect' || attr.attributeType === 'Text') {
+    if (
+      attr.attributeType === 'Select' ||
+      attr.attributeType === 'MultiSelect' ||
+      attr.attributeType === 'Text'
+    ) {
       if (!attr.values || attr.values.length === 0) {
         return null;
       }
 
       // Usar el attributeId del backend si está disponible, sino el nombre
-      const filterId = attr.attributeId
-        ? `attr_${attr.attributeId}`
-        : `attr_${attributeName}`;
+      const filterId = attr.attributeId ? `attr_${attr.attributeId}` : `attr_${attributeName}`;
 
       return {
         id: filterId,
         name: attr.attributeName,
         type: FilterType.CHECKBOX, // Usar CHECKBOX para mejor UX con Material
-        options: attr.values.map(v => ({
+        options: attr.values.map((v) => ({
           id: v.id.toString(),
           label: v.name,
           count: v.count,
@@ -216,9 +219,7 @@ export class FacetMapperService {
     }
     // Filtros numéricos con rango
     else if (attr.attributeType === 'Number' && attr.range) {
-      const filterId = attr.attributeId
-        ? `attr_${attr.attributeId}`
-        : `attr_${attributeName}`;
+      const filterId = attr.attributeId ? `attr_${attr.attributeId}` : `attr_${attributeName}`;
 
       return {
         id: filterId,
@@ -238,9 +239,7 @@ export class FacetMapperService {
     }
     // Filtros booleanos
     else if (attr.attributeType === 'Boolean') {
-      const filterId = attr.attributeId
-        ? `attr_${attr.attributeId}`
-        : `attr_${attributeName}`;
+      const filterId = attr.attributeId ? `attr_${attr.attributeId}` : `attr_${attributeName}`;
 
       return {
         id: filterId,
@@ -266,7 +265,7 @@ export class FacetMapperService {
    */
   private addStaticFilters(filters: FilterOption[]): void {
     // 1. Filtro de disponibilidad
-    if (!filters.find(f => f.id === 'inStock')) {
+    if (!filters.find((f) => f.id === 'inStock')) {
       filters.push({
         id: 'inStock',
         name: 'Disponibilidad',
@@ -283,7 +282,7 @@ export class FacetMapperService {
     }
 
     // 2. Filtro de ofertas/descuento
-    if (!filters.find(f => f.id === 'discount')) {
+    if (!filters.find((f) => f.id === 'discount')) {
       filters.push({
         id: 'discount',
         name: 'Ofertas',
@@ -300,7 +299,7 @@ export class FacetMapperService {
     }
 
     // 3. Filtro de calificación (por defecto, puede ser sobrescrito por facetas del backend)
-    if (!filters.find(f => f.id === 'rating')) {
+    if (!filters.find((f) => f.id === 'rating')) {
       filters.push(this.createDefaultRatingFilter());
     }
   }

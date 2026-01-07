@@ -24,9 +24,9 @@ export const environment = {
   get loginServiceUrl(): string {
     return getEnvValue('loginServiceUrl', 'https://localhost:4400');
   },
-  tokenKey: 'ecommerce_access_token',
-  refreshTokenKey: 'ecommerce_refresh_token',
-  tokenExpirationKey: 'ecommerce_token_expiration',
+  tokenKey: 'access_token',
+  refreshTokenKey: 'refresh_token',
+  tokenExpirationKey: 'token_expiration',
   get mercadoPagoPublicKey(): string {
     return getEnvValue('mercadoPagoPublicKey', 'APP_USR-8ca245f1-7586-4db6-ba30-93c030fb147a');
   },

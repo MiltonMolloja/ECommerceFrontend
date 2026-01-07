@@ -15,13 +15,7 @@ export const languageInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Read language directly from localStorage to avoid circular dependency
   // This matches the STORAGE_KEY in LanguageService
-  const language =
-    typeof window !== 'undefined' ? localStorage.getItem('app-language') || 'es' : 'es';
-
-  // Debug log for API requests
-  if (req.url.includes('/home') || req.url.includes('/catalog')) {
-    console.log(`[LanguageInterceptor] 🌐 ${req.method} ${req.url} - Accept-Language: ${language}`);
-  }
+  const language = typeof window !== 'undefined' ? localStorage.getItem('language') || 'es' : 'es';
 
   // Clone request and add Accept-Language header
   const clonedRequest = req.clone({

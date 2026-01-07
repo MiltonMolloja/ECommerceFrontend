@@ -16,7 +16,7 @@ interface LanguageOption {
 export class LanguageService {
   private readonly translateService = inject(TranslateService);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly STORAGE_KEY = 'app-language';
+  private readonly STORAGE_KEY = 'language';
   private readonly DEFAULT_LANGUAGE: Language = 'es';
 
   // Available languages

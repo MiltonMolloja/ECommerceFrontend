@@ -183,12 +183,39 @@ export class AuthService {
     localStorage.setItem(this.tokenKey, authResult.accessToken);
     localStorage.setItem(this.refreshTokenKey, authResult.refreshToken);
 
-    if (authResult.expiresAt) {
+    // Obtener la expiración del access token directamente del JWT (más preciso)
+    const tokenExpiration = this.getExpirationFromToken(authResult.accessToken);
+    if (tokenExpiration) {
+      localStorage.setItem(this.tokenExpirationKey, tokenExpiration.toISOString());
+    } else if (authResult.expiresAt) {
+      // Fallback al expiresAt del response (refresh token expiration)
       localStorage.setItem(this.tokenExpirationKey, authResult.expiresAt.toString());
     }
 
     this.accessTokenSignal.set(authResult.accessToken);
     this.currentUserSignal.set(this.getUserFromToken());
+  }
+
+  /**
+   * Obtener la fecha de expiración desde el JWT token
+   */
+  private getExpirationFromToken(token: string): Date | null {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 3) return null;
+
+      const payloadPart = parts[1];
+      if (!payloadPart) return null;
+
+      const payload = JSON.parse(atob(payloadPart));
+      if (payload.exp) {
+        // exp está en segundos desde epoch
+        return new Date(payload.exp * 1000);
+      }
+      return null;
+    } catch {
+      return null;
+    }
   }
 
   /**

@@ -71,7 +71,6 @@ export class CartComponent {
     effect(() => {
       const langChangeCount = this.languageService.languageChanged();
       if (this.initialLoadComplete && langChangeCount > 0) {
-        console.log('🌐 Idioma cambiado, recargando nombres de productos en carrito');
         this.loadProductNames();
       }
     });

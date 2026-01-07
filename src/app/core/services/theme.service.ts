@@ -10,7 +10,7 @@ export type ThemeMode = 'light' | 'dark' | 'auto';
 export class ThemeService {
   private translateService = inject(TranslateService);
   private platformId = inject(PLATFORM_ID);
-  private readonly THEME_STORAGE_KEY = 'app-theme-preference';
+  private readonly THEME_STORAGE_KEY = 'theme';
 
   // Signal para el modo de tema seleccionado por el usuario
   readonly themeMode = signal<ThemeMode>(this.getStoredTheme());

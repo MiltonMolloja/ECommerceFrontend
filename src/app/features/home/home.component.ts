@@ -99,15 +99,8 @@ export class HomeComponent implements OnInit, OnDestroy {
     effect(() => {
       const langChangeCount = this.languageService.languageChanged();
 
-      console.log('[HomeComponent] 🔔 Language change detected:', {
-        langChangeCount,
-        initialLoadComplete: this.initialLoadComplete,
-        currentLanguage: this.languageService.currentLanguage()
-      });
-
       // Only reload if initial load has completed (avoid double-loading on startup)
       if (this.initialLoadComplete && langChangeCount > 0) {
-        console.log('[HomeComponent] 🌐 Language changed, reloading data...');
         this.homeService.clearCache();
         this.loadHomePageData();
       }
@@ -140,13 +133,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.error.set(null);
     this.loadStrategy.set('aggregator');
 
-    console.log('[HomeComponent] 🚀 Loading home page data (aggregator)');
-
     this.homeService
       .getHomePageData({ productsPerSection: 8 })
       .pipe(
-        catchError((error) => {
-          console.error('[HomeComponent] ❌ Aggregator failed, trying individual endpoints', error);
+        catchError(() => {
           this.loadStrategy.set('individual');
           // Fallback a endpoints individuales
           return this.loadSectionsIndividually();
@@ -157,15 +147,8 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.updateAllSections(response);
           this.isLoading.set(false);
           this.initialLoadComplete = true;
-
-          console.log('[HomeComponent] ✅ Home page loaded', {
-            strategy: this.loadStrategy(),
-            fromCache: response.metadata?.fromCache,
-            executionTime: `${response.metadata?.queryExecutionTimeMs}ms`
-          });
         },
-        error: (err) => {
-          console.error('[HomeComponent] ❌ Failed to load home page:', err);
+        error: () => {
           this.error.set('Error al cargar la página. Por favor, intenta de nuevo.');
           this.isLoading.set(false);
         }
@@ -176,8 +159,6 @@ export class HomeComponent implements OnInit, OnDestroy {
    * 🔄 Fallback: Carga secciones individualmente si falla el agregador
    */
   private loadSectionsIndividually() {
-    console.log('[HomeComponent] 🔄 Loading sections individually (fallback)');
-
     return forkJoin({
       banners: this.homeService.getBanners({ position: 'hero' }).pipe(catchError(() => of([]))),
       featuredProducts: this.homeService
@@ -247,14 +228,13 @@ export class HomeComponent implements OnInit, OnDestroy {
    * 🔥 Actualización parcial: Solo ofertas
    */
   refreshDeals(): void {
-    console.log('[HomeComponent] 🔄 Refreshing deals (polling)');
-
     this.homeService.getDeals({ limit: 8 }).subscribe({
       next: (deals) => {
         this.deals.set(deals);
-        console.log('[HomeComponent] ✅ Deals refreshed', { count: deals.length });
       },
-      error: (err) => console.error('[HomeComponent] ❌ Error refreshing deals:', err)
+      error: () => {
+        // Silently ignore deals loading errors
+      }
     });
   }
 
@@ -266,7 +246,6 @@ export class HomeComponent implements OnInit, OnDestroy {
    * 🔄 Recargar toda la página
    */
   retry(): void {
-    console.log('[HomeComponent] 🔄 Retrying home page load');
     this.homeService.clearCache();
     this.loadHomePageData();
   }
@@ -275,7 +254,6 @@ export class HomeComponent implements OnInit, OnDestroy {
    * 🗑️ Limpiar cache y recargar
    */
   clearCacheAndReload(): void {
-    console.log('[HomeComponent] 🗑️ Clearing cache and reloading');
     this.homeService.clearCache();
     this.loadHomePageData();
   }
@@ -284,8 +262,6 @@ export class HomeComponent implements OnInit, OnDestroy {
    * 🛒 Agregar producto al carrito
    */
   onAddToCart(product: ProductDto): void {
-    console.log('[HomeComponent] 🛒 Add to cart:', product);
-
     // Verificar stock
     if (product.stock && product.stock.stock <= 0) {
       this.snackBar.open(
