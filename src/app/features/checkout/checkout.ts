@@ -111,6 +111,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   // Can be overridden via window.__env.devMode
   isDevMode = this.checkDevMode();
 
+  // Production mode flag (for showing demo platform warning)
+  isProdMode = environment.production;
+
   private checkDevMode(): boolean {
     const w = window as Window & { __env?: Record<string, string> };
     // Check if explicitly set in window.__env
@@ -396,10 +399,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         verticalPosition: 'top'
       });
 
+      // loginServiceUrl ya incluye /auth, solo agregamos /login
       const baseUrl = window.location.origin;
       const returnUrl = '/checkout';
       const callbackUrl = `${baseUrl}/login-callback?next=${encodeURIComponent(returnUrl)}`;
-      window.location.href = `${environment.loginServiceUrl}/auth/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
+      window.location.href = `${environment.loginServiceUrl}/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
       return;
     }
 

@@ -185,10 +185,11 @@ export class CartComponent {
       });
 
       // Redirigir al servicio de autenticación externo
+      // loginServiceUrl ya incluye /auth, solo agregamos /login
       const baseUrl = window.location.origin;
       const returnUrl = '/checkout';
       const callbackUrl = `${baseUrl}/login-callback?next=${encodeURIComponent(returnUrl)}`;
-      window.location.href = `${environment.loginServiceUrl}/auth/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
+      window.location.href = `${environment.loginServiceUrl}/login?returnUrl=${encodeURIComponent(callbackUrl)}`;
       return;
     }
 

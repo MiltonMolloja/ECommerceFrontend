@@ -585,6 +585,21 @@
           </mat-card-actions>
         }
 
+        <!-- Demo Platform Warning (only in production mode) -->
+        @if (isProdMode) {
+          <div class="demo-warning">
+            <mat-icon>info</mat-icon>
+            <div class="demo-warning-content">
+              <strong>Plataforma Demostrativa</strong>
+              <span>
+                A pesar de estar en Modo Produccion, el fin de esta plataforma es demostrativo.
+                MercadoPago esta configurado para cobrar solamente <strong>$20 ARS</strong> sin
+                importar el monto del carrito. Realice pruebas con toda confianza.
+              </span>
+            </div>
+          </div>
+        }
+
         <div class="secure-badge">
           <mat-icon>lock</mat-icon>
           <span>{{ 'CHECKOUT.SECURE_PAYMENT' | translate }}</span>
