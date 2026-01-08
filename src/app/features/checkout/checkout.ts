@@ -126,10 +126,11 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   }
 
   private checkProdMode(): boolean {
-    const w = window as Window & { __env?: Record<string, string | boolean> };
+    const w = window as Window & { __env?: Record<string, unknown> };
     // Check if explicitly set in window.__env
     if (w.__env?.['production'] !== undefined) {
-      return w.__env['production'] === true || w.__env['production'] === 'true';
+      const prod = w.__env['production'];
+      return prod === true || prod === 'true';
     }
     // Fall back to environment.production
     return environment.production;
