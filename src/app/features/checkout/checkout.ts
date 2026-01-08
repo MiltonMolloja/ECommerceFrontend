@@ -112,7 +112,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   isDevMode = this.checkDevMode();
 
   // Production mode flag (for showing demo platform warning)
-  isProdMode = environment.production;
+  // Reads from window.__env.production at runtime
+  isProdMode = this.checkProdMode();
 
   private checkDevMode(): boolean {
     const w = window as Window & { __env?: Record<string, string> };
@@ -122,6 +123,16 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     }
     // Fall back to environment.production
     return !environment.production;
+  }
+
+  private checkProdMode(): boolean {
+    const w = window as Window & { __env?: Record<string, string | boolean> };
+    // Check if explicitly set in window.__env
+    if (w.__env?.['production'] !== undefined) {
+      return w.__env['production'] === true || w.__env['production'] === 'true';
+    }
+    // Fall back to environment.production
+    return environment.production;
   }
 
   // Calculations
