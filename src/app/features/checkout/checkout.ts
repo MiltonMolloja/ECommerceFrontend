@@ -116,20 +116,25 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   isProdMode = this.checkProdMode();
 
   private checkDevMode(): boolean {
-    const w = window as Window & { __env?: Record<string, string> };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as Window & { __env?: Record<string, any> };
     // Check if explicitly set in window.__env
     if (w.__env?.['devMode'] !== undefined) {
-      return w.__env['devMode'] === 'true';
+      const dev = w.__env['devMode'];
+      return dev === true || dev === 'true';
     }
     // Fall back to environment.production
     return !environment.production;
   }
 
   private checkProdMode(): boolean {
-    const w = window as Window & { __env?: Record<string, string> };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const w = window as Window & { __env?: Record<string, any> };
     // Check if explicitly set in window.__env
     if (w.__env?.['production'] !== undefined) {
-      return w.__env['production'] === 'true';
+      const prod = w.__env['production'];
+      // Handle both boolean and string values
+      return prod === true || prod === 'true';
     }
     // Fall back to environment.production
     return environment.production;
