@@ -179,6 +179,11 @@
             <!-- Barra de búsqueda con autocomplete -->
             <app-search-bar class="search-bar-wrapper"></app-search-bar>
 
+            <!-- Badge de modo desarrollo -->
+            @if (isDevMode) {
+              <span class="dev-badge">DEV</span>
+            }
+
             <!-- Acciones de header -->
             <div class="header-actions">
               <!-- Cuenta y listas -->

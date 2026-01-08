@@ -18,6 +18,7 @@ import { LanguageService, type Language } from '../../core/services/language.ser
 import { LanguageSwitcher } from '../../shared/components/language-switcher/language-switcher';
 import { SearchBarComponent } from '../../shared/components/search-bar/search-bar.component';
 import { ApiConfigService } from '../../core/services/api-config.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-main-layout',
@@ -64,6 +65,9 @@ export class MainLayoutComponent implements OnInit {
     const user = this.authService.currentUser();
     return user?.firstName || '';
   });
+
+  // Flag para mostrar badge de desarrollo
+  readonly isDevMode = !environment.production;
 
   readonly navigationItems = [
     {
